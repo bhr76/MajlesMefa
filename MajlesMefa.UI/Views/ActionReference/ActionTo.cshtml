@@ -1,0 +1,57 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.UI.Views.ActionReference;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.Back.Utilities.EnumHelper
+@{
+    ViewData["Title"] = "جزییات تذکر";
+}
+@model ActionViewModel
+
+@{
+    Layout = null;
+}
+
+
+
+<form asp-controller="ActionReference" asp-action="ActionTo" enctype="multipart/form-data" id="frmRefrenceto" method="post">
+    <div class="modal-body">
+        <input asp-for="DataEntryId" hidden />
+
+        @*  <div class="container">*@
+
+        @*   <div class="row">*@
+
+        <div class="row">
+        <div class="form-group col-md-4" style="margin-bottom:130px;">
+            <label asp-for="ActRefType" class="control-label"></label>
+            <select asp-for="ActRefType" title="لطفا انتخاب کنید..."
+                    class="form-control selectpicker show-tick ">
+                <option selected="selected" value=3>تایید</option>
+                <option value=4>عدم تایید</option>
+                <option value=6>بستن</option>
+                <option value=9>دریافت پاسخ</option>
+                <option value=2>سایر اقدام</option>
+            </select>
+            <span class="help-block">
+                <span asp-validation-for="ActRefType" class="text-danger"></span>
+            </span>
+        </div>
+        <div class="form-group col-md-4">
+            <label asp-for="Description" class="control-label"></label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+         </div>
+    </div>
+    @* </div>*@
+    <div class="modal-footer">
+
+        <button onclick="event.preventDefault();saveAndupdate($(this.form), $(this.form).attr('action') , 'action');"
+                class="btn btn-taghavi" perform="action">
+            ارسال
+        </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">خروج</button>
+    </div>
+</form>
+
+

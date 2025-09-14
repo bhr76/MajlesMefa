@@ -1,0 +1,90 @@
+﻿@using MajlesMefa.UI.Models;
+@using MajlesMefa.UI.Views.Page;
+@{
+    ViewData["Title"] = "ویرایش صفحه";
+}
+@model PageVm
+
+<div class="m-portlet">
+    <div class="m-portlet__body">
+        <form asp-controller=@PageController.CONTROLLER asp-action="Edit" id="EditPageForm" method="post">
+            <div class="row">
+                <div asp-validation-summary="ModelOnly"></div>
+                <input asp-for="@Model.Id" hidden />
+
+                <div asp-validation-summary="ModelOnly"></div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Url"></label>
+                    <input style="background-color:#ebedf2" readonly asp-for="@Model.Url" id="URL" class="form-control" />
+                    <span asp-validation-for="@Model.Url" class="text-danger"></span>
+                </div>
+
+                
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Controller"></label>
+                    <input style="background-color:#ebedf2" asp-for="@Model.Controller" id="Controller" readonly class="form-control" />
+                    <span asp-validation-for="@Model.Controller" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Action" class="control-label"></label>
+                    <input style="background-color:#ebedf2" asp-for="@Model.Action" id="Action" readonly class="form-control" />
+                    <span asp-validation-for="@Model.Action" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Title"></label>
+                    <input asp-for="@Model.Title" style="background-color:#ebedf2" readonly id="Title" class="form-control" />
+                    <span asp-validation-for="@Model.Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Roles"></label>
+                    <select class="form-control"  asp-for="@Model.Roles" id="Roles" multiple="multiple">
+                    </select>
+                    <span asp-validation-for="@Model.Roles" class="text-danger"></span>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="submit-btn col-md-3 m-auto">
+                    <input type="submit" value="ثبت" />
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+@section scripts{
+        <script>
+            $(document).ready(function () {
+
+            var jsonList = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.RoleDefaultValue))';
+
+            var jsList = JSON.parse(jsonList);
+
+
+            $("#Roles").kendoMultiSelect({
+                includeSelectAllOption: true,
+                //placeholder: "Select Employees...",
+                dataTextField: "name",
+                dataValueField: "id",
+                value: jsList,
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetAllRolesForDropDown", PageController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+        });
+
+        </script>
+}

@@ -1,0 +1,110 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.Back.Enums.Molaghat;
+@using MajlesMefa.UI.Views.Mokatebe;
+@using MajlesMefa.UI.Models;
+@{
+    var molaghatType = (MolaghatTypeEnum)Model.MolaghatData.MolaghatType;
+    var molaghatLocation = (MolaghatLocationEnum)Model.MolaghatData.Mahal;
+}
+@model MolaghatVm
+
+@{
+    Layout = null;
+}
+
+<style>
+    .flex {
+        display: flex;
+    }
+
+    th {
+        max-width: 25% !important;
+    }
+</style>
+
+<div class="card" style="margin:10px;">
+    <div class="card-header">
+        <p class="mb-0">
+            <b>اطلاعات کامل ملاقات</b>
+        </p>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+               <table class="table table-striped" style="width:100%">
+                    <tr>
+                        <th style="max-width:30%;">شناسه</th>
+                        <td style="min-width:70%;">@Model.MolaghatData.Id</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نماینده مرتبط</th>
+                        <td style="min-width:70%;">@Model.SenatorName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">حوزه انتخابی نماینده</th>
+                        <td style="min-width:70%;">@Model.HozeEntekhabi</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">استان نماینده</th>
+                        <td style="min-width:70%;">@Model.SenatorCity</td>
+                    </tr>
+                     <tr>
+                        <th style="max-width:30%;"> کمیسیون </th>
+                        <td style="min-width:70%;">@Model.MolaghatData.CommisionTitle</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">وضعیت پاسخ</th>
+                        @if (Model.MolaghatData.PasokhNo != null)
+                        {
+                            <td class="text-success" style="min-width:70%;">پاسخ داده شده - شماره پاسخ : @Model.MolaghatData.PasokhNo - تاریخ پاسخ : @Model.MolaghatData.PasokhPersianDate</td>
+                        }
+                        else
+                        {
+                            <td class="text-warning" style="min-width:70%;">در دست پیگیری</td>
+                        }
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نتیجه پاسخ</th>
+                        @if (Model.MolaghatData.PasokhNo != null)
+                        {
+                            <td class="text-success" style="min-width:70%;"> @Model.MolaghatData.PasokhState.GetPersianName()</td>
+                        }
+                        else
+                        {
+                            <td class="text-warning" style="min-width:70%;">بدون پاسخ</td>
+                        }
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تاریخ </th>
+                        <td style="min-width:70%;">@Model.MolaghatData.JalaliTarikh</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تعداد ملاقات</th>
+                        <td style="min-width:70%;">@Model.MolaghatData.Count</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">محل</th>
+                        <td style="min-width:70%;">@molaghatLocation.GetPersianName()</td>
+                    </tr>
+                     <tr>
+                        <th style="max-width:30%;">نوع جلسه</th>
+                        <td style="min-width:70%;">@molaghatType.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">چکیده درخواستها و سخنان مطروحه</th>
+                        <td style="min-width:70%;">@Model.Description</td>
+                    </tr>
+                    </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <h5 class="mb-0" style="text-align:left">
+
+            
+
+        </h5>
+    </div>
+</div>
+

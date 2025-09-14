@@ -1,0 +1,185 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.UI.Views.ActionReference;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.Back.Utilities.EnumHelper
+@{
+    ViewData["Title"] = "جزییات تذکر";
+}
+@model ActionReferenceViewModel
+
+@{
+    Layout = null;
+}
+
+
+
+<form asp-controller="ActionReference" asp-action="Refrenceto" enctype="multipart/form-data" id="frmRefrenceto" method="post">
+    <div class="modal-body">
+        <input asp-for="DataEntryId" hidden />
+
+        @*  <div class="container">*@
+        <h6>جستجوی کاربر:</h6>
+        @*   <div class="row">
+
+        <div class="form-group col-md-4">
+        <label asp-for="CityId" class="control-label"></label>
+        <select asp-for="CityId" asp-items="Model.CitySelectList" title="لطفا انتخاب کنید..."
+        data-live-search="true" class="form-control selectpicker show-tick" data-url="@Url.Action("GetCityByParentId", "ActionReference")"></select>
+        <span class="help-block">
+        <span asp-validation-for="CityId" class="text-danger"></span>
+        </span>
+        </div>
+
+        <div class="form-group col-md-4">
+        <label asp-for="SubCityId" class="control-label"></label>
+        <select asp-for="SubCityId" asp-items="Model.SubCitySelectList" title="لطفا انتخاب کنید..."
+        data-live-search="true" class="form-control selectpicker show-tick FilterId"></select>
+        <span class="help-block">
+        <span asp-validation-for="SubCityId" class="text-danger"></span>
+        </span>
+        </div>
+        </div>*@
+        @* <div class="row">
+        <div class="form-group col-md-4">
+        <label asp-for="OrganizationId" class="control-label"></label>
+        <select asp-for="OrganizationId" asp-items="Model.OrganizationSelectList" title="لطفا انتخاب کنید..."
+        class="form-control selectpicker" data-url="@Url.Action("GetOrganizationByParentId", "ActionReference")"></select>
+        <span class="help-block">
+        <span asp-validation-for="OrganizationId" class="text-danger"></span>
+        </span>
+        </div>
+        <div class="form-group col-md-4">
+        <label asp-for="SubOrganizationId" class="control-label"></label>
+        <select asp-for="SubOrganizationId" asp-items="Model.SubOrganizationSelectList" title="لطفا انتخاب کنید..."
+        class="form-control selectpicker FilterId"></select>
+        <span class="help-block">
+        <span asp-validation-for="SubOrganizationId" class="text-danger"></span>
+        </span>
+        </div>
+
+        </div>*@
+        @* <div class="row">*@
+        <div class="form-group col-md-4">
+            <label asp-for="UserId" class="control-label"></label>
+            <select asp-for="UserId" asp-items="Model.UserSelectList" title="لطفا انتخاب کنید..."
+                    class="form-control selectpicker show-tick " data-live-search="true"></select>
+            <span class="help-block">
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </span>
+        </div>
+        <div class="form-group col-md-4">
+            <label asp-for="Description" class="control-label"></label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-4" style="margin-bottom:20px;">
+            <label asp-for="RefType" class="control-label"></label>
+            <select asp-for="RefType" title="لطفا انتخاب کنید..."
+                    class="form-control selectpicker show-tick ">
+                <option selected="selected" value=1>جهت اطلاع</option>
+                <option value=2>جهت اقدام</option>
+                <option value=3>جهت اقدام فوری</option>
+                <option value=4> جهت پیگیری</option>
+                <option value=5> جهت تست</option>
+                <option value=6> جهت اقدام مقتضی</option>
+                <option value=7> جهت استحضار</option>
+            </select>
+            <span class="help-block">
+                <span asp-validation-for="RefType" class="text-danger"></span>
+            </span>
+        </div>
+        @* </div>*@
+    </div>
+    @* </div>*@
+    <div class="modal-footer">
+
+        <button onclick="event.preventDefault();saveAndupdate($(this.form), $(this.form).attr('action'), 'action');"
+                class="btn btn-taghavi" perform="action">
+            ارسال
+        </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">خروج</button>
+    </div>
+</form>
+<script type="text/javascript">
+    //$(document).on('change',
+    //    '#CityId',
+    //    function () {
+    //        var selectedItem = $(this).val();
+    //        var ddlStates = $("#SubCityId");
+    //        $.ajax({
+    //            type: 'GET',
+    //            url: $(this).data("url"),
+    //            data: { "ItemId": selectedItem },
+    //            success: function (data) {
+    //                ddlStates.html('');
+    //                $.each(data,
+    //                    function (i, option) {
+    //                        ddlStates.append($('<option></option>').val(option.id).html(option.name));
+    //                    });
+    //                ddlStates.selectpicker('refresh');
+    //            }
+    //        });
+    //    });
+    //$(document).on('change',
+    //    '#OrganizationId',
+    //    function () {
+    //        var selectedItem = $(this).val();
+    //        var ddlStates = $("#SubOrganizationId");
+    //        $.ajax({
+    //            type: 'GET',
+    //            url: $(this).data("url"),
+    //            data: { "ItemId": selectedItem },
+    //            success: function (data) {
+    //                ddlStates.html('');
+    //                $.each(data,
+    //                    function (i, option) {
+    //                        ddlStates.append($('<option></option>').val(option.id).html(option.name));
+    //                    });
+    //                ddlStates.selectpicker('refresh');
+    //            }
+    //        });
+    //    });
+    $(document).on('change',
+        '.UserId',
+        function () {
+            debugger;
+            // const city = $('#SubCityId').val();
+            //const organization = $('#SubOrganizationId').val();
+            var selectedItem = $(this).val();
+            var ddlStates = $("#UserId");
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action(nameof(ActionReferenceController.GetUserByFilter))',
+                //data: { "cityId": city, "organizationId": organization },
+                success: function (data) {
+                    debugger;
+                    ddlStates.html('');
+                    $.each(data,
+                        function (i, option) {
+                            ddlStates.append($('<option></option>').val(option.id).html(option.name));
+                        });
+                    ddlStates.selectpicker('refresh');
+                }
+            });
+        });
+            //$('#UserId').on('change',
+            //    function () {
+            //        const city = $('#SubCityId').val();
+            //        const organization = $('#OrganizationId').next();
+            //        var selectedItem = $(this).val();
+            //        $.ajax({
+            //            type: 'GET',
+            //            url: $(this).data("url"),
+            //            data: { "cityId": city, "organizationId": organization },
+            //            success: function (data) {
+            //                $(this).html('');
+            //                $.each(data,
+            //                    function (i, option) {
+            //                        $(this).append($('<option></option>').val(option.id).html(option.name));
+            //                    });
+            //                $(this).selectpicker('refresh');
+            //            }
+            //        });
+            //    });
+</script>
+

@@ -1,0 +1,50 @@
+﻿@using MajlesMefa.UI.Views.Organization;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.Back.Enums;
+@{
+    var organizationId = ViewBag.organizationId;
+    ViewData["Title"] = ViewBag.organizationId == null ? "لیست سازمان‌ها" : "لیست سازمان‌ها";
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script asp-append-version="true">
+        var url_create = '';
+        var url_edit = '';
+        var url_delete = '';
+        {
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower()) {
+                url_create = '@Url.Action(nameof(OrganizationController.Create), OrganizationController.CONTROLLER, new {organizationId=@ViewBag.organizationId})';
+                url_edit = '@Url.Action(nameof(OrganizationController.Edit), OrganizationController.CONTROLLER, new {organizationId=@ViewBag.organizationId})';
+                url_delete = '@Url.Action(nameof(OrganizationController.Delete), OrganizationController.CONTROLLER, new {organizationId=@ViewBag.organizationId})';
+            }
+        };
+        var url_get = '@Url.Action(nameof(OrganizationController.GetOrganization), OrganizationController.CONTROLLER, new {organizationId=@ViewBag.organizationId})';
+        var url_subOrg = '@Url.Action(nameof(OrganizationController.Index), OrganizationController.CONTROLLER)';
+        var btns = `#if('${url_delete}' != ''){#<button class="k-button mt-1" data-link="${url_delete}/?id=#:id#"> حذف </button>#}#
+                                        #if('${url_edit}' != ''){#<button class="k-button mt-1" data-link="${url_edit}/?name=#:name#&id=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</button>#}#
+                                   <a class="k-button mt-1 subcategory-btn" id="subcategory-btn"  href = "${url_subOrg}?id=#:id#" >سازمان‌ها</a>
+                      `;
+
+    </script>
+    <script src="~/js/pages/organization.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            if ('@organizationId' != "") {
+                $("#subcategory-btn").addClass("d-hide");
+            }
+        });
+    </script>
+}
+

@@ -1,0 +1,33 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.UI.Views.ActionReference;
+@{
+    ViewData["Title"] = "لیست ارجاعات " + ViewBag.DataEntryTitle;
+
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+}
+@model Guid
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+@section scripts{
+    <script asp-append-version="true">
+        var url_get = '@Url.Action(nameof(ActionReferenceController.GetActionReference), ActionReferenceController.CONTROLLER)' + '?dataEntryId=@Model&actRefType=1';
+        var url_delete = '';
+        {
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower() ) {
+                url_delete = '@Url.Action(nameof(ActionReferenceController.DeleteRefrence), ActionReferenceController.CONTROLLER)';
+            }
+        };
+        var btns = ` #if('${url_delete}' != ''){#<button class="k-button mt-1" data-confirmation="آیا مطمئن هستید؟" data-href="${url_delete}/?refrenceId=#:id#"> حذف </button>#}# `;
+    </script>
+
+    <script src="~/js/pages/actionReference.js" asp-append-version="true"></script>
+}
+

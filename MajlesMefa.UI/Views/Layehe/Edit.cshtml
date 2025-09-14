@@ -1,0 +1,468 @@
+﻿@using MajlesMefa.UI.Views.Category;
+@using MajlesMefa.UI.Views.Commission;
+@using MajlesMefa.UI.Views.Layehe;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.UI.Views.Senator;
+@{
+    var a = Model;
+    var firstParentId = Model.CategoryParentId;
+    ViewData["Title"] = "ویرایش لایحه";
+}
+@model LayeheViewModel
+
+<div class="m-portlet">
+    <div class="m-portlet__body">
+        <form asp-controller=@LayeheController.CONTROLLER asp-action="Edit" id="EditLayeheForm" method="post">
+            <div class="row">
+                <div asp-validation-summary="ModelOnly"></div>
+                <input asp-for="@Model.Id" hidden />
+
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Title"></label>
+                    <input asp-for="@Model.Title" id="Title" class="form-control" />
+                    <span asp-validation-for="@Model.Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.TypeInt" style="display:block;"></label>
+                    <input asp-for="@Model.TypeInt" id="Type" class="form-control" />
+                    <span asp-validation-for="@Model.TypeInt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.ShomareSabt"></label>
+                    <input asp-for="@Model.ShomareSabt" class="form-control" />
+                    <span asp-validation-for="@Model.ShomareSabt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.ElamVosoolPersianDate" class="control-label"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text cursor-pointer" id="ElamVosoolDate"><i class="far fa-calendar-alt"></i></span>
+                        </div>
+                        <input asp-for="@Model.ElamVosoolPersianDate" class="form-control" />
+                    </div>
+                    <span class="help-block"><span asp-validation-for="@Model.ElamVosoolPersianDate" class="text-danger"></span></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.BaresiKoliatDarSahnPersianDate" class="control-label"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text cursor-pointer" id="BaresiKoliatDarSahnDate"><i class="far fa-calendar-alt"></i></span>
+                        </div>
+                        <input asp-for="@Model.BaresiKoliatDarSahnPersianDate" id="BaresiKoliatDarSahnPersianDate" class="form-control" />
+                    </div>
+                    <span class="help-block"><span asp-validation-for="@Model.BaresiKoliatDarSahnPersianDate" class="text-danger"></span></span>
+                </div>
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.EblaghPersianDate" class="control-label"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text cursor-pointer" id="EblaghDate"><i class="far fa-calendar-alt"></i></span>
+                        </div>
+                        <input asp-for="@Model.EblaghPersianDate" class="form-control" />
+                    </div>
+                    <span class="help-block"><span asp-validation-for="@Model.EblaghPersianDate" class="text-danger"></span></span>
+                </div>
+
+
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.VazeyatBarresiInt" style="display:block;"></label>
+                    <input asp-for="@Model.VazeyatBarresiInt" id="VazeyatBarresi" class="form-control" />
+                    <span asp-validation-for="@Model.VazeyatBarresiInt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.NatijeBarresiCommissionInt" class="control-label" style="display:block;"></label>
+                    <input asp-for="@Model.NatijeBarresiCommissionInt" class="form-control NatijeBarresi" />
+                    <span asp-validation-for="@Model.NatijeBarresiCommissionInt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.NatijeBarresiSahnInt" style="display:block;"></label>
+                    <input asp-for="@Model.NatijeBarresiSahnInt" class="form-control NatijeBarresi" />
+                    <span asp-validation-for="@Model.NatijeBarresiSahnInt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.NatijeBarresiShoraInt" style="display:block;"></label>
+                    <input asp-for="@Model.NatijeBarresiShoraInt" class="form-control" id="natijeBarresiShora" />
+                    <span asp-validation-for="@Model.NatijeBarresiShoraInt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-12">
+                    <label asp-for="@Model.MajorCommissions"></label>
+                    <select class="form-control" asp-for="@Model.MajorCommissions" id="majorCommissions" multiple="multiple">
+                    </select>
+                    <span asp-validation-for="@Model.MajorCommissions" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-12">
+                    <label asp-for="@Model.MinorCommissions"></label>
+                    <select class="form-control" asp-for="@Model.MinorCommissions" id="minorCommissions" multiple="multiple">
+                    </select>
+                    <span asp-validation-for="@Model.MinorCommissions" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-12 mt-4">
+                    <input asp-for="@Model.Moshtarak" id="Moshtarak" default="@Model.Moshtarak" />
+                    <label asp-for="@Model.Moshtarak">معاونت مشترک دارد</label>
+                </div>
+
+                <div id="category" class="col-12 row">
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.CategoryParentId"></label>
+                        <input asp-for="@Model.CategoryParentId" id="CategoryParentId" class="form-control" />
+                    </div>
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.CategoryId"></label>
+                        <input asp-for="@Model.CategoryId" id="CategoryId" class="form-control" />
+                        <span asp-validation-for="@Model.CategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3 col-md-12" id="moavenats">
+                    <label asp-for="@Model.Moavenats"></label>
+                    <select class="form-control" asp-for="@Model.Moavenats" id="Moavenats" multiple="multiple">
+                    </select>
+                    <span asp-validation-for="@Model.Moavenats" class="text-danger"></span>
+                </div>
+
+                <div class="col-12"></div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.Description"></label>
+                    <textarea asp-for="@Model.Description" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="submit-btn col-md-3 m-auto">
+                    <input type="submit" value="ثبت" />
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#Type").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetLayeheOrTarhTypeForDropDown", LayeheController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+
+            $("#VazeyatBarresi").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetVazeyatBarresiForDropDown", LayeheController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            $("#majorCommissions").kendoMultiSelect({
+                includeSelectAllOption: true,
+                dataTextField: "title",
+                dataValueField: "id",
+                value: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.MajorCommissionsDefaultValue))'),
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCommissionForMultiSelect", CommissionController.CONTROLLER)',
+                        },
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            $("#minorCommissions").kendoMultiSelect({
+                includeSelectAllOption: true,
+                dataTextField: "title",
+                dataValueField: "id",
+                value: JSON.parse('@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.MinorCommissionsDefaultValue))'),
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCommissionForMultiSelect", CommissionController.CONTROLLER)',
+                        },
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            var jsonList = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.MoavenatsDefaultValue))';
+
+            var jsList = JSON.parse(jsonList);
+
+            if (jsList) {
+                $("#moavenats").show();
+                $("#category").hide();
+            } else {
+                $("#moavenats").hide();
+                $("#category").show();
+            }
+            $("#Moshtarak").change(function (event) {
+                $("#moavenats").toggle();
+                $("#category").toggle();
+            });
+            $("#Moavenats").kendoMultiSelect({
+                includeSelectAllOption: true,
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                value: jsList,
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCategoriesForMultiSelect", CategoryController.CONTROLLER)',
+                        },
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: false
+                }
+            });
+
+
+            $('#ElamVosoolDate').MdPersianDateTimePicker({
+                targetTextSelector: '#ElamVosoolPersianDate',
+                dateFormat: 'yyyy-MM-dd',
+                dateFormat: 'yyyy-MM-dd',
+                isGregorian: false,
+                enableTimePicker: false,
+                disableBeforeToday: false,
+                modalMode: true,
+                inLine: false
+            });
+            $('#BaresiKoliatDarSahnDate').MdPersianDateTimePicker({
+                targetTextSelector: '#BaresiKoliatDarSahnPersianDate',
+                dateFormat: 'yyyy-MM-dd',
+                dateFormat: 'yyyy-MM-dd',
+                isGregorian: false,
+                enableTimePicker: false,
+                disableBeforeToday: false,
+                modalMode: true,
+                inLine: false
+            });
+
+            $('#EblaghDate').MdPersianDateTimePicker({
+                targetTextSelector: '#EblaghPersianDate',
+                dateFormat: 'yyyy-MM-dd',
+                dateFormat: 'yyyy-MM-dd',
+                isGregorian: false,
+                enableTimePicker: false,
+                disableBeforeToday: false,
+                modalMode: true,
+                inLine: false
+            });
+
+
+            $(".NatijeBarresi").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetNatijeBarresiForDropDown", LayeheController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            $("#natijeBarresiShora").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetNatijeBarresiShoraForDropDown", LayeheController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            $("#CategoryParentId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCategoriesForDropDown", CategoryController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+            $("#CategoryId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCategoriesForDropDown", CategoryController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}&parentId=@firstParentId`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+            $("#CategoryParentId").change(
+                function () {
+                    if ($("#CategoryParentId").val()) {
+                        console.log("if", $("#CategoryParentId").val());
+                        var parentId = $("#CategoryParentId").val();
+                        $("#CategoryId").kendoDropDownList({
+                            dataTextField: "name",
+                            dataValueField: "id",
+                            filter: "contains",
+                            optionLabel: "یک آیتم انتخاب کنید...",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        dataType: "json",
+                                        contentType: 'application/json; charset=utf-8',
+                                        url: '@Url.Action("GetCategoriesForDropDown", CategoryController.CONTROLLER)',
+                                    },
+                                    parameterMap: function (options) {
+                                        return `models=${kendo.stringify(options)}&parentId=${parentId}`;
+                                    }
+                                },
+                                schema: {
+                                    data: "data",
+                                    total: "totalRecords",
+                                    page: "page",
+                                    pageSize: "pageSize"
+                                },
+                                serverFiltering: true
+                            }
+                        });
+                    } else {
+                        console.log("hi", $("#CategoryParentId").val());
+
+                        $("#CategoryId").kendoDropDownList({
+                            dataTextField: "name",
+                            dataValueField: "id",
+                            filter: "contains",
+                            optionLabel: "یک آیتم انتخاب کنید...",
+                            dataSource: {}
+                        });
+                    }
+                });
+
+            $("#CategoryId").change(
+                function () {
+                    var id = $("#CategoryId").val();
+                    if (id != "") {
+                        $.ajax({
+                            url: "@Url.Action("GetCategoryById", CategoryController.CONTROLLER)",
+                            type: "POST",
+                            data: { categoryId: id },
+                            dataType: "json",
+                            success: function (response) {
+                                if (response.hasAmount) {
+                                    $("#Amount").show();
+                                } else {
+                                    $("#Amount").hide();
+                                    $("#amount-input").val('');
+                                }
+                            }
+                        });
+                    } else {
+                        $("#Amount").hide();
+                        $("#amount-input").val('');
+                    }
+                }
+            );
+        });
+
+    </script>
+}

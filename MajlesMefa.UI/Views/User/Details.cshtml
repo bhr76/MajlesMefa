@@ -1,0 +1,87 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.Back.Enums.Senator;
+@using MajlesMefa.UI.Views.Mokatebe;
+@using MajlesMefa.UI.Models;
+@{
+    var role = (RoleTypeEnum)Model.Role;
+}
+@model UserVm
+
+@{
+    Layout = null;
+}
+
+<style>
+    .flex {
+        display: flex;
+    }
+
+    th {
+        max-width: 25% !important;
+    }
+</style>
+
+<div class="card" style="margin:10px;">
+    <div class="card-header">
+        <p class="mb-0">
+            <b>اطلاعات کامل نماینده</b>
+        </p>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+               <table class="table table-striped" style="width:100%">
+                    <tr>
+                        <th style="max-width:30%;">شناسه</th>
+                        <td style="min-width:70%;">@Model.Id</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نام و نام خانوادگی</th>
+                        <td style="min-width:70%;">@Model.Name</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> نام کاربری</th>
+                        <td style="min-width:70%;">@Model.Username</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">پست الکترونیکی</th>
+                        <td style="min-width:70%;">@Model.Email</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">شماره همراه</th>
+                        <td style="min-width:70%;">@Model.Mobile</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">استان</th>
+                        <td style="min-width:70%;">@Model.CityName</td>
+                    </tr>
+                    @if(Model.OrganizationParentName is not null)
+                    {
+                        <tr>
+                            <th style="max-width:30%;">سازمان</th>
+                            <td style="min-width:70%;">@Model.OrganizationParentName</td>
+                        </tr>
+                    }
+                   
+                    <tr>
+                        <th style="max-width:30%;">شرکت</th>
+                        <td style="min-width:70%;">@Model.OrganizationName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نقش</th>
+                        <td style="min-width:70%;">@role.GetPersianName()</td>
+                    </tr>
+                    </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <h5 class="mb-0" style="text-align:left">
+
+            
+
+        </h5>
+    </div>
+</div>
+

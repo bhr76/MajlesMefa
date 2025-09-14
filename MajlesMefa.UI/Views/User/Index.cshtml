@@ -1,0 +1,32 @@
+﻿@using MajlesMefa.UI.Views.Senator;
+@using MajlesMefa.UI.Views.User;
+@{
+    ViewData["Title"] = "لیست کاربران";
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script asp-append-version="true">
+        var url_create = '@Url.Action(nameof(UserController.Create), UserController.CONTROLLER)';
+        var url_get = '@Url.Action(nameof(UserController.GetUser), UserController.CONTROLLER)';
+        var url_details = '@Url.Action(nameof(UserController.Details), UserController.CONTROLLER)';
+        var url_delete = '@Url.Action(nameof(UserController.Delete), UserController.CONTROLLER)';
+        var url_edit = '@Url.Action(nameof(UserController.Edit), UserController.CONTROLLER)';
+        var btns = `<button class="k-button" data-link="${url_details}/?userId=#:id#">جزییات</button>
+                                                                     <button class="k-button mt-1" data-link="${url_delete}/?userId=#:id#"> حذف </button>
+                                                                     <a class="k-button mt-1" href="${url_edit}?userId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>
+                `;
+      
+    </script>
+    <script src="~/js/pages/user.js" asp-append-version="true"></script>
+   
+}
+

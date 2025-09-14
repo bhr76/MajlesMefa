@@ -1,0 +1,71 @@
+﻿@using MajlesMefa.UI.Views.Category;
+@using MajlesMefa.UI.Views.Mokatebe;
+@using MajlesMefa.UI.Models;
+@{
+    ViewData["Title"] = "ایجاد معاونت";
+    Layout = null;
+}
+@model CategoryVm
+
+
+<form asp-controller=@CategoryController.CONTROLLER asp-action="Create" id="createCategoryForm" method="post">
+
+    <div class="card" style="margin:10px;">
+        <div class="card-header">
+            <p class="mb-0">
+                @if (Model.ParentId is null)
+                {
+                    <b>ایجاد معاونت</b>
+                }
+                else
+                {
+                    <b>ایجاد موضوع</b>
+                }
+            </p>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div asp-validation-summary="ModelOnly"></div>
+
+                <input hidden asp-for="@Model.ParentId" />
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Name"></label>
+                    <input asp-for="@Model.Name" id="Name" class="form-control" />
+                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                </div>
+
+                @*@if (Model.ParentId is not null)
+                {*@
+                     <div class="form-group mt-4 col-md-4" style="">
+                    <label asp-for="@Model.IsCentralOffice"></label>
+                    <input style="width: 20px;height: 20px;margin-top: 17px;" asp-for="@Model.IsCentralOffice" id="IsCentralOffice" class="form-control" />
+                    <span asp-validation-for="@Model.IsCentralOffice" class="text-danger"></span>
+                </div>
+                @*}*@
+               
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="submit-btn col-md-3 m-auto cursor-pointer">
+                <button onclick="event.preventDefault();saveAndupdate($(this.form), $(this.form).attr('action'));"
+                        class="btn btn-success" perform="action">
+                    ثبت
+                </button>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+
+
+<script>
+    $(document).ready(function () {
+
+
+
+    });
+
+</script>

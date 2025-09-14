@@ -1,0 +1,51 @@
+﻿@using MajlesMefa.UI.Views.Tarh;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.Back.Enums;
+@model Guid?
+@{
+    ViewData["Title"] = "لیست طرح";
+    var id = Model.HasValue ? Model : Guid.Empty;
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid-tarh"></div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+
+    <script asp-append-version="true">
+        var url_get_tarh = '';
+        var url_create = '';
+        var url_edit = '';
+        var url_delete = '';
+        var fromReportPage = false;
+        {
+            if ('@id' == null || '@id' == @Guid.Empty) { url_get_tarh = '@Url.Action(nameof(TarhController.GetTarh), TarhController.CONTROLLER)'; }
+            else {
+                url_get_tarh = '@Url.Action(nameof(TarhController.GetTarh), TarhController.CONTROLLER)' + '?senatorId=@id';
+            }
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower()) {
+                url_create = '@Url.Action(nameof(TarhController.Create), TarhController.CONTROLLER)';
+                url_edit = '@Url.Action(nameof(TarhController.Edit), TarhController.CONTROLLER)';
+                url_delete = '@Url.Action(nameof(TarhController.Delete), TarhController.CONTROLLER)';
+            }
+        };
+        var url_details = '@Url.Action(nameof(TarhController.Details), TarhController.CONTROLLER)';
+        var btns = `<button class="k-button" data-link="${url_details}/?tarhId=#:id#">جزییات</button>
+                                        #if('${url_delete}' != ''){#  <button class="k-button mt-1" data-link="${url_delete}/?tarhId=#:id#"> حذف </button> #}#
+                                                   #if('${url_edit}' != ''){#  <a class="k-button mt-1" href="${url_edit}?tarhId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a> #}#
+                                                `;
+    </script>
+    <script src="~/js/pages/tarh.js" asp-append-version="true"></script>
+
+
+}
+
+

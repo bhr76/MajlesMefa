@@ -1,0 +1,179 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.Back.Enums.Tarh;
+@using MajlesMefa.UI.Views.Tarh;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.Back.Utilities.EnumHelper
+@{
+    ViewData["Title"] = "جزییات طرح";
+}
+@model TarhViewModel
+
+@{
+    Layout = null;
+    var NatijeBarresi = (NatijeBarresiEnum)Model.NatijeBarresi;
+    var VazeyatBarresi = (VazeyatBarresiEnum)Model.VazeyatBarresi;
+    var Kollyat = (NatijeBarresiEnum)Model.Kollyat;
+    var MavadTarh = (NatijeBarresiEnum)Model.MavadTarh;
+    var NatijeBarresiShoraNegahban = (NatijeBarresiEnum)Model.NatijeBarresiShoraNegahban;
+}
+
+<style>
+    .flex {
+        display: flex;
+    }
+
+    th {
+        max-width: 25% !important;
+    }
+</style>
+
+<div class="card" style="margin:10px;">
+    <div class="card-header">
+        <p class="mb-0">
+            <b>اطلاعات کامل طرح</b>
+        </p>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped" style="width:100%">
+                    <tr>
+                        <th style="max-width:30%;">شناسه</th>
+                        <td style="min-width:70%;">@Model.Id</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نماینده مرتبط</th>
+                        <td style="min-width:70%;">@Model.SenatorName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">حوزه انتخابی نماینده</th>
+                        <td style="min-width:70%;">@Model.HozeEntekhabi</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">استان نماینده</th>
+                        <td style="min-width:70%;">@Model.SenatorCity</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">عنوان</th>
+                        <td style="min-width:70%;">@Model.Title</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">معاونت</th>
+                        @if (Model.CategoryParentName is not null)
+                        {
+                            <td style="min-width:70%;">
+                                @Model.CategoryParentName
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">
+                                ---
+                            </td>
+                        }
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">موضوع</th>
+                        @if (Model.CategoryName is not null)
+                        {
+                            <td style="min-width:70%;">
+                                @Model.CategoryName
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">
+                                ---
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">توضیحات</th>
+                        <td style="min-width:70%;">@Model.Description</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">شناسه طرح</th>
+                        <td style="min-width:70%;">@Model.Shenase</td>
+                    </tr>
+                    
+                    <tr>
+                        <th style="max-width:30%;">نتیجه بررسی کمیسیون</th>
+                        <td style="min-width:70%;">@NatijeBarresi.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">وضعیت بررسی</th>
+                        <td style="min-width:70%;">@VazeyatBarresi.GetPersianName()</td>
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">کلیات</th>
+                        <td style="min-width:70%;">@Kollyat.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">مواد طرح</th>
+                        <td style="min-width:70%;">@MavadTarh.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نتیجه بررسی شورا</th>
+                        <td style="min-width:70%;">@NatijeBarresiShoraNegahban.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">توضیحات نتیجه بررسی شورا</th>
+                        <td style="min-width:70%;">@Model.NatijeBarresiShoraNegahbanDescription</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">سوابق ابلاغ</th>
+                        <td style="min-width:70%;">@Model.SavabeghEblagh</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تهیه گزارش نهایی</th>
+                        <td style="min-width:70%;">@Model.GhozarshNahayi</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">حواشی مجلس</th>
+                        <td style="min-width:70%;">@Model.Havashi</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">ارسال برای وزیر</th>
+                        <td style="min-width:70%;">@Model.ErsalBeVazir</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">هماهنگی برای شرکت</th>
+                        <td style="min-width:70%;">@Model.HamahangiBaraSherkat</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نمایندگان وزارتخانه برای شرکت</th>
+                        <td style="min-width:70%;">@Model.NamayandeghanBaraSherkat</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نظر نماینده</th>
+                        <td style="min-width:70%;">@Model.NazarNamayande</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">گزارش  مذاکرات</th>
+                        <td style="min-width:70%;">@Model.GhozareshMozakerat</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">کمیسیون مربوطه</th>
+                        <td style="min-width:70%;">@Model.RelatedComissionTitle</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نمایندگان امضا کننده</th>
+                        <td style="min-width:70%;">@Model.NamayandeghanEmzaKonande</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">گردش کار</th>
+                        <td style="min-width:70%;">@Model.Gardeshkar</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <h5 class="mb-0" style="text-align:left">
+        </h5>
+    </div>
+</div>
+

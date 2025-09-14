@@ -1,0 +1,42 @@
+﻿@using MajlesMefa.UI.Views.Category;
+@{
+    var categoryId = ViewBag.categoryId;
+    ViewData["Title"] = ViewBag.categoryId == null ? "لیست معاونت‌ها" : "لیست موضوع‌ها";
+    
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script asp-append-version="true">
+        var hasCentralOffice = true;
+        var url_create = '@Url.Action(nameof(CategoryController.Create), CategoryController.CONTROLLER, new {categoryId=@ViewBag.categoryId})';
+        var url_get = '@Url.Action(nameof(CategoryController.GetCategory), CategoryController.CONTROLLER, new {categoryId=@ViewBag.categoryId})';
+        var url_delete = '@Url.Action(nameof(CategoryController.Delete), CategoryController.CONTROLLER, new {categoryId=@ViewBag.categoryId})';
+        var url_edit = '@Url.Action(nameof(CategoryController.Edit), CategoryController.CONTROLLER , new {categoryId=@ViewBag.categoryId})';
+        var url_subCategory = '@Url.Action(nameof(CategoryController.Index), CategoryController.CONTROLLER)';
+        var btns = `<button class="k-button mt-1" data-link="${url_delete}/?id=#:id#"> حذف </button>
+                                                            <button class="k-button mt-1" data-link="${url_edit}/?name=#:name#&id=#:id#&isCentralOffice=#:isCentralOffice#"><span class="k-icon k-i-edit"></span> ویرایش</button>
+                                                                    <a class="k-button mt-1 subcategory-btn" id="subcategory-btn"  href = "${url_subCategory}?id=#:id#" > موضوع‌ها</a>
+              `;
+        
+    </script>
+    <script src="~/js/pages/category.js" asp-append-version="true"></script>
+    <script>
+    $(document).ready(function () {
+            if ('@categoryId' != "") {
+                $("#subcategory-btn").addClass("d-hide");
+                //$("#create-btn").addClass("d-hide");
+                //$("#subcategory-btn").attr("disabled","disabled");
+        }
+    });
+    </script>
+}
+
