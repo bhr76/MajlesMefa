@@ -1,0 +1,125 @@
+﻿@using MajlesMefa.Back.Enums.TahghighTafahos;
+@using MajlesMefa.UI.Views.Mokatebe;
+@using MajlesMefa.UI.Models;
+
+@model TahghighTafahosVm
+
+@{
+    var tahghighTafahosVazyat = (TahghighTafahosVazyatEnum)Model.TafahosData.TahghighTafahosVazyat;
+    Layout = null;
+}
+
+<style>
+    .flex {
+        display: flex;
+    }
+
+    th {
+        max-width: 25% !important;
+    }
+</style>
+
+<div class="card" style="margin:10px;">
+    <div class="card-header">
+        <p class="mb-0">
+            <b>اطلاعات کامل تحقیق و تفحص</b>
+        </p>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped" style="width:100%">
+                    <tr>
+                        <th style="max-width:30%;">شناسه</th>
+                        <td style="min-width:70%;">@Model.TafahosData.Id</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نماینده اصلی </th>
+                        <td style="min-width:70%;">@Model.SenatorName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> نمایندگان متقاضی</th>
+                        <td style="min-width:70%;">@Model.TafahosData.TahghighTafahosSenatorsName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">حوزه انتخابی نماینده</th>
+                        <td style="min-width:70%;">@Model.HozeEntekhabi</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">استان نماینده</th>
+                        <td style="min-width:70%;">@Model.SenatorCity</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">موضوع تحقیق و تفحص</th>
+                        <td style="min-width:70%;">@Model.Title</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">معاونت</th>
+                        @if (Model.CategoryParentName is not null)
+                        {
+                            <td style="min-width:70%;">
+                                @Model.CategoryParentName
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">
+                                ---
+                            </td>
+                        }
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">موضوع</th>
+                        @if (Model.CategoryName is not null)
+                        {
+                            <td style="min-width:70%;">
+                                @Model.CategoryName
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">
+                                ---
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">توضیحات</th>
+                        <td style="min-width:70%;">@Model.Description</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">شماره نامه</th>
+                        <td style="min-width:70%;">@Model.TafahosData.ShomareName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">شماره دریافت</th>
+                        <td style="min-width:70%;">@Model.TafahosData.ShomareDaryaft</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> وضعیت</th>
+                        <td style="min-width:70%;">@tahghighTafahosVazyat.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">کمیسیون مربوطه</th>
+                        <td style="min-width:70%;">@Model.TafahosData.CommissionTitle</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تاریخ </th>
+                        <td style="min-width:70%;">@Model.TafahosData.JalaliTarikh</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> مخاطب</th>
+                        <td style="min-width:70%;">@Model.TafahosData.Mokhatab</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <h5 class="mb-0" style="text-align:left">
+        </h5>
+    </div>
+</div>
+

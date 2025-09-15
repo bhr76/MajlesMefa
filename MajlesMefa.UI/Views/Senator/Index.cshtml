@@ -1,0 +1,53 @@
+﻿@using MajlesMefa.UI.Views.Senator;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.Back.Enums;
+@model Guid?
+
+@{
+    var id = Model.HasValue ? Model : Guid.Empty;
+    ViewData["Title"] = Model.HasValue ? $" لیست اعضای کمیسیون {ViewBag.commissionTitle}" : "لیست نمایندگان";
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script asp-append-version="true">
+        var url_create = '';
+        var url_edit = '';
+        var url_delete = '';
+        var url_get = '';
+        {
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower()) {
+                url_create = '@Url.Action(nameof(SenatorController.Create), SenatorController.CONTROLLER)';
+                url_edit = '@Url.Action(nameof(SenatorController.Edit), SenatorController.CONTROLLER)';
+                url_delete = '@Url.Action(nameof(SenatorController.Delete), SenatorController.CONTROLLER)';
+            }
+        };
+
+        if ('@id' == null || '@id' == @Guid.Empty) { url_get = '@Url.Action(nameof(SenatorController.GetSenator), SenatorController.CONTROLLER)'; }
+        else {
+            url_get = '@Url.Action(nameof(SenatorController.GetSenator), SenatorController.CONTROLLER)' + '?commissionId=@id';
+        }
+        var url_details = '@Url.Action(nameof(SenatorController.Details), SenatorController.CONTROLLER)';
+        var url_report = '@Url.Action(nameof(SenatorController.Report), SenatorController.CONTROLLER)';
+        //#if('${url_report}' != ''){# < a class="k-button mt-1" href = "${url_report}?senatorId=#:id#" > گزارش < /a>#}#
+        var btns = `<button class="k-button mt-1" data-link="${url_details}/?senatorId=#:id#">جزییات</button>
+                                         #if('${url_delete}' != ''){# <button class="k-button mt-1" data-link="${url_delete}/?senatorId=#:id#"> حذف </button>#}#
+                                                      #if('${url_edit}' != ''){#<a class="k-button mt-1" href="${url_edit}?senatorId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>#}#
+                                                      
+                        `;
+
+    </script>
+    <script src="~/js/pages/senator.js" asp-append-version="true"></script>
+
+}
+

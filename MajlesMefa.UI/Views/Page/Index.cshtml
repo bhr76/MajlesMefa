@@ -1,0 +1,29 @@
+﻿@using MajlesMefa.UI.Views.Page;
+@using MajlesMefa.UI.Views.Soal;
+@{
+    ViewData["Title"] = "لیست صفحات";
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script asp-append-version="true">
+        var url_create = '@Url.Action(nameof(PageController.Create), PageController.CONTROLLER)';
+        var url_get = '@Url.Action(nameof(PageController.GetPage), PageController.CONTROLLER)';
+        var url_delete = '@Url.Action(nameof(PageController.Delete), PageController.CONTROLLER)';
+        var url_edit = '@Url.Action(nameof(PageController.Edit), PageController.CONTROLLER)';
+        var btns = ` <a class="k-button mt-1" href="${url_edit}?pageId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>
+        `;
+
+    </script>
+    <script src="~/js/pages/page.js" asp-append-version="true"></script>
+
+}
+

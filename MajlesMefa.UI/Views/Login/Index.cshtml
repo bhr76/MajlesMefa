@@ -1,0 +1,126 @@
+﻿@using MajlesMefa.Back.Extensions;
+@using MajlesMefa.UI.Models.Auth;
+@using MajlesMefa.UI.Core.Login;
+@{
+    Layout = "";
+    var errors = Context.ReadMessageOnContext<ErrorDetails>();
+}
+<link rel="icon" href="~/images/vezarat-icon.png">
+<link href="~/lib/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" />
+<link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
+<link href="~/css/ui-theme/vendors.bundle.rtl.css" rel="stylesheet" />
+<link href="~/css/ui-theme/style.bundle.rtl.css" rel="stylesheet" />
+<link href="~/css/ui-theme/layout-style.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+@*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+@model LoginVm
+
+<div class="login-bg">
+    <div class="login-box">
+        <div class="login-bank-logo">
+            <img alt="vezarat-logo" src="/images/mefa-logo.png" />
+        </div>
+        <div class="login-top-text">
+            <p>به سامانه مدیریت تسهیلات مجلس شورای اسلامی خوش آمدید.</p>
+            <div>
+                <form method="post" id="formLogin">
+                    <div class="form-group mt-2">
+                        <label style="width:100%;text-align:right">نام کاربری</label>
+                        <input style="direction: ltr;text-align: left !important;" asp-for="Username" class="form-control" />
+                        <span asp-validation-for="Username" class="text-danger form-control-feedback"></span>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label style="width:100%;text-align:right">
+                            رمز عبور
+                        </label>
+                        <input style="direction: ltr;text-align: left !important;" asp-for="Password" type="password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger form-control-feedback"></span>
+                    </div>
+                    <div class="form-group mt-3 row">
+                        <div class="col-6 pr-0">
+                            <label style="width:100%;text-align:right">
+                                کد امنیتی
+                            </label>
+                            <input class="form-control" autocomplete="off" asp-for="CaptchaCode" style="direction: ltr;text-align: left !important;" onkeypress="return isNumberKey(event)" />
+                            @*<span class="m-form__help text-left">کد را وارد نمایید</span>*@
+                        </div>
+                        <div class="d-flex align-self-end col-6">
+                            <div class="text-center m--margin-top-10 btn p-0 ">
+                                <img id="img-captcha" src="~/get-captcha-image" style="border-radius:8px; width:100%" alt="captcha"/>
+                            </div>
+                        </div>
+                        <span asp-validation-for="CaptchaCode" class="text-danger form-control-feedback col-12"></span>
+                        </div>
+
+                        <div class="submit-btn m-auto">
+
+                            <input value="ورود" type="submit" onclick="event.preventDefault();login($(this.form));"
+                                   class="btn btn-success" perform="action"/>
+
+                        </div>
+                        <div class="all-rights">
+                            <p>تمامی حقوق متعلق به وزارت امور اقتصاد و دارایی است. نسخه 0.1</p>
+                        </div>
+                </form>
+            </div>
+            <script src="~/js/ui-theme/vendors.bundle.js"></script>
+            <script src="~/js/ui-theme/scripts.bundle.js"></script>
+            <script src="~/lib/bootstrap-select/js/bootstrap-select.min.js"></script>
+            <script src="~/lib/bootstrap-select/js/i18n/defaults-fa_IR.min.js"></script>
+            <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+            <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+            <script src="~/lib/md.bootstrappersiandatetimepicker/dist/jquery.md.bootstrap.datetimepicker.js"></script>
+            <script src="~/js/kendogrid.min.js" asp-append-version="true"></script>
+            <script src="~/lib/jquery.mask/jquery.mask.min.js"></script>
+            <script src="~/js/custom/custom.js"></script>
+            <script src="~/js/custom/toastr.js"></script>
+            <script type="text/javascript">
+
+                let displayAlert = "@errors?.Title";
+                $(document).ready(function () {
+
+                    $(document).on('click', '#img-captcha, #btn-captcha', function (e) {
+                        resetCaptchaImage();
+
+                    });
+                    function resetCaptchaImage() {
+                        d = new Date();
+                        $("#img-captcha").attr("src", "/get-captcha-image?" + d.getTime());
+                    }
+                    $.validator.unobtrusive.parse($("form"));
+
+                    if (displayAlert.length) {
+                        kendo.alert(displayAlert);
+                    }
+                });
+                function login(targetForm) {
+
+                    if (!targetForm.valid()) return false;
+                    $.ajax({
+                        data: targetForm.serialize(),
+                        type: "post",
+                        url: '@Url.Action(nameof(LoginController.Index), LoginController.CONTROLLER)',
+                        success: function (data) {
+                            console.log("successsss");
+                            toastr.success("عملیات با موفق انجام شد", "موفق", {
+                                timeOut: 1000,
+                                preventDuplicates: true,
+                                positionClass: 'toast-top-right',
+                                onHidden: function () {
+                                    window.location.href = data.redirectToUrl;
+                                }
+                            });
+                        },
+                        error: function (data) {
+                            console.log("errorrrrrr");
+                             d = new Date();
+                             $("#img-captcha").attr("src", "/get-captcha-image?" + d.getTime());
+                            var errorMsg = JSON.parse(data.responseText);
+                            toastr["error"]("اطلاعات ورود نامعتبر است", "خطا");
+                        }
+                    });
+                };
+            </script>
+        </div>
+
+

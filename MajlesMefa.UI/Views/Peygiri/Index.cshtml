@@ -1,0 +1,39 @@
+﻿@using MajlesMefa.UI.Views.Mokatebe;
+@using MajlesMefa.UI.Views.Peygiri;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.Back.Enums;
+@{
+    ViewData["Title"] = "لیست پیگیری‌ها " + ViewBag.DataEntryTitle;
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+}
+@model Guid
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+@section scripts{
+    <script asp-append-version="true">
+        var url_create = '';
+        var url_edit = '';
+        var url_delete = '';
+        {
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower()) {
+                url_create = '@Url.Action(nameof(PeygiriController.Create), PeygiriController.CONTROLLER)' + '?dataEntryId=@Model';
+                url_edit = '@Url.Action(nameof(PeygiriController.Edit), PeygiriController.CONTROLLER)';
+                url_delete = '@Url.Action(nameof(PeygiriController.Delete), PeygiriController.CONTROLLER)';
+            }
+        };
+        var url_get = '@Url.Action(nameof(PeygiriController.GetPeygiri), PeygiriController.CONTROLLER)' + '?dataEntryId=@Model';
+        var btns = `#if('${url_delete}' != ''){# <button class="k-button mt-1" data-link="${url_delete}/?id=#:id#"> حذف </button>#}#
+                                                #if('${url_edit}' != ''){#<button class="k-button mt-1" data-link="${url_edit}/?id=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</button>#}#
+                        `;
+    </script>
+
+    <script src="~/js/pages/peygiri.js" asp-append-version="true"></script>
+}
+

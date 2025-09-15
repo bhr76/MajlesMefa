@@ -1,0 +1,171 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.UI.Views.Mokatebe;
+@using MajlesMefa.UI.Models;
+@{
+    ViewData["Title"] = "جزییات مکاتبه";
+}
+@model MokatebeVm
+
+@{
+    var mokatebeType = (MokatebeTypeEnum)Model.MokatebeData.MokatebeType;
+    var contact = (ContactEnum)Model.MokatebeData.Contact;
+    var mokatebeKonande = (MokatebeKonandeEnum)Model.MokatebeData.MokatebeKonande;
+    var vaziatPasokh = (ResponseStatusEnum)Model.MokatebeData.VaziatPasokh;
+    Layout = null;
+}
+
+<style>
+    .flex {
+        display: flex;
+    }
+
+    th {
+        max-width: 25% !important;
+    }
+</style>
+
+<div class="card" style="margin:10px;">
+    <div class="card-header">
+        <p class="mb-0">
+            <b>اطلاعات کامل مکاتبه</b>
+        </p>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped" style="width:100%">
+                    <tr>
+                        <th style="max-width:30%;">شناسه</th>
+                        <td style="min-width:70%;">@Model.MokatebeData.Id</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نماینده مرتبط</th>
+                        <td style="min-width:70%;">@Model.SenatorName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">حوزه انتخابی نماینده</th>
+                        <td style="min-width:70%;">@Model.HozeEntekhabi</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">استان نماینده</th>
+                        <td style="min-width:70%;">@Model.SenatorCity</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">عنوان</th>
+                        <td style="min-width:70%;">@Model.Title</td>
+                    </tr>
+                     <tr>
+                        <th style="max-width:30%;">وضعیت پاسخ</th>
+                        @if(Model.MokatebeData.PasokhNo != null)
+                        {
+                            <td class="text-success" style="min-width:70%;">پاسخ داده شده - شماره پاسخ : @Model.MokatebeData.PasokhNo - تاریخ پاسخ : @Model.MokatebeData.PasokhPersianDate</td>
+                        }
+                        else{
+                             <td class="text-warning" style="min-width:70%;">در دست پیگیری</td>
+                        }
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نتیجه پاسخ</th>
+                        @if (Model.MokatebeData.PasokhNo != null)
+                        {
+                            <td class="text-success" style="min-width:70%;">@vaziatPasokh.GetPersianName()</td>
+                        }
+                        else
+                        {
+                            <td class="text-warning" style="min-width:70%;">بدون پاسخ</td>
+                        }
+                        <td style="min-width:70%;"></td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">توضیحات</th>
+                        @if (Model.Description != null)
+                        {
+                            <td style="min-width:70%;">@Model.Description</td>
+                        }
+                        else
+                        {
+                                <td style="min-width:70%;">---</td>
+                        }
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">مکاتبه کننده</th>
+                        <td style="min-width:70%;">@mokatebeKonande.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">مخاطب نامه</th>
+                        <td style="min-width:70%;">@contact.GetPersianName()</td>
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">معاونت</th>
+                        @if (Model.CategoryParentName is not null)
+                        {
+                            <td style="min-width:70%;">
+                                @Model.CategoryParentName
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">
+                                ---
+                            </td>
+                        }
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">موضوع</th>
+                        @if (Model.CategoryName is not null)
+                        {
+                            <td style="min-width:70%;">
+                                @Model.CategoryName
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">
+                               ---
+                            </td>
+                        }
+                    </tr>
+
+
+                    <tr>
+                        <th style="max-width:30%;">نوع مکاتبه</th>
+                        <td style="min-width:70%;">@mokatebeType.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تاریخ دبیرخانه</th>
+                        <td style="min-width:70%;">@Model.MokatebeData.TarikhDabirKhaneStr</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">شماره دبیرخانه </th>
+                        <td style="min-width:70%;">@Model.MokatebeData.ShomareDabirkhaneMarkazi</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تاریخ نامه نماینده</th>
+                        <td style="min-width:70%;">@Model.MokatebeData.TarikhNameNamayandeStr</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">شماره نامه نماینده</th>
+                        <td style="min-width:70%;">@Model.MokatebeData.ShomareDabirkhane</td>
+                    </tr>
+                    
+                    @if (Model.MokatebeData.Amount != 0)
+                    {
+                        <tr>
+                            <th style="max-width:30%;">مبلغ(ریال)</th>
+                            <td style="min-width:70%;">@Model.MokatebeData.AmountStr</td>
+                        </tr>
+                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <h5 class="mb-0" style="text-align:left">
+        </h5>
+    </div>
+</div>
+

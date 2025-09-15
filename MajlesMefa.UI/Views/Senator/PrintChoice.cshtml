@@ -1,0 +1,122 @@
+﻿@using MajlesMefa.UI.Models;
+@using MajlesMefa.UI.Views.Senator;
+@{
+    ViewData["Title"] = "انتخاب گزارشات برای دانلود";
+}
+@model PrintChiocesVm
+
+@{
+    Layout = null;
+}
+
+<form asp-controller=@SenatorController.CONTROLLER asp-action="DownloadWord" id="ChoosPrintOptionsForm" method="post">
+
+    <div class="card" style="margin:10px;">
+        <div class="card-header">
+            <p class="mb-0">
+                <b>انتخاب گزارشات برای دانلود</b>
+            </p>
+        </div>
+
+        <div class="modal-body">
+
+            <div asp-validation-summary="ModelOnly"></div>
+            <input asp-for="@Model.Id" hidden />
+            <div class="row"><div class="col-12"><br /></div></div>
+            <div class="row">
+                @*<div class="form-group mt-3 col-md-3">
+                    <input asp-for="@Model.HasTarh" id="HasTarh" />
+                    <label asp-for="@Model.HasTarh"></label>
+                </div>*@
+                <div class="form-group mt-3 col-md-3">
+                    <input asp-for="@Model.HasSoal" id="HasSoal" />
+                    <label asp-for="@Model.HasSoal"></label>
+                </div>
+                <div class="form-group mt-3 col-md-3">
+                    <input asp-for="@Model.HasEzharat" id="HasEzharat" />
+                    <label asp-for="@Model.HasEzharat"></label>
+                </div>
+                <div class="form-group mt-3 col-md-3">
+                    <input asp-for="@Model.HasNotgh" id="HasNotgh" />
+                    <label asp-for="@Model.HasNotgh"></label>
+                </div>
+                <div class="form-group mt-3 col-md-3">
+                    <input asp-for="@Model.HasTahghighTafahos" id="HasTahghighTafahos" />
+                    <label asp-for="@Model.HasTahghighTafahos"></label>
+                </div>
+                <div class="form-group mt-3 col-md-3">
+                    <input asp-for="@Model.HasMokatebe" id="HasMokatebe" />
+                    <label asp-for="@Model.HasMokatebe"></label>
+                </div>
+                <div class="form-group mt-3 col-md-3">
+                    <input asp-for="@Model.HasTazakor" id="HasTazakor" />
+                    <label asp-for="@Model.HasTazakor"></label>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <hr />
+                </div>
+            </div>
+            <div class="row">
+                <hr />
+                <div class="col-md-3">
+                    <p class="mt-3 fw-bold">نوع مکاتبه</p>
+                </div>
+                <div class="form-group mt-3 col-md-2">
+                    <input asp-for="@Model.HasAddiMokatebe" id="HasAddiMokatebe" />
+                    <label asp-for="@Model.HasAddiMokatebe"></label>
+                </div>
+                <div class="form-group mt-3 col-md-2">
+                    <input asp-for="@Model.HasPeyNeveshtMokatebe" id="HasPeyNeveshtMokatebe" />
+                    <label asp-for="@Model.HasPeyNeveshtMokatebe"></label>
+                </div>
+                <div class="form-group mt-3 col-md-2">
+                    <input asp-for="@Model.HasAsl90Mokatebe" id="HasAsl90Mokatebe" />
+                    <label asp-for="@Model.HasAsl90Mokatebe"></label>
+                </div>
+                <div class="form-group mt-3 col-md-3">
+                    <input asp-for="@Model.HasAllMokatebeTypes" id="HasAllMokatebeTypes" />
+                    <label asp-for="@Model.HasAllMokatebeTypes"></label>
+                </div>
+            </div>
+
+            <div class="row">
+                <hr />
+                <div class="col-md-3">
+                    <p class="mt-3">وضعیت پاسخ مکاتبه</p>
+                </div>
+                <div class="form-group mt-3 col-md-2">
+                    <input asp-for="@Model.IsPosetive" id="Mosbat" />
+                    <label asp-for="@Model.IsPosetive"></label>
+                </div>
+                <div class="form-group mt-3 col-md-2">
+                    <input asp-for="@Model.IsNegative" id="manfi" />
+                    <label asp-for="@Model.IsNegative"></label>
+                </div>
+                
+                <div class="form-group mt-3 col-md-2">
+                    <input asp-for="@Model.IsNotAnswered" id="notAnswered" />
+                    <label asp-for="@Model.IsNotAnswered"></label>
+                </div>
+                <div class="form-group mt-3 col-md-2">
+                    <input asp-for="@Model.IsReport" id="report" />
+                    <label asp-for="@Model.IsReport"></label>
+                </div>
+                <div class="form-group mt-3 col-md-1">
+                    <input asp-for="@Model.HasAllMokatebe" id="HasAllMokatebe" />
+                    <label asp-for="@Model.HasAllMokatebe"></label>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <input type="submit"
+                   class="btn btn-primary" perform="action" value="دانلود" />
+        </div>
+    </div>
+
+</form>
+
+

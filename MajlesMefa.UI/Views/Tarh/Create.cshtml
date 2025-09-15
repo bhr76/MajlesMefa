@@ -1,0 +1,393 @@
+﻿@using MajlesMefa.UI.Views.Category;
+@using MajlesMefa.UI.Views.Commission;
+@using MajlesMefa.UI.Views.Senator;
+@using MajlesMefa.UI.Views.Tarh;
+@using MajlesMefa.UI.Models;
+@{
+    ViewData["Title"] = "ایجاد طرح";
+}
+@model TarhViewModel
+
+<div class="m-portlet">
+    <div class="m-portlet__body">
+        <form asp-controller=@TarhController.CONTROLLER asp-action="Create" id="createTarhForm" method="post">
+            <div class="row">
+                <div asp-validation-summary="ModelOnly"></div>
+
+                 <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.SenatorId"></label>
+                    <input asp-for="@Model.SenatorId" id="SenatorId" class="form-control" />
+                    <span asp-validation-for="@Model.SenatorId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Title"></label>
+                    <input asp-for="@Model.Title" class="form-control" />
+                    <span asp-validation-for="@Model.Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Shenase"></label>
+                    <input asp-for="@Model.Shenase" class="form-control" />
+                    <span asp-validation-for="@Model.Shenase" class="text-danger"></span>
+                </div>
+               
+                
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.RelatedComission"></label>
+                    <input asp-for="@Model.RelatedComission" id="Commission" class="form-control" />
+                    <span asp-validation-for="@Model.RelatedComission" class="text-danger"></span>
+                </div>
+
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.VazeyatBarresiInt" style="display:block;"></label>
+                    <input asp-for="@Model.VazeyatBarresiInt" id="VazeyatBarresi" class="form-control" />
+                    <span asp-validation-for="@Model.VazeyatBarresiInt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.NatijeBarresiInt" class="control-label" style="display:block;"></label>
+                    <input asp-for="@Model.NatijeBarresiInt" class="form-control NatijeBarresi" />
+                    <span asp-validation-for="@Model.NatijeBarresiInt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.KollyatInt" style="display:block;"></label>
+                    <input asp-for="@Model.KollyatInt" class="form-control NatijeBarresi" />
+                    <span asp-validation-for="@Model.KollyatInt" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.MavadTarhInt" style="display:block;"></label>
+                    <input asp-for="@Model.MavadTarhInt" class="form-control NatijeBarresi" />
+                    <span asp-validation-for="@Model.MavadTarhInt" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.NatijeBarresiShoraNegahbanInt" style="display:block;"></label>
+                    <input asp-for="@Model.NatijeBarresiShoraNegahbanInt" class="form-control NatijeBarresi" />
+                    <span asp-validation-for="@Model.NatijeBarresiShoraNegahbanInt" class="text-danger"></span>
+                </div>
+                <div class="form-group col-12 mt-4">
+                    <input asp-for="@Model.Moshtarak" id="Moshtarak" />
+                    <label asp-for="@Model.Moshtarak">معاونت مشترک دارد</label>
+                </div>
+
+                <div id="category" class="col-12 row">
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.CategoryParentId"></label>
+                        <input asp-for="@Model.CategoryParentId" id="CategoryParentId" class="form-control" />
+                    </div>
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.CategoryId"></label>
+                        <input asp-for="@Model.CategoryId" id="CategoryId" class="form-control" />
+                        <span asp-validation-for="@Model.CategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+
+                <div class="form-group mt-3 col-md-12" id="moavenats">
+                    <label asp-for="@Model.Moavenats"></label>
+                    <select class="form-control" asp-for="@Model.Moavenats" id="Moavenats" multiple="multiple">
+                    </select>
+                    <span asp-validation-for="@Model.Moavenats" class="text-danger"></span>
+                </div>
+                <div class="col-12"></div>
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.Havashi" style="display:block;"></label>
+                    <textarea asp-for="@Model.Havashi" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="@Model.Havashi" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.Gardeshkar"></label>
+                    <textarea asp-for="@Model.Gardeshkar" class="form-control" rows="4" ></textarea>
+                    <span asp-validation-for="@Model.Gardeshkar" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.NamayandeghanBaraSherkat"></label>
+                    <textarea asp-for="@Model.NamayandeghanBaraSherkat" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="@Model.NamayandeghanBaraSherkat" class="text-danger"></span>
+                </div>
+                 <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.NamayandeghanEmzaKonande"></label>
+                    <textarea asp-for="@Model.NamayandeghanEmzaKonande" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="@Model.NamayandeghanEmzaKonande" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.GhozareshMozakerat"></label>
+                    <textarea asp-for="@Model.GhozareshMozakerat" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="@Model.GhozareshMozakerat" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.HamahangiBaraSherkat"></label>
+                    <textarea asp-for="@Model.HamahangiBaraSherkat" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="@Model.HamahangiBaraSherkat" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.NatijeBarresiShoraNegahbanDescription" style="display:block;"></label>
+                    <textarea asp-for="@Model.NatijeBarresiShoraNegahbanDescription" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="@Model.NatijeBarresiShoraNegahbanDescription" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.NazarNamayande" style="display:block;"></label>
+                    <textarea asp-for="@Model.NazarNamayande" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="@Model.NazarNamayande" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.SavabeghEblagh" style="display:block;"></label>
+                    <textarea asp-for="@Model.SavabeghEblagh" class="form-control" rows="4" ></textarea>
+                    <span asp-validation-for="@Model.SavabeghEblagh" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.GhozarshNahayi" style="display:block;"></label>
+                    <textarea asp-for="@Model.GhozarshNahayi" class="form-control" rows="4" ></textarea>
+                    <span asp-validation-for="@Model.GhozarshNahayi" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.ErsalBeVazir" style="display:block;">توضیحات ارسال به وزیر</label>
+                    <textarea asp-for="@Model.ErsalBeVazir" class="form-control" rows="4" ></textarea>
+                    <span asp-validation-for="@Model.ErsalBeVazir" class="text-danger"></span>
+                </div>
+
+                 <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.Description"></label>
+                    <textarea asp-for="@Model.Description" class="form-control" rows="4" ></textarea>
+                    <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="submit-btn col-md-3 m-auto">
+                    <input type="submit" value="ثبت" />
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#moavenats").hide();
+            $("#category").show();
+
+            $("#Moshtarak").change(function (event) {
+                $("#moavenats").toggle();
+                $("#category").toggle();
+                $("#Moavenats").removeAttr('value');
+                $("#CategoryParentId").removeAttr('value');
+            });
+
+            $("#Moavenats").kendoMultiSelect({
+                includeSelectAllOption: true,
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCategoriesForMultiSelect", CategoryController.CONTROLLER)',
+                        },
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: false
+                }
+            });
+            $("#Commission").kendoDropDownList({
+                dataTextField: "title",
+                dataValueField: "id",
+                 filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCommission", CommissionController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+            $(".NatijeBarresi").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetNatijeBarresiForDropDown", TarhController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            $("#VazeyatBarresi").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetVazeyatBarresiForDropDown", TarhController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            $("#SenatorId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                template: "<span>#:data.name# -  #:data.hozeCityName#</span>",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetSenatorsForDropDown", SenatorController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+
+            $("#CategoryParentId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCategoriesForDropDown", CategoryController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+            $("#CategoryId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {}
+            });
+
+            $("#CategoryParentId").change(
+                function () {
+                    if ($("#CategoryParentId").val()) {
+                        var parentId = $("#CategoryParentId").val();
+                        $("#CategoryId").kendoDropDownList({
+                            dataTextField: "name",
+                            dataValueField: "id",
+                            filter: "contains",
+                            optionLabel: "یک آیتم انتخاب کنید...",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        dataType: "json",
+                                        contentType: 'application/json; charset=utf-8',
+                                        url: '@Url.Action("GetCategoriesForDropDown", CategoryController.CONTROLLER)',
+                                    },
+                                    parameterMap: function (options) {
+                                        return `models=${kendo.stringify(options)}&parentId=${parentId}`;
+                                    }
+                                },
+                                schema: {
+                                    data: "data",
+                                    total: "totalRecords",
+                                    page: "page",
+                                    pageSize: "pageSize"
+                                },
+                                serverFiltering: true
+                            }
+                        });
+                    } else {
+                        $("#CategoryId").kendoDropDownList({
+                            dataTextField: "name",
+                            dataValueField: "id",
+                            filter: "contains",
+                            optionLabel: "یک آیتم انتخاب کنید...",
+                            dataSource: {}
+                        });
+                    }
+                })
+
+            $("#CategoryId").change(
+                function () {
+                    var id = $("#CategoryId").val();
+                    if (id != "") {
+                        $.ajax({
+                            url: "@Url.Action("GetCategoryById", CategoryController.CONTROLLER)",
+                            type: "POST",
+                            data: { categoryId: id },
+                            dataType: "json",
+                            success: function (response) {
+                                if (response.hasAmount) {
+                                    $("#Amount").show();
+                                } else {
+                                    $("#Amount").hide();
+                                    $("#amount-input").val('');
+                                }
+                            }
+                        });
+                    } else {
+                        $("#Amount").hide();
+                        $("#amount-input").val('');
+                    }
+                }
+            );
+        });
+
+    </script>
+}

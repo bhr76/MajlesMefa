@@ -1,0 +1,165 @@
+@font-face {
+    font-family: Iransans;
+    font-style: normal;
+    src: url('../fonts/IRANSansWeb(FaNum)_Light.eot');
+    src: url('../fonts/IRANSansWeb(FaNum)_Light.eot?#iefix') format('embedded-opentype'), /* IE6-8 */
+    url('../fonts/IRANSansWeb(FaNum).woff2') format('woff2'), /* FF39+,Chrome36+, Opera24+*/
+    url('../fonts/IRANSans-Light-web.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+    url('../fonts/IRANSans-Light-web.ttf') format('truetype');
+}
+@font-face {
+    font-family: Iransans-bold;
+    font-style: normal;
+    src: url('../fonts/IRANSansWeb(FaNum)_Bold.eot');
+    src: url('../fonts/IRANSansWeb(FaNum)_Bold.eot?#iefix') format('embedded-opentype'), /* IE6-8 */
+    url('../fonts/IRANSansWeb(FaNum)_Bold.woff2') format('woff2'), /* FF39+,Chrome36+, Opera24+*/
+    url('../fonts/IRANSansWeb(FaNum)_Bold.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+    url('../fonts/IRANSansWeb(FaNum)_Bold.ttf') format('truetype');
+}
+.d-hide{
+    display: none;
+}
+html {
+    font-size: 14px;
+}
+.k-dropdown.k-state-focused{
+    box-shadow:none !important;
+}
+
+.k-grid.k-widget .k-header.k-grid-toolbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+div.k-header.k-grid-toolbar::after {
+    content: none !important;
+    display: none !important;
+}
+
+.k-button.k-button-icontext.k-grid-excel{
+    margin-left:10px;
+}
+.k-grid-toolbar input {
+    min-width: 200px;
+}
+.bg-green {
+    background-color: #d4efd4 !important;
+    color: black !important;
+}
+.bg-error {
+    background-color: #f7c8c2 !important;
+    color: black !important;
+}
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+.header-site-logo {
+    height: 70px !important;
+}
+html {
+    position: relative;
+    min-height: 100%;
+    direction: rtl;
+}
+body, text {
+    font-family: Iransans !important;
+    direction: rtl;
+}
+label{
+    font-size:12px;
+}
+.login-bg{
+    /*background: url("../images/bg-pattern.svg") no-repeat;*/
+    height:100%;
+    width:100%;
+    background-size:cover;
+    display:flex;
+    justify-content: center;
+    background-color : aliceblue;
+}
+.error-rate-limit {
+    background: url('../../images/error_down.png') no-repeat;
+}
+.login-box{
+    width: 400px;
+    height: 550px;
+    background-color: white;
+    border-radius:5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    margin-top: 25px;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+.login-box label {
+    color: #666666;
+}
+.login-bank-logo{
+    width:100%;
+    display:flex;
+    justify-content:center;
+}
+.login-bank-logo img{
+    width: 195px
+}
+.login-top-text p {
+    font-size: 14px;
+    color: #024C80;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 15px;
+}
+.captcha-code{
+    display:flex;
+    justify-content:center;
+    width:100%;
+    margin-top:15px;
+}
+.captcha-code .refresh{
+    width: 22px;
+    cursor: pointer;
+}
+.submit-btn input{
+    border-radius: 20px;
+    border:none;
+    height:42px;
+    background: linear-gradient(270deg, #21409A 31.91%, #CE1878 100%);
+    color:white;
+    width:100%;
+    margin-top:30px;
+}
+.all-rights p{
+    font-weight: normal;
+    font-size: 10px;
+}
+.statistics-item{
+    background-color:white;
+    border-radius: 5px;
+    displayf
+}
+p{
+    margin-bottom: 0;
+}
+
+@media(max-width: 1023.9px){
+    .header-site-logo {
+        height: 61px !important;
+    }
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 575.9px) {
+   .login-box{
+       width: 100%;
+       height: 100%;
+       margin-top:0;
+       box-shadow: none;
+       border-radius: 0;
+       padding-bottom: 20px;
+   }
+}

@@ -1,0 +1,261 @@
+﻿@using MajlesMefa.UI.Views.Category;
+@using MajlesMefa.UI.Views.City;
+@using MajlesMefa.UI.Views.Mokatebe;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.UI.Views.Organization;
+@using MajlesMefa.UI.Views.Senator;
+@using MajlesMefa.UI.Views.User;
+@{
+    var defaultOrganizationParentId = Model.OrganizationParentId;
+    ViewData["Title"] = "ویرایش اطلاعات کاربر";
+}
+@model UserVm
+
+<div class="m-portlet">
+    <div class="m-portlet__body">
+        <form asp-controller=@UserController.CONTROLLER asp-action="Edit" id="editUserForm" method="post">
+            <div class="row">
+                <div asp-validation-summary="ModelOnly"></div>
+                <input hidden asp-for="@Model.Id" />
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Name"></label>
+                    <input asp-for="@Model.Name" id="Name" class="form-control" />
+                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                </div>
+
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.CityId"></label>
+                    <input asp-for="@Model.CityId" id="CityId" class="form-control" />
+                    <span asp-validation-for="@Model.CityId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Mobile"></label>
+                    <input asp-for="@Model.Mobile" id="Mobile" class="form-control" />
+                    <span asp-validation-for="@Model.Mobile" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Email"></label>
+                    <input asp-for="@Model.Email" id="Email" class="form-control" />
+                    <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.RoleInt"></label>
+                    <input asp-for="@Model.RoleInt" id="RoleInt" class="form-control" />
+                    <span asp-validation-for="@Model.RoleInt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.OrganizationParentId"></label>
+                    <input asp-for="@Model.OrganizationParentId" id="OrganizationParentId" class="form-control" />
+                    <span asp-validation-for="@Model.OrganizationParentId" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.OrganizationId"></label>
+                    <input asp-for="@Model.OrganizationId" id="OrganizationId" class="form-control" />
+                    <span asp-validation-for="@Model.OrganizationId" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 mt-5">
+                    <p class="text-info">در صورت تمایل به تغییر کلمه عبور، باکس‌های زیر را پر کنید و در غیر اینصورت آن‌ها را خالی بگذارید.</p>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.EditPassword"></label>
+                    <input style="direction: ltr;text-align: left !important;" type="password" asp-for="@Model.EditPassword" id="EditPassword" class="form-control text-left" />
+                    <i style="position: absolute;top: 41px;right: 23px;" id="btnPassword" class="fa fa-eye"></i>
+                    <span asp-validation-for="@Model.EditPassword" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.EditConfirmPassword"></label>
+                    <input style="direction: ltr;text-align: left !important;" type="password" asp-for="@Model.EditConfirmPassword" id="EditConfirmPassword" class="form-control" />
+                    <i style="position: absolute;top: 41px;right: 23px;" id="btnConfirmPassword" class="fa fa-eye"></i>
+                    <span asp-validation-for="@Model.EditConfirmPassword" class="text-danger"></span>
+                </div>
+
+
+            </div>
+            <div class="row">
+                <div class="submit-btn col-md-3 m-auto">
+                    <input type="submit" value="ثبت" />
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+            $("#btnPassword").click(
+                function () {
+                    if ($('#btnPassword').hasClass("fa-eye")) {
+                        $('#EditPassword').attr('type', 'text');
+                        $('#btnPassword').removeClass('fa-eye').addClass('fa-eye-slash');
+                    } else {
+                        $('#EditPassword').attr('type', 'password');
+                        $('#btnPassword').removeClass('fa-eye-slash').addClass('fa-eye');
+                    }
+                }
+            );
+
+            $("#btnConfirmPassword").click(
+                function () {
+                    if ($('#btnConfirmPassword').hasClass("fa-eye")) {
+                        $('#EditConfirmPassword').attr('type', 'text');
+                        $('#btnConfirmPassword').removeClass('fa-eye').addClass('fa-eye-slash');
+                    } else {
+                        $('#EditConfirmPassword').attr('type', 'password');
+                        $('#btnConfirmPassword').removeClass('fa-eye-slash').addClass('fa-eye');
+                    }
+                }
+            );
+
+
+            $("#CityId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCitiesForDropDown", CityController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+            $("#RoleInt").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetRolesForDropDown", UserController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+
+            $("#OrganizationParentId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetOrganizationsForDropDown", OrganizationController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+
+            $("#OrganizationId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetOrganizationsForDropDown", OrganizationController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}&parentId=@defaultOrganizationParentId`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+            $("#OrganizationParentId").change(
+                function () {
+                    if ($("#OrganizationParentId").val()) {
+                        console.log("if", $("#OrganizationParentId").val());
+                        var parentId = $("#OrganizationParentId").val();
+                        $("#OrganizationId").kendoDropDownList({
+                            dataTextField: "name",
+                            dataValueField: "id",
+                            filter: "contains",
+                            optionLabel: "یک آیتم انتخاب کنید...",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        dataType: "json",
+                                        contentType: 'application/json; charset=utf-8',
+                                        url: '@Url.Action("GetOrganizationsForDropDown", OrganizationController.CONTROLLER)',
+                                    },
+                                    parameterMap: function (options) {
+                                        return `models=${kendo.stringify(options)}&parentId=${parentId}`;
+                                    }
+                                },
+                                schema: {
+                                    data: "data",
+                                    total: "totalRecords",
+                                    page: "page",
+                                    pageSize: "pageSize"
+                                },
+                                serverFiltering: true
+                            }
+                        });
+                    } else {
+
+                        $("#OrganizationId").kendoDropDownList({
+                            dataTextField: "name",
+                            dataValueField: "id",
+                            filter: "contains",
+                            optionLabel: "یک آیتم انتخاب کنید...",
+                            dataSource: {}
+                        });
+                    }
+                })
+
+        });
+
+    </script>
+}

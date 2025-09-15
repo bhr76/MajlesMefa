@@ -1,0 +1,68 @@
+﻿@using MajlesMefa.UI.Views.Mokatebe;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.UI.Views.TahghighTafahos;
+
+@model TahghighTafahosVm
+
+@{
+    Layout = null;
+}
+
+<form asp-controller=@TahghighTafahosController.CONTROLLER asp-action="Delete" id="DeleteTahghighTafahosForm" method="post">
+
+    <div class="card" style="margin:10px;">
+        <div class="card-header">
+            <p class="mb-0">
+                <b>حذف تحقیق و تفحص - شناسه: @Model.TafahosData.Id</b>
+            </p>
+        </div>
+
+    <div class="modal-body">
+
+        <div asp-validation-summary="ModelOnly"></div>
+            <input asp-for="@Model.TafahosData.Id" hidden />
+            <input asp-for="@Model.TafahosData" hidden />
+        <div class="row"><div class="col-12"><br /></div></div>
+        <div class="row">
+            <div class="form-group col-6">
+                <label asp-for="@Model.Title" class="control-label">عنوان تحقیق و تفحص</label>
+                    <input value="@Model.Title" class="form-control" disabled readonly />
+            </div>
+            <div class="form-group col-6">
+                    <label asp-for="@Model.TafahosData.ShomareName" class="control-label">شماره نامه </label>
+                    <input value="@Model.TafahosData.ShomareName" class="form-control" disabled readonly />
+            </div>
+            <div class="form-group col-6">
+                <label asp-for="@Model.TafahosData.ShomareDaryaft" class="control-label">شماره دریافت </label>
+                    <input value="@Model.TafahosData.ShomareDaryaft" class="form-control" disabled readonly />
+            </div>
+             <div class="form-group col-6">
+                    <label asp-for="@Model.TafahosData.Commission" class="control-label">کمیسیون مربوطه </label>
+                    <input value="@Model.TafahosData.Commission" class="form-control" disabled readonly />
+            </div>
+        </div>
+        <div class="row"><div class="col-12"><br /></div></div>
+        <div class="row"><div class="col-12"><br /></div></div>
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-danger" style="width:90%; margin:auto;">
+                    آیا از انجام این عملیات مطمئن هستید؟
+                </div>
+                <br/>
+            </div>
+        </div>
+       
+
+    </div>
+    <div class="modal-footer">
+
+            <button onclick="event.preventDefault();saveAndupdate($(this.form), $(this.form).attr('action') , '#report-grid-tahghigh');"
+                class="btn btn-danger" perform="action">
+            حذف
+        </button>
+    </div>
+    </div>
+
+</form>
+
+

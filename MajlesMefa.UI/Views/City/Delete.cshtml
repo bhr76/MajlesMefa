@@ -1,0 +1,63 @@
+﻿@using MajlesMefa.UI.Models;
+@using MajlesMefa.UI.Views.City;
+
+@model CityVm
+
+@{
+    Layout = null;
+}
+
+<form asp-controller=@CityController.CONTROLLER asp-action="Delete" id="DeleteCityForm" method="post">
+    <div style="margin:auto">
+        <div class="card-header">
+            <p class="mb-0">
+                @if (Model.ParentId is null)
+                {
+                    <b>حذف استان - شناسه: @Model.Id</b>
+                }
+                else
+                {
+                    <b>حذف حوزه  - شناسه: @Model.Id</b>
+                }
+            </p>
+        </div>
+
+
+
+    <div class="modal-body">
+
+        <div asp-validation-summary="ModelOnly"></div>
+            <input asp-for="@Model.Id" hidden />
+            <input asp-for="@Model.ParentId" hidden />
+        <div class="row"><div class="col-12"><br /></div></div>
+        <div class="row">
+            <div class="form-group col-6">
+                <label asp-for="@Model.Name" class="control-label"></label>
+                <input value="@Model.Name" class="form-control" disabled readonly />
+            </div>
+        </div>
+        <div class="row"><div class="col-12"><br /></div></div>
+        <div class="row"><div class="col-12"><br /></div></div>
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-danger" style="width:90%; margin:auto;">
+                    آیا از انجام این عملیات مطمئن هستید؟
+                </div>
+                <br/>
+            </div>
+        </div>
+       
+
+    </div>
+    <div class="modal-footer">
+
+        <button onclick="event.preventDefault();saveAndupdate($(this.form), $(this.form).attr('action'));"
+                class="btn btn-danger" perform="action">
+            حذف
+        </button>
+    </div>
+    </div>
+
+</form>
+
+

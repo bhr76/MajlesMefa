@@ -1,0 +1,36 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace MajlesMefa.Back.Migrations
+{
+    /// <inheritdoc />
+    public partial class mokatebe_konande : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.AlterColumn<byte>(
+                name: "MokatebeKonande",
+                table: "Mokatebes",
+                type: "tinyint",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(128)",
+                oldMaxLength: 128);
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.AlterColumn<string>(
+                name: "MokatebeKonande",
+                table: "Mokatebes",
+                type: "nvarchar(128)",
+                maxLength: 128,
+                nullable: false,
+                oldClrType: typeof(byte),
+                oldType: "tinyint");
+        }
+    }
+}

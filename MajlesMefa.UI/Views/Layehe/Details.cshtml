@@ -1,0 +1,147 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.Back.Enums.Layehe;
+@using MajlesMefa.Back.Enums.Tarh;
+@using MajlesMefa.UI.Views.Layehe;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.Back.Utilities.EnumHelper
+@{
+    ViewData["Title"] = "جزییات طرح و لایحه";
+}
+@model LayeheViewModel
+
+@{
+    Layout = null;
+    var NatijeBarresiCommission = (NatijeBarresiEnum)Model.NatijeBarresiCommission;
+    var NatijeBarresiSahn = (NatijeBarresiEnum)Model.NatijeBarresiSahn;
+    var NatijeBarresiShora = (NatijeBarresiShoraEnum)Model.NatijeBarresiShora;
+    var VaziatBaresi = (VazeyatBarresiEnum)Model.VazeyatBarresi;
+    var Type = (LayeheTarhTypeEnum)Model.Type;
+}
+
+<style>
+    .flex {
+        display: flex;
+    }
+
+    th {
+        max-width: 25% !important;
+    }
+</style>
+
+<div class="card" style="margin:10px;">
+    <div class="card-header">
+        <p class="mb-0">
+            <b>اطلاعات کامل </b>
+        </p>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped" style="width:100%">
+                    <tr>
+                        <th style="max-width:30%;">شناسه</th>
+                        <td style="min-width:70%;">@Model.Id</td>
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">نوع</th>
+                        <td style="min-width:70%;">@Type.GetPersianName()</td>
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">عنوان</th>
+                        <td style="min-width:70%;">@Model.Title</td>
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">شماره ثبت</th>
+                        <td style="min-width:70%;">@Model.ShomareSabt</td>
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">معاونت</th>
+                        @if (Model.CategoryParentName is not null)
+                        {
+                            <td style="min-width:70%;">
+                                @Model.CategoryParentName
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">
+                                ---
+                            </td>
+                        }
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">موضوع</th>
+                        @if (Model.CategoryName is not null)
+                        {
+                            <td style="min-width:70%;">
+                                @Model.CategoryName
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">
+                                ---
+                            </td>
+                        }
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">توضیحات</th>
+                        <td style="min-width:70%;">@Model.Description</td>
+                    </tr>
+                     <tr>
+                        <th style="max-width:30%;">وضعیت طرح/لایحه</th>
+                        <td style="min-width:70%;">@VaziatBaresi.GetPersianName()</td>
+                    </tr>
+                      <tr>
+                        <th style="max-width:30%;">نتیجه بررسی در کمیسیون</th>
+                        <td style="min-width:70%;">@NatijeBarresiCommission.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نتیجه بررسی کلیات در صحن</th>
+                        <td style="min-width:70%;">@NatijeBarresiSahn.GetPersianName()</td>
+                    </tr>
+                    
+                   <tr>
+                        <th style="max-width:30%;">نتیجه بررسی در شورای نگهبان</th>
+                        <td style="min-width:70%;">@NatijeBarresiShora.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تاریخ اعلام وصول</th>
+                        <td style="min-width:70%;">@Model.ElamVosoolPersianDate</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تاریخ بررسی کلیات در صحن</th>
+                        <td style="min-width:70%;">@Model.BaresiKoliatDarSahnPersianDate</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تاریخ ابلاغ</th>
+                        @if (@Model.EblaghPersianDate is null)
+                        {
+                            <td style="min-width:70%;">
+                               در حال حاضر تاریخ ابلاغ ندارد
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">@Model.EblaghPersianDate</td>
+                        }
+                       
+                    </tr>
+                    
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <h5 class="mb-0" style="text-align:left">
+        </h5>
+    </div>
+</div>
+
