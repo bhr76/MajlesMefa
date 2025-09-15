@@ -1,0 +1,173 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.Back.Enums.Senator;
+@using MajlesMefa.UI.Views.Loan;
+@using MajlesMefa.UI.Views.Mokatebe;
+@using MajlesMefa.UI.Views.Molaghat;
+@using MajlesMefa.UI.Views.Tazakor;
+@using MajlesMefa.UI.Views.Soal;
+@using MajlesMefa.UI.Views.Layehe;
+@using MajlesMefa.UI.Views.Tarh;
+@using MajlesMefa.UI.Views.Notgh;
+@using MajlesMefa.UI.Views.Ezharat;
+@using MajlesMefa.UI.Views.TahghighTafahos;
+@using MajlesMefa.UI.Models;
+@{
+    ViewData["Title"] = " اطلاعات نماینده";
+}
+@model SenatorVm
+
+@{
+    var madrakTahsili = (MadrakTahsiliEnum)Model.MadrakTahsili;
+    var mahaleTahsil = (MahaleTahsilEnum)Model.MahaleTahsil;
+    var hozeEntekhabi = (HozeEntekhabiEnum)Model.HozeEntekhabi;
+    var shoghleGhaleb = (ShoghleGhalebEnum)Model.ShoghleGhaleb;
+    var gerayeshSiasi = (GerayeshSiasiEnum)Model.GerayeshSiasi;
+    Layout = null;
+}
+
+<style>
+    .flex {
+        display: flex;
+    }
+
+    th {
+        max-width: 25% !important;
+    }
+</style>
+
+<div class="card" style="margin:10px;">
+    <div class="card-header">
+        <p class="mb-0">
+            <b>اطلاعات کامل نماینده</b>
+        </p>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped" style="width:100%">
+                    
+                    @if(Model.ProfilePhotoUrl is not null)
+                    {
+                        <tr class="d-flex justify-content-end">
+                            <div style="height:150px;width:190px;border:1px solid #ebedf2" class="mb-3 mt-2 d-flex justify-content-center">
+                                <img style="height: 148px;max-width: 188px" id="currentPhoto" src="@Model.ProfilePhotoUrl" />
+                            </div>
+
+                        </tr>
+                    }
+                    
+                    
+                    <tr>
+                        <th style="max-width:30%;">شناسه</th>
+                        <td style="min-width:70%;">@Model.Id</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نام و نام خانوادگی</th>
+                        <td style="min-width:70%;">@Model.Name</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نام کاربری</th>
+                        <td style="min-width:70%;">@Model.Username</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">موبایل</th>
+                        <td style="min-width:70%;">@Model.Mobile</td>
+                    </tr>
+                    @*<tr>
+                        <th style="max-width:30%;">ایمیل</th>
+                        <td style="min-width:70%;">@Model.Email</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تاریخ تولد</th>
+                        <td style="min-width:70%;">@Model.BirthdateStr</td>
+                    </tr>*@
+                    <tr>
+                        <th style="max-width:30%;"> استان</th>
+                        <td style="min-width:70%;">@Model.CityName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> حوزه انتخابیه</th>
+                        <td style="min-width:70%;">@Model.HozeCityName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">مدرک تحصیلی </th>
+                        <td style="min-width:70%;">@madrakTahsili.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> رشته</th>
+                        <td style="min-width:70%;">@Model.Reshte</td>
+                    </tr>
+                  @*  <tr>
+                        <th style="max-width:30%;">محل تحصیل </th>
+                        <td style="min-width:70%;">@mahaleTahsil.GetPersianName()</td>
+                    </tr>*@
+                    <tr>
+                        <th style="max-width:30%;">حوزه انتخابیه </th>
+                        <td style="min-width:70%;">@hozeEntekhabi.GetPersianName()</td>
+                    </tr>
+                    @*<tr>
+                        <th style="max-width:30%;"> شغل غالب مردم </th>
+                        <td style="min-width:70%;">@shoghleGhaleb.GetPersianName()</td>
+                    </tr>*@
+                    <tr>
+                        <th style="max-width:30%;">گرایش سیاسی </th>
+                        <td style="min-width:70%;">@gerayeshSiasi.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">توضیحات گرایش سیاسی </th>
+                        <td style="min-width:70%;">@Model.PoliticalTending</td>
+                    </tr>
+                    @*<tr>
+                        <th style="max-width:30%;">علایق شخصی </th>
+                        <td style="min-width:70%;">@Model.PersonalFavorites</td>
+                    </tr>*@
+                    <tr>
+                        <th style="max-width:30%;"> سوابق نمایندگی </th>
+                        <td style="min-width:70%;">@Model.SenaHistory</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> سابقه عضویت در هیئت رئیسه </th>
+                        <td style="min-width:70%;">@Model.SabegheHeyatReise</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> عضویت در کمیسیون‌ها </th>
+                        <td style="min-width:70%;">@Model.ComissionMembershipTitle</td>
+                    </tr>
+                    @*<tr>
+                        <th style="max-width:30%;"> عضویت در فراکسیون‌ها </th>
+                        <td style="min-width:70%;">@Model.FractionMembership</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> فعالیتهای اجتماعی </th>
+                        <td style="min-width:70%;">@Model.SocialActivity</td>
+                    </tr>*@
+                    <tr>
+                        <th style="max-width:30%;"> سوابق قبلی </th>
+                        <td style="min-width:70%;">@Model.JobHistory</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> سابقه امضای استیضاح </th>
+                        <td style="min-width:70%;">@Model.SabegheEmzaEstizah</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <h5 class="mb-0" style="text-align:left">
+            <a style="font-size: 14px" class="k-button mt-1" href="@Url.Action(nameof(LayeheController.Index), LayeheController.CONTROLLER)?senatorId=@Model.Id"> لوایح</a>
+            <a class="k-button mt-1" style="font-size: 14px" href="@Url.Action(nameof(TarhController.Index), TarhController.CONTROLLER)?senatorId=@Model.Id"> طرح ها</a>
+            <a class="k-button mt-1" style="font-size: 14px" href="@Url.Action(nameof(SoalController.Index), SoalController.CONTROLLER)?senatorId=@Model.Id"> سوالات</a>
+            <a class="k-button mt-1" style="font-size: 14px" href="@Url.Action(nameof(EzharatController.Index), EzharatController.CONTROLLER)?senatorId=@Model.Id"> اظهارات رسانه ای</a>
+            <a class="k-button mt-1" style="font-size: 14px" href="@Url.Action(nameof(NotghController.Index), NotghController.CONTROLLER)?senatorId=@Model.Id"> نطق</a>
+            <a class="k-button mt-1" style="font-size: 14px" href="@Url.Action(nameof(TahghighTafahosController.Index), TahghighTafahosController.CONTROLLER)?senatorId=@Model.Id"> تحقیق و تفحص</a>
+            <a class="k-button mt-1" style="font-size: 14px" href="@Url.Action(nameof(MokatebeController.Index), MokatebeController.CONTROLLER)?senatorId=@Model.Id"> مکاتبات</a>
+            <a class="k-button mt-1" style="font-size: 14px" href="@Url.Action(nameof(TazakorController.Index), TazakorController.CONTROLLER)?senatorId=@Model.Id"> تذکرات</a>
+            <a class="k-button mt-1" style="font-size: 14px" href="@Url.Action(nameof(MolaghatController.Index), MolaghatController.CONTROLLER)?senatorId=@Model.Id"> ملاقات</a>
+            <a class="k-button mt-1" style="font-size: 14px" href="@Url.Action(nameof(LoanController.Index), LoanController.CONTROLLER)?senatorId=@Model.Id"> تسهیلات</a>
+
+        </h5>
+    </div>
+</div>
+

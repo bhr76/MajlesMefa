@@ -1,0 +1,48 @@
+﻿@using MajlesMefa.UI.Views.Commission;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.Back.Enums;
+@using MajlesMefa.UI.Views.Senator;
+@{
+    ViewData["Title"] = "دستور جلسات کمیسیون";
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script asp-append-version="true">
+        //#if('${url_delete}' != ''){# < button class="k-button mt-1" data - link="${url_delete}/?commissionId=#:id#" > حذف < /button>#}#
+        var url_create = '';
+        var url_edit = '';
+        var url_delete = '';
+        var url_members = '';
+        {
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower()) {
+                url_create = '@Url.Action(nameof(CommissionController.Create), CommissionController.CONTROLLER)';
+                url_edit = '@Url.Action(nameof(CommissionController.Edit), CommissionController.CONTROLLER)';
+                url_delete = '@Url.Action(nameof(CommissionController.Delete), CommissionController.CONTROLLER)';
+            }
+        };
+        var url_get = '@Url.Action(nameof(CommissionController.GetCommission), CommissionController.CONTROLLER)';
+        var url_details = '@Url.Action(nameof(CommissionController.Details), CommissionController.CONTROLLER)';
+        var url_members = '@Url.Action(nameof(SenatorController.Index), SenatorController.CONTROLLER)';
+        var btns = `<button class="k-button" data-link="${url_details}/?commissionId=#:id#">جزییات</button>
+                            <a class="k-button mt-1" href="${url_members}?commissionId=#:id#"> اعضای کمیسیون</a>
+
+                                                                      #if('${url_edit}' != ''){#<a class="k-button mt-1" href="${url_edit}?commissionId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>#}#
+
+                        `;
+
+    </script>
+    <script src="~/js/pages/commission.js" asp-append-version="true"></script>
+
+}
+

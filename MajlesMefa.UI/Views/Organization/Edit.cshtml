@@ -1,0 +1,49 @@
+﻿@using MajlesMefa.UI.Models;
+@using MajlesMefa.UI.Views.Organization;
+
+@model OrganizationVm
+
+@{
+    Layout = null;
+}
+
+<form asp-controller=@OrganizationController.CONTROLLER asp-action="Edit" id="editOrganizationForm" method="post">
+
+    <div class="card" style="margin:10px;">
+        <div class="card-header">
+            <p class="mb-0">
+                @if (Model.ParentId is null)
+                {
+                    <b>ویرایش استان - شناسه: @Model.Id</b>
+                }else{
+                    <b>ویرایش  حوزه - شناسه: @Model.Id</b>
+                }
+                
+            </p>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div asp-validation-summary="ModelOnly"></div>
+
+                <input hidden asp-for="@Model.Id" />
+                <input hidden asp-for="@Model.ParentId" />
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Name"></label>
+                    <input asp-for="@Model.Name" id="Title" class="form-control" />
+                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="event.preventDefault();saveAndupdate($(this.form), $(this.form).attr('action'));"
+                    class="btn btn-success" perform="action">
+                ثبت
+            </button>
+        </div>
+    </div>
+
+</form>
+
+

@@ -1,0 +1,63 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.UI.Views.Khadamat;
+@using MajlesMefa.UI.Views.Peygiri;
+@using MajlesMefa.UI.Views.ActionReference;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.Back.Enums;
+@model Guid?
+@{
+    ViewData["Title"] = "لیست خدمات";
+    var id = Model.HasValue ? Model : Guid.Empty;
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script asp-append-version="true">
+        var url_get_khadamat = '';
+        var url_create = '';
+        var url_edit = '';
+        var fromReportPage = false;
+        var url_delete = '';
+        {
+            if ('@id' == null || '@id' == @Guid.Empty) {
+                url_get_khadamat = '@Url.Action(nameof(KhadamatController.GetKhadamat), KhadamatController.CONTROLLER)';
+            }
+            else {
+                url_get_khadamat = '@Url.Action(nameof(KhadamatController.GetKhadamat), KhadamatController.CONTROLLER)' + '?senatorId=@id';
+            }
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower() || @RoleTypeEnum.Organization.Equals(role).ToString().ToLower()) {
+                url_create = '@Url.Action(nameof(KhadamatController.Create), KhadamatController.CONTROLLER)';
+                url_edit = '@Url.Action(nameof(KhadamatController.Edit), KhadamatController.CONTROLLER)';
+                url_delete = '@Url.Action(nameof(KhadamatController.Delete), KhadamatController.CONTROLLER)';
+            }
+        };
+
+        var url_details = '';
+        var url_actionReference = '';
+        var url_action = '';
+        var url_refrenceTo = '';
+        var url_peygiri = '@Url.Action(nameof(PeygiriController.Index), PeygiriController.CONTROLLER,new{dataEntryType=DataEntryTypeEnum.Khadamat})';
+        var url_actionTo = '@Url.Action(nameof(ActionReferenceController.ActionTo), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#';
+        var btns = `      #if('${url_delete}' != ''){#<button class="k-button mt-1" data-confirmation="آیا مطمئن هستید؟" data-href="${url_delete}/?khadamatId=#:id#"> حذف </button>#}#
+                                                                                                             <a class="k-button mt-1" href="${url_peygiri}&dataEntryId=#:id#""></span> پیگیری ها</a>
+                                                                                                                       
+                                                                     
+                                                                             #if('${url_edit}' != ''){#<a class="k-button mt-1" href="${url_edit}?khadamatId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>#}#
+                                `;
+       
+
+    </script>
+    <script src="~/js/pages/khadamat.js" asp-append-version="true"></script>
+
+}
+

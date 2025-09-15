@@ -1,0 +1,136 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.UI.Views.Tazakor;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.Back.Utilities.EnumHelper
+@{
+    ViewData["Title"] = "جزییات تذکر";
+}
+@model TazakorViewModel
+
+@{
+    Layout = null;
+}
+
+<style>
+    .flex {
+        display: flex;
+    }
+
+    th {
+        max-width: 25% !important;
+    }
+</style>
+
+<div class="card" style="margin:10px;">
+    <div class="card-header">
+        <p class="mb-0">
+            <b>اطلاعات کامل تذکر</b>
+        </p>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped" style="width:100%">
+                    <tr>
+                        <th style="max-width:30%;">شناسه</th>
+                        <td style="min-width:70%;">@Model.Id</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نماینده مرتبط</th>
+                        <td style="min-width:70%;">@Model.SenatorName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">حوزه انتخابی نماینده</th>
+                        <td style="min-width:70%;">@Model.HozeEntekhabi</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">استان نماینده</th>
+                        <td style="min-width:70%;">@Model.SenatorCity</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">خلاصه تذکر</th>
+                        <td style="min-width:70%;">@Model.Title</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">وضعیت پاسخ</th>
+                        @if (Model.PasokhNo != null)
+                        {
+                            <td class="text-success" style="min-width:70%;">پاسخ داده شده - شماره پاسخ : @Model.PasokhNo - تاریخ پاسخ : @Model.PasokhPersianDate</td>
+                        }
+                        else
+                        {
+                            <td class="text-warning" style="min-width:70%;">در دست پیگیری</td>
+                        }
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نتیجه پاسخ</th>
+                        @if (Model.PasokhNo != null)
+                        {
+                            <td class="text-success" style="min-width:70%;"> @Model.PasokhState.GetPersianName()</td>
+                        }
+                        else
+                        {
+                            <td class="text-warning" style="min-width:70%;">بدون پاسخ</td>
+                        }
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">معاونت</th>
+                        @if (Model.CategoryParentName is not null)
+                        {
+                            <td style="min-width:70%;">
+                                @Model.CategoryParentName
+                            </td>
+                        } else
+                        {
+                            <td style="min-width:70%;">
+                                ---
+                            </td>
+                        }
+                    </tr>
+
+                    <tr>
+                        <th style="max-width:30%;">موضوع</th>
+                        @if (Model.CategoryName is not null)
+                        {
+                            <td style="min-width:70%;">
+                                @Model.CategoryName
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">
+                                ---
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">توضیحات</th>
+                        <td style="min-width:70%;">@Model.Description</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نوع تذکر</th>
+                        <td style="min-width:70%;">@Model.TazakorType.GetDisplayName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تاریخ قرائت در صحن</th>
+                        <td style="min-width:70%;">@Model.GheraatSahnPersianDate</td>
+                    </tr>
+
+
+                    <tr>
+                        <th style="max-width:30%;">شماره نامه</th>
+                        <td style="min-width:70%;">@Model.ShomareName</td>
+                    </tr>
+
+                  
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <h5 class="mb-0" style="text-align:left">
+        </h5>
+    </div>
+</div>
+

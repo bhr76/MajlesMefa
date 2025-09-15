@@ -1,0 +1,61 @@
+﻿@using MajlesMefa.UI.Views.Peygiri;
+@using MajlesMefa.UI.Views.TahghighTafahos;
+@using MajlesMefa.UI.Views.ActionReference;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.Back.Enums;
+@model Guid?
+@{
+    ViewData["Title"] = "لیست تحقیق و تفحص‌ها";
+    var id = Model.HasValue ? Model : Guid.Empty;
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid-tahghigh"></div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script asp-append-version="true">
+        var url_create = '';
+        var url_edit = '';
+        var url_delete = '';
+        var url_get_tahghigh = '';
+        var fromReportPage = false;
+        {
+            if ('@id' == null || '@id' == @Guid.Empty) { url_get_tahghigh = '@Url.Action(nameof(TahghighTafahosController.GetTahghighTafahos), TahghighTafahosController.CONTROLLER)'; }
+            else {
+                url_get_tahghigh = '@Url.Action(nameof(TahghighTafahosController.GetTahghighTafahos), TahghighTafahosController.CONTROLLER)' + '?senatorId=@id';
+            }
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower()) {
+                url_create = '@Url.Action(nameof(TahghighTafahosController.Create), TahghighTafahosController.CONTROLLER)';
+                url_edit = '@Url.Action(nameof(TahghighTafahosController.Edit), TahghighTafahosController.CONTROLLER)';
+                url_delete = '@Url.Action(nameof(TahghighTafahosController.Delete), TahghighTafahosController.CONTROLLER)';
+            }
+        };
+        var url_details = '@Url.Action(nameof(TahghighTafahosController.Details), TahghighTafahosController.CONTROLLER)';
+        var url_actionReference = '@Url.Action(nameof(ActionReferenceController.Index), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#&dataEntryType=#:dataEntryType#';
+        var url_action = '@Url.Action(nameof(ActionReferenceController.ActionIndex), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#&dataEntryType=#:dataEntryType#';
+        var url_refrenceTo = '@Url.Action(nameof(ActionReferenceController.RefrenceTo), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#';
+        var url_actionTo = '@Url.Action(nameof(ActionReferenceController.ActionTo), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#';
+        var url_peygiri = '@Url.Action(nameof(PeygiriController.Index), PeygiriController.CONTROLLER,new{dataEntryType=DataEntryTypeEnum.TahghighTafahos})';
+        var btns = `<button class="k-button" data-link="${url_details}/?tahghighTafahosId=#:id#">جزییات</button>
+                         #if (myData.accessActionRefrence.accessRefrence == true) {# <button class="k-button mt-1" data-link="${url_refrenceTo}"> ارجاع به </button> #}#
+                                 <a class="k-button mt-1" href="${url_peygiri}&dataEntryId=#:id#""></span> پیگیری ها</a>
+                                                             <a class="k-button mt-1" href="${url_actionReference}"></span> ارجاعات</a>
+                                                                     #if (myData.accessActionRefrence.accessAction == true) {# <button class="k-button mt-1" data-link="${url_actionTo}"> اقدام </button> #}#
+                                                                      <a class="k-button mt-1" href="${url_action}"></span> اقدامات</a>
+                                                                                             #if('${url_delete}' != ''){#<button class="k-button mt-1" data-link="${url_delete}/?tahghighTafahosId=#:id#"> حذف </button>#}#
+                                                                                                     #if('${url_edit}' != ''){#<a class="k-button mt-1" href="${url_edit}?tahghighTafahosId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>#}#
+                        `;
+
+    </script>
+    <script src="~/js/pages/tafahos.js" asp-append-version="true"></script>
+
+}
+

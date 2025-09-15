@@ -1,0 +1,911 @@
+﻿@using MediatR;
+@using MajlesMefa.Back.Dtos.UserDtos;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.Back.Extensions;
+@using MajlesMefa.Back.UseCases.Queries.GetUserMenuQuery;
+@using MajlesMefa.UI.Views.Shared;
+
+@{
+    var mediator = Context.RequestServices.GetService<IMediator>();
+    var cuser = Context.RequestServices.GetService<ICurrentUserService>().GetCurrentUser();
+    var rslt = await mediator.Send(new GetUserMenuQuery());
+    var menu = rslt;
+    Layout = null;
+    var errors = Context.ReadMessageOnContext<ErrorDetails>();
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>سامانه مجلس | @ViewData["Title"]</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <link rel="icon" href="~/images/vezarat-icon.png">
+    <environment names="Development">
+        <link rel="icon" href="~/images/vezarat-icon.png">
+        <link href="~/css/kendo.app.min.css" rel="stylesheet" />
+        <link href="~/lib/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" />
+        <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
+        @*<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">*@
+        <link href="~/css/ui-theme/vendors.bundle.rtl.css" rel="stylesheet" />
+        <link href="~/css/ui-theme/style.bundle.rtl.css" rel="stylesheet" />
+        <link href="~/lib/md.bootstrappersiandatetimepicker/dist/jquery.md.bootstrap.datetimepicker.style.css" rel="stylesheet" />
+        @*<link href="~/fonts/fonts-fa.css" asp-append-version="true" rel="stylesheet" />*@
+        <link href="~/css/ui-theme/layout-style.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    </environment>
+    <environment names="Production">
+        <link rel="icon" href="~/images/vezarat-icon.png">
+        <link href="~/css/kendo.app.min.css" rel="stylesheet" />
+        <link href="~/lib/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" />
+        <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
+        <link href="~/css/ui-theme/vendors.bundle.rtl.css" rel="stylesheet" />
+        <link href="~/css/ui-theme/style.bundle.rtl.css" rel="stylesheet" />
+        <link href="~/lib/md.bootstrappersiandatetimepicker/dist/jquery.md.bootstrap.datetimepicker.style.css" rel="stylesheet" />
+        @*<link href="~/fonts/fonts-fa.css" asp-append-version="true" rel="stylesheet" />*@
+        <link href="~/css/ui-theme/layout-style.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    </environment>
+
+
+    <link rel="shortcut icon" href="vezarat-icon.png" />
+    @RenderSection("styles", false)
+</head>
+<body class="m-page--fluid m--skin- m-content--skin-light2 m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark m-aside-left--fixed m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default">
+    <div class="m-grid m-grid--hor m-grid--root m-page">
+        <!-- BEGIN: Header -->
+        <header id="m_header" class="m-grid__item    m-header " m-minimize-offset="200" m-minimize-mobile-offset="200">
+            <div class="m-container m-container--fluid m-container--full-height">
+                <div class="m-stack m-stack--ver m-stack--desktop">
+
+                    <!-- BEGIN: Brand -->
+                    <div class="m-stack__item m-brand  m-brand--skin-dark ">
+                        <div class="m-stack m-stack--ver m-stack--general">
+                            <div class="m-stack__item m-stack__item--middle m-brand__logo d-flex">
+                                <a href="" class="m-brand__logo-wrapper">
+                                    <img class="header-site-logo" width="135" src="~/images/mefa-logo.png" />@*App-Sign-Refah*@
+                                </a>
+                                <label class="majles-title-mobile" style="color:#fff;margin-top:30px;margin-right:30px;font-size:14px !important;font-weight:bold">
+                                    سامانه مدیریت اطلاعات نمایندگان مجلس
+                                </label>
+                            </div>
+
+
+                            <div class="m-stack__item m-stack__item--middle m-brand__tools">
+
+                                <!-- BEGIN: Left Aside Minimize Toggle -->
+                                <a href="javascript:;" id="m_aside_left_minimize_toggle" class="m-brand__icon m-brand__toggler m-brand__toggler--left m--visible-desktop-inline-block  ">
+                                    <span></span>
+                                </a>
+
+                                <!-- END -->
+                                <!-- BEGIN: Responsive Aside Left Menu Toggler -->
+                                <a href="javascript:;" id="m_aside_left_offcanvas_toggle" class="m-brand__icon m-brand__toggler m-brand__toggler--left m--visible-tablet-and-mobile-inline-block">
+                                    <span></span>
+                                </a>
+
+                               @* <!-- BEGIN: Topbar Toggler -->
+                                <a id="m_aside_header_topbar_mobile_toggle" href="javascript:;" class="m-brand__icon m--visible-tablet-and-mobile-inline-block">
+                                    <i class="flaticon-more"></i>
+                                </a>*@
+
+                                <!-- BEGIN: Topbar Toggler -->
+
+                              
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- END: Brand -->
+                    <div class="m-stack__item m-stack__item--fluid m-header-head" id="m_header_nav">
+                        <label class="majles-title" style="color:#fff;margin-top:25px;margin-right:30px;font-size:14px !important;font-weight:bold">
+                            سامانه مدیریت اطلاعات نمایندگان مجلس
+                        </label>
+                        <!-- BEGIN: Horizontal Menu -->
+                        <button class="m-aside-header-menu-mobile-close  m-aside-header-menu-mobile-close--skin-dark " id="m_aside_header_menu_mobile_close_btn"><i class="la la-close"></i></button>
+
+                        <!-- END: Horizontal Menu -->
+                        <!-- BEGIN: Topbar -->
+                        <div id="m_header_topbar" class="m-topbar  m-stack m-stack--ver m-stack--general m-stack--fluid">
+                            <div class="m-stack__item m-topbar__nav-wrapper">
+                                <ul class="m-topbar__nav m-nav m-nav--inline">
+                                    @*@await Component.InvokeAsync("NToastNotify")
+                                    @await Component.InvokeAsync("Notyf")*@
+                                    @*@await Component.InvokeAsync("Notification")*@
+                                    <li class="m-nav__item m-topbar__user-profile m-topbar__user-profile--img  m-dropdown m-dropdown--medium m-dropdown--arrow m-dropdown--header-bg-fill m-dropdown--align-right m-dropdown--mobile-full-width m-dropdown--skin-light"
+                                        m-dropdown-toggle="click">
+                                        <a href="#" class="m-nav__link m-dropdown__toggle">
+                                            <span class="m-topbar__userpic">
+                                                @*<img src="/uploads/user-image/@(User.GetPicture())" class="m--img-rounded m--marginless" alt="" />*@
+                                                <img src="/images/user-while.png" class="m--img-rounded m--marginless" alt="" />
+                                            </span>
+                                            @*<span class="m-topbar__username m--hide">@User.GetFullName()</span>*@
+                                            <span class="m-topbar__username m--hide">ااا</span>
+                                        </a>
+                                        <div class="m-dropdown__wrapper">
+                                            <span class="m-dropdown__arrow m-dropdown__arrow--adjust"></span>
+                                            <div class="m-dropdown__inner">
+                                                <div class="m-dropdown__header m--align-center" style="background: url(/images/ui-theme/user_profile_bg.jpg); background-size: cover;">
+                                                    <div class="m-card-user m-card-user--skin-dark">
+                                                        <div class="m-card-user__pic">
+                                                        </div>
+                                                        <div class="m-card-user__details">
+                                                            <span class="m-card-user__name m--font-weight-500">@cuser.RoleNames.FirstOrDefault()</span>
+                                                            <a href="" class="m-card-user__email m--font-weight-300 m-link">@cuser.Name</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="m-dropdown__body">
+                                                    <div class="m-dropdown__content">
+                                                        <ul class="m-nav m-nav--skin-light">
+                                                            <li class="m-nav__section m--hide">
+                                                                <span class="m-nav__section-text">Section</span>
+                                                            </li>
+                                                            <li class="m-nav__separator m-nav__separator--fit"></li>
+                                                            <li class="m-nav__item">
+                                                                <a asp-action="Signout" asp-controller="Base" class="btn m-btn--pill btn-secondary m-btn m-btn--custom m-btn--label-brand m-btn--bolder">خروج</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- END: Topbar -->
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- END: Header -->
+        <!-- begin::Body -->
+        <div class="m-grid__item m-grid__item--fluid m-grid m-grid--ver-desktop m-grid--desktop m-body">
+
+            <!-- BEGIN: Left Aside -->
+            <button class="m-aside-left-close  m-aside-left-close--skin-dark " id="m_aside_left_close_btn"><i class="la la-close"></i></button>
+            <div id="m_aside_left" class="m-grid__item	m-aside-left  m-aside-left--skin-dark ">
+
+                <!-- BEGIN: Aside Menu -->
+                <div id="m_ver_menu" class="m-aside-menu  m-aside-menu--skin-dark m-aside-menu--submenu-skin-dark" m-menu-vertical="1" m-menu-scrollable="1" m-menu-dropdown-timeout="500" style="position: relative;">
+                    <ul class="m-menu__nav m-menu__nav--dropdown-submenu-arrow "></ul>
+                </div>
+
+                <!-- END: Aside Menu -->
+            </div>
+
+            <!-- END: Left Aside -->
+            <div class="m-grid__item m-grid__item--fluid m-wrapper">
+
+                <!-- BEGIN: Subheader -->
+                <div class="m-subheader">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-auto">
+                            <h4 class="m-subheader__title m-subheader__title--separator">@ViewBag.Title</h4>
+                            <ul class="m-subheader__breadcrumbs m-nav m-nav--inline">
+                                <li class="m-nav__item m-nav__item--home">
+                                    <a href="#" class="m-nav__link m-nav__link--icon">
+                                        <i class="m-nav__link-icon la la-home"></i>
+                                    </a>
+                                </li>
+                                <li class="m-nav__item">
+                                    <a href="/home" class="m-nav__link">
+                                        <span class="m-nav__link-text">داشبورد</span>
+                                    </a>
+                                </li>
+                                @RenderSection("breadcrumb", false)
+                                <li class="m-nav__separator">-</li>
+                                <li class="m-nav__item">
+                                    <a href="#" class="m-nav__link">
+                                        <span class="m-nav__link-text">@ViewBag.Title</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- END: Subheader -->
+                <div class="m-content">
+                    @* @if (User.IsImpersonating())
+                    {
+                    <div class="alert alert-danger" role="alert">
+                    شما با عنوان کاربری @User.Identity.Name وارد سیستم شده اید!
+                    <br />
+                    <a asp-controller="Account" asp-action="StopImpersonation">بازگشت به حساب اصلی</a>
+                    </div>
+                    }*@
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+
+        <div id="waitModal" style="display:none">
+            <div class="k-loading-mask" style="width: 80%; height: 100%; top: 0px; right: 10px;">
+                <span class="k-loading-image" style="right:21%;top:-8%"></span>
+            </div>
+        </div>
+
+
+
+        <div class="modal fade" id="dataModal" data-keyboard="false" data-backdrop="static" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body-parent">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="secondModal" data-keyboard="false" data-backdrop="static" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header second-modal-header">
+                        <h5 class="modal-second-title"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-second-body-parent">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- end:: Body -->
+        <!-- begin::Footer -->
+        <footer class="m-grid__item m-footer">
+            <div class="m-container m-container--fluid m-container--full-height m-page__container">
+                <div class="m-stack m-stack--flex-tablet-and-mobile m-stack--ver m-stack--desktop">
+                    <div class="m-stack__item m-stack__item--left m-stack__item--middle m-stack__item--last">
+                        <span class="m-footer__copyright">
+                            طراحی و توسعه <a target="_blank" href="https://www.mcls.gov.ir/" class="m-link">دفتر امور مجلس</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="m_scroll_top" class="m-scroll-top">
+        <i class="la la-arrow-up"></i>
+    </div>
+
+    <environment names="Development">
+        <script src="~/js/ui-theme/vendors.bundle.js"></script>
+        <script src="~/js/ui-theme/scripts.bundle.js"></script>
+        <script src="~/lib/bootstrap-select/js/bootstrap-select.min.js"></script>
+        <script src="~/lib/bootstrap-select/js/i18n/defaults-fa_IR.min.js"></script>
+        <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+        <script src="~/lib/md.bootstrappersiandatetimepicker/dist/jquery.md.bootstrap.datetimepicker.js"></script>
+        <script src="~/js/kendogrid.min.js" asp-append-version="true"></script>
+        <script src="~/lib/jquery.mask/jquery.mask.min.js"></script>
+    </environment>
+
+    <environment names="Production">
+        <script src="~/lib/jquery.mask/jquery.mask.min.js"></script>
+        <script src="~/js/kendogrid.min.js" asp-append-version="true"></script>
+        <script src="~/js/ui-theme/vendors.bundle.js"></script>
+        <script src="~/js/ui-theme/scripts.bundle.js"></script>
+        <script src="~/lib/bootstrap-select/js/bootstrap-select.min.js"></script>
+        <script src="~/lib/bootstrap-select/js/i18n/defaults-fa_IR.min.js"></script>
+        <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+        <script src="~/lib/md.bootstrappersiandatetimepicker/dist/jquery.md.bootstrap.datetimepicker.js"></script>
+        <script src="~/js/kendogrid.min.js" asp-append-version="true"></script>
+        <script src="~/lib/jquery.mask/jquery.mask.min.js"></script>
+    </environment>
+
+    <script>
+        let displayAlert = "@(errors==null?"null": string.Join(',', errors.Errors.Select(x => x.Info)))";
+        $(document).ready(function () {
+            
+            if(displayAlert?.length > 5){
+                kendo.alert(displayAlert);
+            }
+
+            //$("#exitBtn").click(
+            //    function(){
+            //        const cookies = document.cookie.split(";");
+            //        for (let i = 0; i < cookies.length; i++) {
+            //            const cookie = cookies[i];
+            //            const eqPos = cookie.indexOf("=");
+            //            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            //            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            //        }
+            //    }
+            //);
+
+            $("form").submit(function (e) {
+                e.preventDefault();
+                debugger;
+                if (!$(this).valid()) return false;
+                $.ajax({
+                    data: $(this).serialize(),
+                    type: $(this).attr('method'),
+                    url: $(this).attr('action'),
+                    success: function (data) {   
+                        
+                        toastr.success("عملیات با موفق انجام شد", "موفق", {
+                            timeOut: 1000,
+                            preventDuplicates: true,
+                            positionClass: 'toast-top-right',
+                            onHidden: function () {
+                                window.location.href = data.redirectToUrl;
+                            }
+                        });
+                    },
+                    error: function (data) {
+                        console.log("aaaa",  data.responseText)
+                        if (typeof data.responseText == "string" && data.responseText.length < 200) {
+                            toastr["error"](data.responseText, "خطا", {
+                                tapToDismiss: false,
+                                timeOut: 100000000,
+                            });
+                        }
+                            var errorMsg = JSON.parse(data.responseText);
+
+                            if (errorMsg.StatusCode === "401") {
+                                const loginLocation = xhr.getResponseHeader('Location');
+                                if (loginLocation) {
+                                    window.location = loginLocation;
+                                } else {
+                                    window.location = "/account/signin";
+                                }
+                            }
+                            else {
+                                toastr["error"](errorMsg.title, "هشدار", {
+                                    tapToDismiss: false,
+                                    timeOut: 100000000,
+                                });
+                            }
+
+                        
+                        
+                    }
+                    //error: function () {
+                    //    debugger;
+                    //}
+                });
+            });
+         });
+
+        kendo.culture("fa-IR");
+        $(document).ready(function () {
+            var currentPath = window.location.pathname + location.search;
+            $('a[href="' + currentPath + '"]').parent().addClass('m-menu__item--active m-menu__item--open');
+            $('a[href="' + currentPath + '"]').parentsUntil($('div')).parentsUntil($('li')).parent().addClass('m-menu__item--active m-menu__item--open');
+        });
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        $.ajaxSetup({
+
+            cache: false,
+            "error": function (jqXhr, textStatus, errorThrown) {
+                var errorMsg = JSON.parse(jqXhr.responseText);
+                if (errorMsg.StatusCode === "403") {
+                    toastr["error"]("شما مجوز انجام این عملیات را ندارید!", "خطا");
+                }
+                if (errorMsg.StatusCode === "401") {
+                    const loginLocation = xhr.getResponseHeader('Location');
+                    if (loginLocation) {
+                        window.location = loginLocation;
+                    } else {
+                        window.location = "/account/signin";
+                    }
+                } else {
+                    if (errorMsg.title)
+                        toastr["error"](errorMsg.title, "خطا");
+                    else
+                        toastr["error"](errorMsg.title, "خطا");
+                }
+            }
+        });
+
+        change_task_state();
+        task_detail();
+
+        function change_task_state() {
+            if ($('#change-task-state').length > 0) {
+                $.ajax({
+                    url: $("#change-task-state").data("url"),
+                    success: function (data) {
+                        $("#change-task-state").html(data);
+                    }
+                });
+            }
+        }
+
+        function task_detail() {
+            if ($('#task-detail').length > 0) {
+                $.ajax({
+                    url: $("#task-detail").data("url"),
+                    success: function (data) {
+                        $("#task-detail").html(data);
+                    }
+                });
+            }
+        }
+
+        if ($('#report-box').length > 0) {
+            var $reportBox = $("#report-box");
+            $reportBox.load($reportBox.data("url"));
+        }
+
+        function report_box(frm) {
+            if ($('#report-box').length > 0) {
+                $('button[perform=action]').prop('disabled', true);
+                $('button[perform=action]').addClass("fa-spin");
+                $.ajax({
+                    url: $("#report-box").data("url"),
+                    data: frm.serialize(),
+                    success: function (data) {
+                        $("#report-box").html(data);
+                        $('button[perform=action]').prop('disabled', false);
+                        $('button[perform=action]').removeClass("fa-spin");
+                    }
+                });
+                window.report_chart('@Url.Action("ChartData", "Home")');
+            }
+        }
+
+        $('#dataModal').on('shown.bs.modal',
+            function () {
+                $('.selectpicker').selectpicker();
+                $.validator.unobtrusive.parse($("form"));
+
+            });
+
+
+        $(document).on('change',
+            '#selectDefaultText',
+            function () {
+                $("#Message").value = "";
+                $("#Message").val($("#selectDefaultText option:selected").text());
+            });
+
+        $(document).on('click',
+            'button[data-confirmation]',
+            function (e) {
+                e.preventDefault();
+                if (confirm($(this).data("confirmation"))) {
+                    $.ajax({
+                        url: $(this).data("href"),
+                        type: "get",
+                        success: function (result) {
+                            update_list(result);
+                        }
+                    });
+                }
+            });
+        //todo
+        $(document).on('click',
+            '#notification-item',
+            function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: $(this).data("url"),
+                    type: "post",
+                    success: function (result) {
+                        update_list(result);
+                    }
+                });
+            });
+
+        $(document).on('click',
+            '#changeState',
+            function (e) {
+                e.preventDefault();
+                if (confirm($(this).data("confirm"))) {
+                    let items = $(this).data("items");
+                    $.ajax({
+                        url: $(this).data("url"),
+                        data: { "status": items.item1, "id": items.item2 },
+                        type: "post",
+                        success: function (result) {
+                            update_list(result);
+                        }
+                    });
+                }
+            });
+
+
+        function update_list(result, id = "#report-grid") {
+            if (result.message) {
+                eval(result.message.replace("\r\n", "</br>"));
+            }
+            if (result.refreshTaskGrid) {
+                task_detail();
+            }
+            if (result.refreshGrid) {
+                if(id != "action"){
+                     $(id).data('kendoGrid').dataSource.read();
+                }
+                $('#dataModal').modal('hide');
+            }
+
+            else {
+                $('#dataModal').modal('hide');
+            }
+
+            return true;
+
+
+            if (result.redirect != null) {
+                window.location.href = result.redirect;
+            }
+
+            if (result.refreshTicketGrid) {
+                const $ticketList = $("#list");
+                $ticketList.load($ticketList.data("url"));
+                $(id).data('kendoGrid').dataSource.read();
+            }
+            if (result.closeSecondWithRefreshGrid) {
+                $('#secondModal').modal('hide');
+                $(id).data('kendoGrid').dataSource.read();
+            }
+            else if (!result.refreshSuggestionGrid) {
+                $('#dataModal').modal('hide');
+            }
+            return false;
+        }
+
+        function saveAndupdate(targetForm, targetUrl, id="#report-grid") {
+            if (!targetForm.valid()) return false;
+            targetForm.children('button[perform=action]').prop('disabled', true);
+            targetForm.children('button[perform=action]').addClass("fa-spin");
+            $.ajax({
+                url: targetUrl,
+                data: targetForm.serialize(),
+                type: targetForm[0].method,
+                success: function (result) {
+                    if (typeof (result) == "string") {
+                        $(id).data('kendoGrid').dataSource.read();
+                        $('.modal-body-parent').html(result);
+                    } else
+                        update_list(result, id);
+                    setTimeout(function () {
+                        targetForm.children('button[perform=action]').prop('disabled', false);
+                        targetForm.children('button[perform=action]').removeClass("fa-spin");
+                    },
+                        2000);
+                },
+                error: function(data){
+                    debugger;
+                }
+            });
+        }
+
+
+        function saveAndupdateFile(targetForm, targetUrl) {
+            if (!targetForm.valid()) return false;
+            var progressEle = $("#progress");
+            var formData = new FormData(targetForm[0]);
+            formData.append('file', $('input[type=file]')[0].files[0]);
+            $.ajax({
+                url: targetUrl,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function () {
+                    $(`#${targetForm[0].id} button[perform=action]`).prop('disabled', true);
+                    $(`#${targetForm[0].id} button[perform=action]`).addClass("fa-spin");
+                },
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress",
+                        function (evt) {
+                            if (evt.lengthComputable) {
+                                var progress = Math.round((evt.loaded / evt.total) * 100);
+                                progressEle.width(progress + "%");
+                            }
+                        },
+                        false);
+                    return xhr;
+                },
+                success: function (result) {
+                    toastr.success("عملیات با موفقیت انجام شد", "موفق", {
+                            timeOut: 1000,
+                            preventDuplicates: true,
+                            positionClass: 'toast-top-right',
+                            onHidden: function () {
+                            window.location.href = result.redirectToUrl;
+                            }
+                        });
+                },
+                complete: function () {
+                    setTimeout(function () {
+                        $(`#${targetForm[0].id} button[perform=action]`).prop('disabled', false);
+                        $(`#${targetForm[0].id} button[perform=action]`).removeClass("fa-spin");
+                    },
+                        2000);
+                }
+            });
+        }
+        $(document).on('click',
+            'button[data-child]',
+            function (e) {
+                e.preventDefault();
+                const title = $(this).data("title");
+                $.ajax({
+                    url: $(this).data("child"),
+                    success: function (result) {
+                        $('#secondModal').modal('show');
+                        $('.modal-second-title').html(title);
+                        $('.modal-second-body-parent').html(result);
+                    }
+                });
+            });
+        $(document).on('click',
+            'button[data-caption],a[data-caption]',
+            function (e) {
+                e.preventDefault();
+                var title = $(this).data("caption");
+                var url = $(this).attr("href") == null ? $(this).attr("formaction") : $(this).attr("href");
+                $.ajax({
+                    url: url,
+                    success: function (result) {
+                        $('#dataModal').modal('show');
+                        $('.modal-title').html(title);
+                        $('.modal-body-parent').html(result);
+                    }
+                });
+            });
+
+        $(document).on('click',
+            'button[data-link],a[data-link]',
+            function () {
+                const title = $(this).data("title");
+                $.ajax({
+                    url: $(this).data("link"),
+                    success: function (result) {
+                        $('#dataModal').modal('show');
+                        $('.modal-title').html(title);
+                        $('.modal-body-parent').html(result);
+                    }
+                });
+            });
+
+        $(document).on('click', '#addBtn', function () {
+            var lastContent = $(".contact-card.row").last().clone();
+            $(".contact-card.row").last().after(lastContent);
+
+            $(".contact-card.row")
+                .last()
+                .find("input:not(:button)")
+                .each(function () {
+                    var currentName = $(this).attr("name");
+                    var regex = /\[([0-9])\]/;
+                    var newName = currentName.replace(regex, '[' + (parseInt(currentName.match(regex)[1]) + 1) + ']');
+                    $(this).val('');
+                    $(this).attr('name', newName);
+                });
+
+            $(".contact-card.row")
+                .last()
+                .find("#delete")
+                .each(function () {
+                    $(this).removeAttr("style");
+                });
+        });
+
+
+        function exportGridWithTemplatesContent(e) {
+            const data = e.data;
+            const gridColumns = e.sender.columns;
+            const sheet = e.workbook.sheets[0];
+            const visibleGridColumns = [];
+            const columnTemplates = [];
+            var dataItem;
+            // Create element to generate templates in.
+            const elem = document.createElement('div');
+
+            // Get a list of visible columns
+            var i;
+            for (i = 0; i < gridColumns.length; i++) {
+                if (!gridColumns[i].hidden) {
+                    visibleGridColumns.push(gridColumns[i]);
+                }
+            }
+
+            // Create a collection of the column templates, together with the current column index
+            for (i = 0; i < visibleGridColumns.length; i++) {
+                if (visibleGridColumns[i].template) {
+                    columnTemplates.push({ cellIndex: i, template: kendo.template(visibleGridColumns[i].template) });
+                }
+            }
+
+            // Traverse all exported rows.
+            for (i = 1; i < sheet.rows.length; i++) {
+                const row = sheet.rows[i];
+                // Traverse the column templates and apply them for each row at the stored column position.
+
+                // Get the data item corresponding to the current row.
+                dataItem = data[i - 1];
+                for (let j = 0; j < columnTemplates.length; j++) {
+                    const columnTemplate = columnTemplates[j];
+                    // Generate the template content for the current cell.
+                    elem.innerHTML = columnTemplate.template(dataItem);
+                    if (row.cells[columnTemplate.cellIndex] != undefined)
+                        // Output the text content of the templated cell into the exported cell.
+                        row.cells[columnTemplate.cellIndex].value = elem.textContent || elem.innerText || "";
+                }
+            }
+        }
+
+        $(document).on('click', '#roleSelection', function (e) {
+            e.preventDefault();
+            var checked = [];
+            for (var i in checkedIds) {
+                if (checkedIds[i]) {
+                    checked.push(i);
+                }
+            }
+            if (checked.length > 0) {
+                var title = $(this).data("title");
+                $.ajax({
+                    url: $(this).data("url"),
+                    type: "post",
+                    data: { ids: checked },
+                    success: function (result) {
+                        $('#secondModal').modal('show');
+                        $('.modal-second-title').html(title);
+                        $('.modal-second-body-parent').html(result);
+                        checkedIds = {};
+                    }
+                });
+            }
+        });
+
+
+
+        $(document).on('click', '#deleteSelection', function (e) {
+            e.preventDefault();
+            var checked = [];
+            for (var i in checkedIds) {
+                if (checkedIds[i]) {
+                    checked.push(i);
+                }
+            }
+            if (checked.length > 0) {
+                if (confirm("آیا از حذف رکوردهای انتخابی اطمینان دارید؟")) {
+                    $.ajax({
+                        url: $(this).data("url"),
+                        type: "delete",
+                        data: { ids: checked },
+                        success: function (result) {
+                            update_list(result);
+                            checkedIds = {};
+                        }
+                    });
+                }
+            }
+        });
+
+        var checkedIds = {};
+
+        function selectRow() {
+            var checked = this.checked,
+                row = $(this).closest("tr"),
+                grid = $("#report-grid").data("kendoGrid"),
+                dataItem = grid.dataItem(row);
+
+            checkedIds[dataItem.id] = checked;
+            if (checked) {
+                row.addClass("k-state-selected");
+            } else {
+                row.removeClass("k-state-selected");
+            }
+        }
+
+        function suggestionSelectRow() {
+            var checked = this.checked,
+                row = $(this).closest("tr"),
+                grid = $("#suggestion-grid").data("kendoGrid"),
+                dataItem = grid.dataItem(row);
+
+            checkedIds[dataItem.id] = checked;
+            if (checked) {
+                row.addClass("k-state-selected");
+            } else {
+                row.removeClass("k-state-selected");
+            }
+        }
+
+        
+
+        function parseMenu(ul, menu) {
+            for (let i = 0; i < menu.length; i++) {
+                if (menu[i].items != null) {
+                    const li = $(`<li class="m-menu__item m-menu__item--submenu" aria-haspopup="true" m-menu-submenu-toggle="hover">`);
+                    $(li).append(
+                        `<a href="javascript:;" class="m-menu__link m-menu__toggle">
+                                            <i class="m-menu__link-icon ${menu[i].icon}"></i>
+                                            <span class="m-menu__link-text">${menu[i].text}</span>
+                                            <i class="m-menu__ver-arrow la la-angle-left"></i>
+                                        </a>`);
+
+                    const subul = $('<div class="m-menu__submenu"><span class="m-menu__arrow"></span>');
+                    const innerUl = $('<ul class="m-menu__subnav">');
+                    $(subul).append(innerUl);
+                    $(li).append(subul);
+                    $(ul).append(li);
+                    parseMenu($(innerUl), menu[i].items);
+                } else {
+                    if (menu[i].icon) {
+                        $(ul).append(
+                            `<li class="m-menu__item"  aria-haspopup="true">
+                                            <a href="${menu[i].link}" class="m-menu__link">
+                                                <i class="m-menu__link-icon ${menu[i].icon}"><span></span></i>
+                                                <span class="m-menu__link-text">
+                                                    <span class="m-menu__link-wrap"><span class="m-menu__link-text">${menu[i].text}</span></span>
+                                                </span>
+                                        </a></li>`);
+                    } else {
+                        $(ul).append(
+                            `<li class="m-menu__item" aria-haspopup="true">
+                                            <a href="${menu[i].link}" class="m-menu__link">
+                                                <i class="m-menu__link-bullet m-menu__link-bullet--dot"><span></span></i>
+                                                <span class="m-menu__link-text">${menu[i].text}</span>
+                                        </a></li>`);
+                    }
+                }
+            }
+        }
+
+
+        var menu = $('.m-menu__nav');
+
+        var jsonList = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@menu))';
+
+        var jsList = JSON.parse(jsonList);
+
+        var menuList = [];
+        if (jsList) {
+            for (var i = 0; i < jsList.length ; i++) {
+                menuList.push({
+                    icon: jsList[i].IconUrl, text: jsList[i].Title, link: jsList[i].Controller + '/' + jsList[i].Action
+                });
+            };
+        }
+        
+
+        parseMenu(menu, menuList);
+
+        function showWaitModal() {
+            $('#waitModal').css("display", "");
+            $('#waitModal').css('display', 'inline');
+        }
+
+        function hideWaitModal() {
+            $("#waitModal").removeClass("in");
+            $(".modal-backdrop").remove();
+            $("#waitModal").hide();
+        }
+
+
+    </script>
+    @RenderSection("scripts", required: false)
+   @* @await Component.InvokeAsync("Notyf")*@
+</body>
+</html>

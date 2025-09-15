@@ -1,0 +1,81 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.UI.Models;
+
+@model CommissionVm
+
+@{
+    Layout = null;
+}
+
+<style>
+    .flex {
+        display: flex;
+    }
+
+    th {
+        max-width: 25% !important;
+    }
+</style>
+
+<div class="card" style="margin:10px;">
+    <div class="card-header">
+        <p class="mb-0">
+            <b>اطلاعات کامل دستور جلسه کمیسیون</b>
+        </p>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped" style="width:100%">
+                    <tr>
+                        <th style="max-width:30%;">شناسه</th>
+                        <td style="min-width:70%;">@Model.CommissionData.Id</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">عنوان</th>
+                        <td style="min-width:70%;">@Model.Title</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">توضیحات</th>
+                        @if (@Model.Description != null)
+                        {
+                            <td style="min-width:70%;">@Model.Description</td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">---</td>
+                        }
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تاریخ </th>
+                        @if (@Model.CommissionData.JalaliTarikh != null)
+                        {
+                            <td style="min-width:70%;">@Model.CommissionData.JalaliTarikh</td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">---</td>
+                        }
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">گزارشات</th>
+                        @if (@Model.CommissionData.Ghozareshat != null)
+                        {
+                            <td style="min-width:70%;">@Model.CommissionData.Ghozareshat</td>
+                        }
+                        else
+                        {
+                            <td style="min-width:70%;">---</td>
+                        }
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <h5 class="mb-0" style="text-align:left">
+        </h5>
+    </div>
+</div>
+

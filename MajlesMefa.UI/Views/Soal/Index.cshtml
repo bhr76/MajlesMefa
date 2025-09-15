@@ -1,0 +1,63 @@
+﻿@using MajlesMefa.UI.Views.Soal;
+@using MajlesMefa.UI.Views.Peygiri;
+@using MajlesMefa.UI.Views.ActionReference;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.Back.Enums;
+@model Guid?
+@{
+    ViewData["Title"] = "لیست سوالات";
+    var id = Model.HasValue ? Model : Guid.Empty;
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid-soal"></div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script asp-append-version="true">
+        var url_get_soal = '';
+        var url_create = '';
+        var url_edit = '';
+        var url_delete = '';
+        var fromReportPage = false;
+        {
+            if ('@id' == null || '@id' == @Guid.Empty) { url_get_soal = '@Url.Action(nameof(SoalController.GetSoal), SoalController.CONTROLLER)'; }
+            else {
+                url_get_soal = '@Url.Action(nameof(SoalController.GetSoal), SoalController.CONTROLLER)' + '?senatorId=@id';
+            }
+            
+                url_create = '@Url.Action(nameof(SoalController.Create), SoalController.CONTROLLER)';
+                url_edit = '@Url.Action(nameof(SoalController.Edit), SoalController.CONTROLLER)';
+                url_delete = '@Url.Action(nameof(SoalController.Delete), SoalController.CONTROLLER)';
+            
+        };
+        var url_details = '@Url.Action(nameof(SoalController.Details), SoalController.CONTROLLER)';
+        var url_delete = '@Url.Action(nameof(SoalController.Delete), SoalController.CONTROLLER)';
+        var url_edit = '@Url.Action(nameof(SoalController.Edit), SoalController.CONTROLLER)';
+        var url_peygiri = '@Url.Action(nameof(PeygiriController.Index), PeygiriController.CONTROLLER)' + '?dataEntryId=#:id#&dataEntryType=#:dataEntryType#';
+        var url_actionReference = '@Url.Action(nameof(ActionReferenceController.Index), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#&dataEntryType=#:dataEntryType#';
+        var url_action = '@Url.Action(nameof(ActionReferenceController.ActionIndex), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#&dataEntryType=#:dataEntryType#';
+        var url_refrenceTo = '@Url.Action(nameof(ActionReferenceController.RefrenceTo), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#';
+        var url_actionTo = '@Url.Action(nameof(ActionReferenceController.ActionTo), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#';
+        var btns = `<button class="k-button" data-link="${url_details}/?soalId=#:id#">جزییات</button>
+                         <a class="k-button mt-1" href="${url_peygiri}"></span> پیگیری ها</a>
+                                  #if (myData.accessActionRefrence.accessRefrence == true) {# <button class="k-button mt-1" data-link="${url_refrenceTo}"> ارجاع به </button> #}#
+                                         <a class="k-button mt-1" href="${url_actionReference}"></span> ارجاعات</a>
+                                                 #if (myData.accessActionRefrence.accessAction == true) {# <button class="k-button mt-1" data-link="${url_actionTo}"> اقدام </button> #}#
+                                             <a class="k-button mt-1" href="${url_action}"></span> اقدامات</a>
+                                                 #if('${url_delete}' != ''){# <button class="k-button mt-1" data-link="${url_delete}/?soalId=#:id#"> حذف </button>#}#
+                                                           #if('${url_edit}' != ''){# <a class="k-button mt-1" href="${url_edit}?soalId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>#}#
+                        `;
+
+    </script>
+    <script src="~/js/pages/soal.js" asp-append-version="true"></script>
+
+}
+

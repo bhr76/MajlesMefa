@@ -1,0 +1,261 @@
+﻿@using MajlesMefa.UI.Views.Category;
+@using MajlesMefa.UI.Views.City;
+@using MajlesMefa.UI.Views.Mokatebe;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.UI.Views.Molaghat;
+@using MajlesMefa.UI.Views.Senator;
+@using MajlesMefa.Back.Enums;
+@using MajlesMefa.Back.Enums.Senator;
+@using MajlesMefa.UI.Views.Tazakor;
+@using MajlesMefa.UI.Views.Soal;
+@using MajlesMefa.UI.Views.Layehe;
+@using MajlesMefa.UI.Views.Tarh;
+@using MajlesMefa.UI.Views.Notgh;
+@using MajlesMefa.UI.Views.Ezharat;
+@using MajlesMefa.UI.Views.TahghighTafahos;
+
+@{
+    var a = Model;
+    var defaultBirthCityParentId = Model.InitialData.BirthCityParentId;
+    ViewData["Title"] = "گزارش اطلاعات نماینده";
+    var madrakTahsili = (MadrakTahsiliEnum)Model.InitialData.MadrakTahsili;
+    var hozeEntekhabi = (HozeEntekhabiEnum)Model.InitialData.HozeEntekhabi;
+    var gerayeshSiasi = (GerayeshSiasiEnum)Model.InitialData.GerayeshSiasi;
+}
+@model SenatorReportVm
+
+<div class="m-portlet">
+    <div class="m-portlet__body">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped" style="width:100%">
+
+                    @if (Model.InitialData.ProfilePhotoUrl is not null)
+                    {
+                        <tr class="d-flex justify-content-end">
+                            <div style="height:150px;width:190px;border:1px solid #ebedf2" class="mb-3 mt-2 d-flex justify-content-center">
+                                <img style="height: 148px;max-width: 188px" id="currentPhoto" src="@Model.InitialData.ProfilePhotoUrl" />
+                            </div>
+
+                        </tr>
+                    }
+                    <tr>
+                        <th style="max-width:30%;">شناسه</th>
+                        <td style="min-width:70%;">@Model.InitialData.Id</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">نام و نام خانوادگی</th>
+                        <td style="min-width:70%;">@Model.InitialData.Name</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">موبایل</th>
+                        <td style="min-width:70%;">@Model.InitialData.Mobile</td>
+                    </tr>
+                    @*<tr>
+                        <th style="max-width:30%;">ایمیل</th>
+                        <td style="min-width:70%;">@Model.InitialData.Email</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">تاریخ تولد</th>
+                        <td style="min-width:70%;">@Model.InitialData.BirthdateStr</td>
+                    </tr>*@
+                    <tr>
+                        <th style="max-width:30%;"> استان</th>
+                        <td style="min-width:70%;">@Model.InitialData.CityName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">حوزه انتخابیه</th>
+                        <td style="min-width:70%;">@Model.InitialData.HozeCityName</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">مدرک تحصیلی </th>
+                        <td style="min-width:70%;">@madrakTahsili.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> رشته</th>
+                        <td style="min-width:70%;">@Model.InitialData.Reshte</td>
+                    </tr>
+                    @*<tr>
+                        <th style="max-width:30%;">محل تحصیل </th>
+                        <td style="min-width:70%;">@mahaleTahsil.GetPersianName()</td>
+                    </tr>*@
+                    <tr>
+                        <th style="max-width:30%;">حوزه انتخابیه </th>
+                        <td style="min-width:70%;">@hozeEntekhabi.GetPersianName()</td>
+                    </tr>
+                    @*<tr>
+                        <th style="max-width:30%;"> شغل غالب مردم </th>
+                        <td style="min-width:70%;">@shoghleGhaleb.GetPersianName()</td>
+                    </tr>*@
+                    <tr>
+                        <th style="max-width:30%;">گرایش سیاسی </th>
+                        <td style="min-width:70%;">@gerayeshSiasi.GetPersianName()</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;">توضیحات گرایش سیاسی </th>
+                        <td style="min-width:70%;">@Model.InitialData.PoliticalTending</td>
+                    </tr>
+                   @* <tr>
+                        <th style="max-width:30%;">علایق شخصی </th>
+                        <td style="min-width:70%;">@Model.InitialData.PersonalFavorites</td>
+                    </tr>*@
+                    <tr>
+                        <th style="max-width:30%;"> سوابق نمایندگی </th>
+                        <td style="min-width:70%;">@Model.InitialData.SenaHistory</td>
+                    </tr>
+                     <tr>
+                        <th style="max-width:30%;"> سوابق قبلی </th>
+                        <td style="min-width:70%;">@Model.InitialData.JobHistory</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> سابقه عضویت در هیئت رئیسه </th>
+                        <td style="min-width:70%;">@Model.InitialData.SabegheHeyatReise</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> عضویت در کمیسیون‌ها </th>
+                        <td style="min-width:70%;">@Model.InitialData.ComissionMembershipTitle</td>
+                    </tr>
+                    @*<tr>
+                        <th style="max-width:30%;"> عضویت در فراکسیون‌ها </th>
+                        <td style="min-width:70%;">@Model.InitialData.FractionMembership</td>
+                    </tr>
+                    <tr>
+                        <th style="max-width:30%;"> فعالیتهای اجتماعی </th>
+                        <td style="min-width:70%;">@Model.InitialData.SocialActivity</td>
+                    </tr>*@
+                    <tr>
+                        <th style="max-width:30%;"> سابقه امضای استیضاح </th>
+                        <td style="min-width:70%;">@Model.InitialData.SabegheEmzaEstizah</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <hr/>
+        <div class="row">
+            <div class="btn col-md-3 m-auto">
+                <div class="submit-btn col-md-3 m-auto">
+                    <button class="btn btn-primary mt-1" data-link='@Url.Action(nameof(SenatorController.PrintChoice), SenatorController.CONTROLLER, new { senatorId = @Model.InitialData.Id})'> دانلود گزارش </button>
+                </div>
+            </div>
+
+        </div>
+        <hr/>
+       @* <div class="row">
+            <div class="col-12">
+                <h5>لوایح نماینده</h5>
+                <div class="k-rtl">
+                    <div id="report-grid-layehe"></div>
+                </div>
+            </div>
+        </div>*@
+         <hr/>
+        <div class="row">
+            <div class="col-12">
+                <h5>مکاتبات نماینده</h5>
+                <div class="k-rtl">
+                    <div id="report-grid-mokatebe"></div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="row">
+            <div class="col-12">
+                <h5>اظهارات نماینده</h5>
+                <div class="k-rtl">
+                    <div id="report-grid-ezharat"></div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="row">
+            <div class="col-12">
+                <h5>ملاقات نماینده</h5>
+                <div class="k-rtl">
+                    <div id="report-grid-molaghat"></div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="row">
+            <div class="col-12">
+                <h5>نطق‌های نماینده</h5>
+                <div class="k-rtl">
+                    <div id="report-grid-notgh"></div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-12">
+                <h5>سوالات نماینده</h5>
+                <div class="k-rtl">
+                    <div id="report-grid-soal"></div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="row">
+            <div class="col-12">
+                <h5>تحقیق و تفحص‌های نماینده</h5>
+                <div class="k-rtl">
+                    <div id="report-grid-tahghigh"></div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        @*<div class="row">
+            <div class="col-12">
+                <h5> طرح‌های نماینده</h5>
+                <div class="k-rtl">
+                    <div id="report-grid-tarh"></div>
+                </div>
+            </div>
+        </div>*@
+        <hr />
+        <div class="row">
+            <div class="col-12">
+                <h5> تذکرات نماینده</h5>
+                <div class="k-rtl">
+                    <div id="report-grid-tazakor"></div>
+                </div>
+            </div>
+        </div>   
+    </div>
+</div>
+
+
+@section scripts{
+    <script asp-append-version="true">
+        var url_get_layehe = '@Url.Action(nameof(LayeheController.GetLayehe), LayeheController.CONTROLLER)' + '?senatorId=@Model.InitialData.Id';
+        var url_get_mokatebe = '@Url.Action(nameof(MokatebeController.GetMokatebe), MokatebeController.CONTROLLER)' + '?senatorId=@Model.InitialData.Id';
+        var url_get_ezharat = '@Url.Action(nameof(EzharatController.GetEzharat), EzharatController.CONTROLLER)' + '?senatorId=@Model.InitialData.Id';
+        var url_get_molaghat = '@Url.Action(nameof(MolaghatController.GetMolaghat), MolaghatController.CONTROLLER)' + '?senatorId=@Model.InitialData.Id';
+        var url_get_notgh = '@Url.Action(nameof(NotghController.GetNotgh), NotghController.CONTROLLER)' + '?senatorId=@Model.InitialData.Id';
+        var url_get_soal = '@Url.Action(nameof(SoalController.GetSoal), SoalController.CONTROLLER)' + '?senatorId=@Model.InitialData.Id';
+        var url_get_tahghigh = '@Url.Action(nameof(TahghighTafahosController.GetTahghighTafahos), TahghighTafahosController.CONTROLLER)' + '?senatorId=@Model.InitialData.Id';
+        var url_get_tarh = '@Url.Action(nameof(TarhController.GetTarh), TarhController.CONTROLLER)' + '?senatorId=@Model.InitialData.Id';
+        var url_get_tazakor = '@Url.Action(nameof(TazakorController.GetTazakor), TazakorController.CONTROLLER)' + '?senatorId=@Model.InitialData.Id';
+        
+        var url_details_layehe = '@Url.Action(nameof(LayeheController.Details), LayeheController.CONTROLLER)';
+        var url_details_mokatebe = '@Url.Action(nameof(MokatebeController.Details), MokatebeController.CONTROLLER)';
+        var url_details_ezharat = '@Url.Action(nameof(EzharatController.Details), EzharatController.CONTROLLER)';
+        var url_details_molaghat = '@Url.Action(nameof(MolaghatController.Details), MolaghatController.CONTROLLER)';
+        var url_details_notgh = '@Url.Action(nameof(NotghController.Details), NotghController.CONTROLLER)';
+        var url_details_soal = '@Url.Action(nameof(SoalController.Details), SoalController.CONTROLLER)';
+        var url_details_tahghigh = '@Url.Action(nameof(TahghighTafahosController.Details), TahghighTafahosController.CONTROLLER)';
+        var url_details_tarh = '@Url.Action(nameof(TarhController.Details), TarhController.CONTROLLER)';
+        var url_details_tazakor = '@Url.Action(nameof(TazakorController.Details), TazakorController.CONTROLLER)';
+
+        var fromReportPage = true;
+
+    </script>
+    <script src="~/js/pages/layehe.js" asp-append-version="true"></script>
+    <script src="~/js/pages/mokatebe.js" asp-append-version="true"></script>
+    <script src="~/js/pages/ezharat.js" asp-append-version="true"></script>
+    <script src="~/js/pages/molaghat.js" asp-append-version="true"></script>
+    <script src="~/js/pages/notgh.js" asp-append-version="true"></script>
+    <script src="~/js/pages/soal.js" asp-append-version="true"></script>
+    <script src="~/js/pages/tafahos.js" asp-append-version="true"></script>
+    <script src="~/js/pages/tarh.js" asp-append-version="true"></script>
+    <script src="~/js/pages/tazakor.js" asp-append-version="true"></script>
+    }

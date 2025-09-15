@@ -1,0 +1,57 @@
+﻿@using MajlesMefa.UI.Views.Layehe;
+@using MajlesMefa.UI.Models;
+@{
+    ViewData["Title"] = "حذف لایحه";
+}
+@model LayeheViewModel
+
+@{
+    Layout = null;
+}
+
+<form asp-controller=@LayeheController.CONTROLLER asp-action="Delete" id="DeleteLayeheForm" method="post">
+
+    <div class="card" style="margin:10px;">
+        <div class="card-header">
+            <p class="mb-0">
+                <b>حذف لایحه - شناسه: @Model.Id</b>
+            </p>
+        </div>
+
+        <div class="modal-body">
+
+            <div asp-validation-summary="ModelOnly"></div>
+            <input asp-for="@Model.Id" hidden />
+            @*<input asp-for="@Model" hidden />*@
+            <div class="row"><div class="col-12"><br /></div></div>
+            <div class="row">
+                <div class="form-group col-6">
+                    <label asp-for="@Model.Title" class="control-label">عنوان لایحه</label>
+                    <input value="@Model.Title" class="form-control" disabled readonly />
+                </div>
+            </div>
+            <div class="row"><div class="col-12"><br /></div></div>
+            <div class="row"><div class="col-12"><br /></div></div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-danger" style="width:90%; margin:auto;">
+                        آیا از انجام این عملیات مطمئن هستید؟
+                    </div>
+                    <br />
+                </div>
+            </div>
+
+
+        </div>
+        <div class="modal-footer">
+
+            <button onclick="event.preventDefault();saveAndupdate($(this.form), $(this.form).attr('action'), '#report-grid-layehe');"
+                    class="btn btn-danger" perform="action">
+                حذف
+            </button>
+        </div>
+    </div>
+
+</form>
+
+

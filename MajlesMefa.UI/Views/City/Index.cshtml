@@ -1,0 +1,51 @@
+﻿@using MajlesMefa.UI.Views.City;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.Back.Enums;
+@{
+    var cityId = ViewBag.cityId;
+    ViewData["Title"] = ViewBag.cityId == null ? "لیست استان‌ها" : "لیست حوزه‌ها";
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+    
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+    <script asp-append-version="true">
+        var url_create = '';
+        var url_edit = '';
+        var url_delete = '';
+        {
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower()) {
+                url_create = '@Url.Action(nameof(CityController.Create), CityController.CONTROLLER, new {cityId=@ViewBag.cityId})';
+                url_edit = '@Url.Action(nameof(CityController.Edit), CityController.CONTROLLER , new {cityId=@ViewBag.cityId})';
+                url_delete = '@Url.Action(nameof(CityController.Delete), CityController.CONTROLLER, new {cityId=@ViewBag.cityId})';
+            }
+        };
+        var url_get = '@Url.Action(nameof(CityController.GetCity), CityController.CONTROLLER, new {cityId=@ViewBag.cityId})';
+        var url_city = '@Url.Action(nameof(CityController.Index), CityController.CONTROLLER)';
+        var btns = `#if('${url_delete}' != ''){#<button class="k-button mt-1" data-link="${url_delete}/?id=#:id#"> حذف </button>#}#
+                                                                            #if('${url_edit}' != ''){#<button class="k-button mt-1" data-link="${url_edit}/?name=#:name#&id=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</button>#}#
+                                                                    <a class="k-button mt-1 subcategory-btn" id="subcategory-btn"  href = "${url_city}?id=#:id#" > حوزه‌ها</a>
+              `;
+        
+    </script>
+    <script src="~/js/pages/city.js" asp-append-version="true"></script>
+    <script>
+    $(document).ready(function () {
+            if ('@cityId' != "") {
+                console.log("in the if", $("#subcategory-btn"));
+                $("#subcategory-btn").addClass("d-hide");
+        }
+    });
+    </script>
+}
+

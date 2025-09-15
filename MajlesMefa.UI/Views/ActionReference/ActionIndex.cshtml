@@ -1,0 +1,23 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.UI.Views.ActionReference;
+@{
+    ViewData["Title"] = "لیست اقدامات " + ViewBag.DataEntryTitle;
+}
+@model Guid
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+@section scripts{
+    <script asp-append-version="true">
+        var url_get = '@Url.Action(nameof(ActionReferenceController.GetActionReference), ActionReferenceController.CONTROLLER)' + '?dataEntryId=@Model&actRefType=2';
+
+    </script>
+
+    <script src="~/js/pages/action.js" asp-append-version="true"></script>
+}
+

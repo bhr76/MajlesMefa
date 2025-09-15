@@ -1,0 +1,468 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<StiSerializer version="1.02" type="Net" application="StiReport">
+  <Dictionary Ref="1" type="Dictionary" isKey="true">
+    <BusinessObjects isList="true" count="1">
+      <Shop Ref="2" type="Stimulsoft.Report.Dictionary.StiBusinessObject" isKey="true">
+        <Alias>Shop</Alias>
+        <BusinessObjects isList="true" count="0" />
+        <Category>Web</Category>
+        <Columns isList="true" count="5">
+          <value>FirstName,System.String</value>
+          <value>UserName,System.String</value>
+          <value>Password,System.String</value>
+          <value>LastName,System.String</value>
+          <value>Cvv2,System.String</value>
+        </Columns>
+        <Dictionary isRef="1" />
+        <Guid>809033411bb14c17b416b78b772a6ccc</Guid>
+        <Name>Shop</Name>
+      </Shop>
+    </BusinessObjects>
+    <Databases isList="true" count="0" />
+    <DataSources isList="true" count="0" />
+    <Relations isList="true" count="0" />
+    <Report isRef="0" />
+    <Resources isList="true" count="0" />
+    <Variables isList="true" count="0" />
+  </Dictionary>
+  <EngineVersion>EngineV2</EngineVersion>
+  <GlobalizationStrings isList="true" count="0" />
+  <Key>6d7c29bda34f45269e3fada4e7be58df</Key>
+  <MetaTags isList="true" count="0" />
+  <Pages isList="true" count="1">
+    <Page1 Ref="3" type="Page" isKey="true">
+      <Border>None;Black;2;Solid;False;4;Black</Border>
+      <Brush>Transparent</Brush>
+      <Components isList="true" count="16">
+        <Text2 Ref="4" type="Text" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>2.1,1.3,3.2,0.6</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,18,Bold</Font>
+          <HorAlignment>Center</HorAlignment>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text2</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Text>خرید اعتباری بانک رفاه</Text>
+          <TextBrush>Black</TextBrush>
+          <Type>Expression</Type>
+          <VertAlignment>Center</VertAlignment>
+        </Text2>
+        <Text9 Ref="5" type="Text" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>4.2,3.2,1.3,0.4</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,14,Bold</Font>
+          <Guid>278d393a407f4d539d05cb56d59fa76e</Guid>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text9</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Text>شماره کارت:</Text>
+          <TextBrush>Black</TextBrush>
+          <TextOptions>,,RightToLeft=True,,,A=0</TextOptions>
+          <Type>Expression</Type>
+          <VertAlignment>Center</VertAlignment>
+        </Text9>
+        <Text10 Ref="6" type="Text" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>4.2,3.7,1.3,0.4</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,14,Bold</Font>
+          <Guid>ffd182c5153a458dae81ad503f4ff1f1</Guid>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text10</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Text>رمز کارت:</Text>
+          <TextBrush>Black</TextBrush>
+          <TextOptions>,,RightToLeft=True,,,A=0</TextOptions>
+          <Type>Expression</Type>
+          <VertAlignment>Center</VertAlignment>
+        </Text10>
+        <Text12 Ref="7" type="Text" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>1.6,3.2,2.3,0.4</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,14,Bold</Font>
+          <Guid>0143f6443bef459e9d0a0c6adf642bc6</Guid>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text12</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Text>{Shop.UserName}</Text>
+          <TextBrush>Black</TextBrush>
+          <TextOptions>,,RightToLeft=True,,,A=0</TextOptions>
+          <Type>Expression</Type>
+          <VertAlignment>Center</VertAlignment>
+        </Text12>
+        <Text13 Ref="8" type="Text" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>1.9,3.7,2,0.4</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,14,Bold</Font>
+          <Guid>ddc9aff947554694be6cb83621f2a500</Guid>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text13</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Text>{Shop.Password}</Text>
+          <TextBrush>Black</TextBrush>
+          <TextOptions>,,RightToLeft=True,,,A=0</TextOptions>
+          <Type>Expression</Type>
+          <VertAlignment>Center</VertAlignment>
+        </Text13>
+        <Image1 Ref="9" type="Image" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>3.1,0,1.2,1.2</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <ImageBytes>iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ
+bWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdp
+bj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6
+eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEz
+NDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJo
+dHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlw
+dGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAv
+IiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RS
+ZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpD
+cmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlE
+PSJ4bXAuaWlkOkRGREU3NUJBMDIxRjExRTI4MjNFODkzQTM2MDc3RjlBIiB4bXBNTTpEb2N1bWVu
+dElEPSJ4bXAuZGlkOkRGREU3NUJCMDIxRjExRTI4MjNFODkzQTM2MDc3RjlBIj4gPHhtcE1NOkRl
+cml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6REZERTc1QjgwMjFGMTFFMjgyM0U4
+OTNBMzYwNzdGOUEiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6REZERTc1QjkwMjFGMTFFMjgy
+M0U4OTNBMzYwNzdGOUEiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1l
+dGE+IDw/eHBhY2tldCBlbmQ9InIiPz6dbSIIAAAcYUlEQVR42uxdB5wURdZ/kzYRF0TCIoIiBhRE
+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
+FmoQFut2F6UAAAAASUVORK5CYII=</ImageBytes>
+          <Margins>0,0,0,0</Margins>
+          <Name>Image1</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Stretch>True</Stretch>
+        </Image1>
+        <Text3 Ref="10" type="Text" isKey="true">
+          <Anchor>Top, Left, Right</Anchor>
+          <Brush>Transparent</Brush>
+          <ClientRectangle>4.2,2.2,1.3,0.4</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,14,Bold</Font>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text3</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <ShiftMode>None</ShiftMode>
+          <Text>نام:</Text>
+          <TextBrush>Black</TextBrush>
+          <TextOptions>,,RightToLeft=True,,,A=0</TextOptions>
+          <Type>Expression</Type>
+          <VertAlignment>Center</VertAlignment>
+        </Text3>
+        <Text4 Ref="11" type="Text" isKey="true">
+          <Anchor>Top, Left, Right</Anchor>
+          <Brush>Transparent</Brush>
+          <ClientRectangle>1.9,2.7,2,0.4</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,14,Bold</Font>
+          <Guid>700344fb856a450e9e7848000896726c</Guid>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text4</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <ShiftMode>None</ShiftMode>
+          <Text>{Shop.LastName}</Text>
+          <TextBrush>Black</TextBrush>
+          <TextOptions>,,RightToLeft=True,,,A=0</TextOptions>
+          <Type>Expression</Type>
+          <VertAlignment>Center</VertAlignment>
+        </Text4>
+        <Text5 Ref="12" type="Text" isKey="true">
+          <Anchor>Top, Left, Right</Anchor>
+          <Brush>Transparent</Brush>
+          <ClientRectangle>4.2,2.7,1.3,0.4</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,14,Bold</Font>
+          <Guid>e6feda2766e24bffb530da9d7cf33d58</Guid>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text5</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <ShiftMode>None</ShiftMode>
+          <Text>نام خانوادگی:</Text>
+          <TextBrush>Black</TextBrush>
+          <TextOptions>,,RightToLeft=True,,,A=0</TextOptions>
+          <Type>Expression</Type>
+          <VertAlignment>Center</VertAlignment>
+        </Text5>
+        <Text6 Ref="13" type="Text" isKey="true">
+          <Anchor>Top, Left, Right</Anchor>
+          <Brush>Transparent</Brush>
+          <ClientRectangle>1.9,2.2,2,0.4</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,14,Bold</Font>
+          <Guid>b26bf161d57f4c4887f9e85657900e6e</Guid>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text6</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <ShiftMode>None</ShiftMode>
+          <Text>{Shop.FirstName}</Text>
+          <TextBrush>Black</TextBrush>
+          <TextOptions>,,RightToLeft=True,,,A=0</TextOptions>
+          <Type>Expression</Type>
+          <VertAlignment>Center</VertAlignment>
+        </Text6>
+        <Text1 Ref="14" type="Text" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>0.8,4.9,5.4,0.4</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,12</Font>
+          <HorAlignment>Center</HorAlignment>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text1</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Text>.لطفا در نگهداری اطلاعات فوق کوشا باشید، در صورت مفقود شدن مراتب را به شعبه اطلاع دهید</Text>
+          <TextBrush>Black</TextBrush>
+          <Type>Expression</Type>
+        </Text1>
+        <Text7 Ref="15" type="Text" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>1.9,4.2,2,0.3</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,14,Bold</Font>
+          <HorAlignment>Right</HorAlignment>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text7</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Text>{Shop.Cvv2}</Text>
+          <TextBrush>Black</TextBrush>
+          <VertAlignment>Center</VertAlignment>
+        </Text7>
+        <Text8 Ref="16" type="Text" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>4.2,4.2,1.3,0.3</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Font>B Nazanin,14,Bold</Font>
+          <Guid>4d9b82420f2a4d8a9515afca8a475f59</Guid>
+          <Margins>0,0,0,0</Margins>
+          <Name>Text8</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Text>رمز cvv2</Text>
+          <TextBrush>Black</TextBrush>
+          <TextOptions>,,RightToLeft=True,,,A=0</TextOptions>
+          <Type>Expression</Type>
+          <VertAlignment>Center</VertAlignment>
+        </Text8>
+        <RoundedRectanglePrimitive1 Ref="17" type="Stimulsoft.Report.Components.StiRoundedRectanglePrimitive" isKey="true">
+          <Anchor>Top, Left, Right</Anchor>
+          <ClientRectangle>1.5,2,4.2,2.7</ClientRectangle>
+          <Color>Black</Color>
+          <Conditions isList="true" count="0" />
+          <Guid>061017e5e60348b3999e498d3efba9fc</Guid>
+          <Name>RoundedRectanglePrimitive1</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <Round>0.2</Round>
+          <ShiftMode>None</ShiftMode>
+        </RoundedRectanglePrimitive1>
+        <StartPointPrimitive1 Ref="18" type="Stimulsoft.Report.Components.StiStartPointPrimitive" isKey="true">
+          <ClientRectangle>1.5,2,0,0</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Name>StartPointPrimitive1</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <ReferenceToGuid>061017e5e60348b3999e498d3efba9fc</ReferenceToGuid>
+        </StartPointPrimitive1>
+        <EndPointPrimitive1 Ref="19" type="Stimulsoft.Report.Components.StiEndPointPrimitive" isKey="true">
+          <ClientRectangle>5.7,4.7,0,0</ClientRectangle>
+          <Conditions isList="true" count="0" />
+          <Name>EndPointPrimitive1</Name>
+          <Page isRef="3" />
+          <Parent isRef="3" />
+          <ReferenceToGuid>061017e5e60348b3999e498d3efba9fc</ReferenceToGuid>
+        </EndPointPrimitive1>
+      </Components>
+      <Conditions isList="true" count="0" />
+      <Guid>4166e2258e9845b0979de512d54764ac</Guid>
+      <Margins>0.39,0.39,0.39,0.39</Margins>
+      <Name>Page1</Name>
+      <PageHeight>11.69</PageHeight>
+      <PageWidth>8.27</PageWidth>
+      <PaperSize>A4</PaperSize>
+      <Report isRef="0" />
+      <RightToLeft>True</RightToLeft>
+    </Page1>
+  </Pages>
+  <ReferencedAssemblies isList="true" count="8">
+    <value>System.Dll</value>
+    <value>System.Drawing.Dll</value>
+    <value>System.Windows.Forms.Dll</value>
+    <value>System.Data.Dll</value>
+    <value>System.Xml.Dll</value>
+    <value>Stimulsoft.Controls.Dll</value>
+    <value>Stimulsoft.Base.Dll</value>
+    <value>Stimulsoft.Report.Dll</value>
+  </ReferencedAssemblies>
+  <ReportAlias>Report</ReportAlias>
+  <ReportChanged>9/15/2019 11:46:06 AM</ReportChanged>
+  <ReportCreated>4/29/2019 12:00:15 PM</ReportCreated>
+  <ReportFile>F:\InternetShoppingDDD\src\04. Endpoints\InternetShopping.Endpoints.Web\wwwroot\report-template\PrintUserName.mrt</ReportFile>
+  <ReportGuid>d99033ba720d4b79a3118111d0984a2d</ReportGuid>
+  <ReportName>Report</ReportName>
+  <ReportUnit>Inches</ReportUnit>
+  <ReportVersion>2019.2.2.0</ReportVersion>
+  <Script>using System;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Data;
+using Stimulsoft.Controls;
+using Stimulsoft.Base.Drawing;
+using Stimulsoft.Report;
+using Stimulsoft.Report.Dialogs;
+using Stimulsoft.Report.Components;
+
+namespace Reports
+{
+    public class Report : Stimulsoft.Report.StiReport
+    {
+        public Report()        {
+            this.InitializeComponent();
+        }
+
+        #region StiReport Designer generated code - do not modify
+		#endregion StiReport Designer generated code - do not modify
+    }
+}
+</Script>
+  <ScriptLanguage>CSharp</ScriptLanguage>
+  <Styles isList="true" count="0" />
+</StiSerializer>

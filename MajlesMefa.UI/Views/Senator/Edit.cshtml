@@ -1,0 +1,513 @@
+﻿@using MajlesMefa.UI.Views.Category;
+@using MajlesMefa.UI.Views.City;
+@using MajlesMefa.UI.Views.Commission;
+@using MajlesMefa.UI.Views.Mokatebe;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.UI.Views.Senator;
+@{
+    var a = Model;
+    var defaultBirthCityParentId = Model.CityId;
+    ViewData["Title"] = "ویرایش اطلاعات نماینده";
+}
+@model SenatorVm
+
+<div class="m-portlet">
+    <div class="m-portlet__body">
+        <form asp-controller=@SenatorController.CONTROLLER asp-action="Edit" enctype="multipart/form-data" id="editSenatorForm" method="post">
+            <div class="row">
+                <div asp-validation-summary="ModelOnly"></div>
+                <input hidden asp-for="@Model.Id" />
+                <input hidden asp-for="@Model.ProfilePhotoUrl" />
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Name"></label>
+                    <input asp-for="@Model.Name" id="Name" class="form-control" />
+                    <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Mobile"></label>
+                    <input asp-for="@Model.Mobile" id="Mobile" class="form-control" />
+                    <span asp-validation-for="@Model.Mobile" class="text-danger"></span>
+                </div>
+
+                @*<div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Email"></label>
+                    <input asp-for="@Model.Email" id="Email" class="form-control" />
+                    <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.BirthdateString" class="control-label"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text cursor-pointer" id="btnBirthdate"><i class="far fa-calendar-alt"></i></span>
+                        </div>
+                        <input asp-for="@Model.BirthdateString" class="form-control" />
+                    </div>
+                    <span class="help-block"><span asp-validation-for="@Model.BirthdateString" class="text-danger"></span></span>
+                </div>*@
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.CityId"></label>
+                    <input asp-for="@Model.CityId" id="CityId" class="form-control" />
+                    <span asp-validation-for="@Model.CityId" class="text-danger"></span>
+                </div>
+
+                @*<div class="form-group mt-3 col-md-4">
+                    <label>استان محل تولد</label>
+                    <input id="BirthCityParentId" class="form-control" />
+                    <span class="text-danger"></span>
+                </div>*@
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.HozeCityId"></label>
+                    <input asp-for="@Model.HozeCityId" id="HozeCityId" class="form-control" />
+                    <span asp-validation-for="@Model.HozeCityId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.MadrakTahsiliInt" class="control-label"></label>
+                    <input asp-for="@Model.MadrakTahsiliInt" id="MadrakTahsiliInt" class="form-control" />
+                    <span asp-validation-for="@Model.MadrakTahsiliInt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.Reshte"></label>
+                    <input asp-for="@Model.Reshte" id="reshte" class="form-control" />
+                    <span asp-validation-for="@Model.Reshte" class="text-danger"></span>
+                </div>
+
+                @*<div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.MahaleTahsilInt" class="control-label"></label>
+                    <input asp-for="@Model.MahaleTahsilInt" id="MahaleTahsilInt" class="form-control" />
+                    <span asp-validation-for="@Model.MahaleTahsilInt" class="text-danger"></span>
+                </div>*@
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.HozeEntekhabiInt" class="control-label"></label>
+                    <input asp-for="@Model.HozeEntekhabiInt" id="HozeEntekhabiInt" class="form-control" />
+                    <span asp-validation-for="@Model.HozeEntekhabiInt" class="text-danger"></span>
+                </div>
+
+                @*<div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.ShoghleGhalebInt" class="control-label"></label>
+                    <input asp-for="@Model.ShoghleGhalebInt" id="ShoghleGhalebInt" class="form-control" />
+                    <span asp-validation-for="@Model.ShoghleGhalebInt" class="text-danger"></span>
+                </div>*@
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.GerayeshSiasiInt" class="control-label"></label>
+                    <input asp-for="@Model.GerayeshSiasiInt" id="GerayeshSiasiInt" class="form-control" />
+                    <span asp-validation-for="@Model.GerayeshSiasiInt" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.ComissionMembership" class="control-label"></label>
+                    <input asp-for="@Model.ComissionMembership" id="ComissionMembership" class="form-control">
+                    <span asp-validation-for="@Model.ComissionMembership" class="text-danger"></span>
+                </div>
+                <div class="col-12"></div>
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.PoliticalTending"></label>
+                    <textarea asp-for="@Model.PoliticalTending" id="PoliticalTending" class="form-control" rows="4"
+                              placeholder="عضویت در احزاب و تشکلهای سیاسی/عضویت در فهرست های انتخاباتی"></textarea>
+                    <span asp-validation-for="@Model.PoliticalTending" class="text-danger"></span>
+                </div>
+
+@*
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.PersonalFavorites"></label>
+                    <textarea asp-for="@Model.PersonalFavorites" id="PersonalFavorites" class="form-control" rows="4"
+                              placeholder="علایق شخصی در حوزه های تعاون(عضویت در تعاونی‌ها و اتحادیه‌ها، عضویت در هیئت مدیره‌ها)، کار(عضویت در تشکلهای کارگری)، تولیدی، تجاری، بانکی(عضویت در هیئت مدیره بانکها، صندوقها و موسسات مالی) و سازمان‌های حمایتی(خیره ها و جمعیت‌ها) "></textarea>
+                    <span asp-validation-for="@Model.PersonalFavorites" class="text-danger"></span>
+                </div>*@
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.SenaHistory"></label>
+                    <textarea asp-for="@Model.SenaHistory" id="SenaHistory" class="form-control"
+                              placeholder="در صورت داشتن سوابق نمایندگی، مدت آن را نیز ذکر کنید." rows="4"></textarea>
+                    <span asp-validation-for="@Model.SenaHistory" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.SabegheHeyatReise"></label>
+                    <textarea asp-for="@Model.SabegheHeyatReise" id="SabegheHeyatReise" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="@Model.SabegheHeyatReise" class="text-danger"></span>
+                </div>
+
+               @* <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.FractionMembership"></label>
+                    <textarea asp-for="@Model.FractionMembership" id="FractionMembership" class="form-control" rows="4"
+                              placeholder="عضویت در فراکسیون‌های تخصصی(سوابق عضویت و سمت در فراکسیون‌های قبلی و فعلی)/غیرتخصصی"></textarea>
+                    <span asp-validation-for="@Model.FractionMembership" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.SocialActivity"></label>
+                    <textarea asp-for="@Model.SocialActivity" id="SocailActivity" class="form-control"
+                              placeholder="عضویت در تشکلهای کارگری/سازمان‌های مردم نهاد(خیریه‌های مردمی)"
+                              rows="4"></textarea>
+                    <span asp-validation-for="@Model.SocialActivity" class="text-danger"></span>
+                </div>*@
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.JobHistory"></label>
+                    <textarea asp-for="@Model.JobHistory" id="JobHistory" class="form-control"
+                              placeholder="سوابق قبلی"
+                              rows="4"></textarea>
+                    <span asp-validation-for="@Model.JobHistory" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.SabegheEmzaEstizah"></label>
+                    <textarea asp-for="@Model.SabegheEmzaEstizah" id="SabegheEmzaEstizah" class="form-control"
+                              placeholder="سابقه امضای استیضاح"
+                              rows="4"></textarea>
+                    <span asp-validation-for="@Model.SabegheEmzaEstizah" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 mt-5">
+                    <p class="text-info">در صورت تمایل به تغییر کلمه عبور، باکس‌های زیر را پر کنید و در غیر اینصورت آن‌ها را خالی بگذارید.</p>
+
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.EditPassword"></label>
+                    <input style="direction: ltr;text-align: left !important;" type="password" asp-for="@Model.EditPassword" id="EditPassword" class="form-control text-left" />
+                    <i style="position: absolute;top: 41px;right: 23px;" id="btnPassword" class="fa fa-eye"></i>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.EditConfirmPassword"></label>
+                    <input style="direction: ltr;text-align: left !important;" type="password" asp-for="@Model.EditConfirmPassword" id="EditConfirmPassword" class="form-control" />
+                    <i style="position: absolute;top: 41px;right: 23px;" id="btnConfirmPassword" class="fa fa-eye"></i>
+                </div>
+
+
+                <div class="form-group col-12 mt-3">
+                    <label asp-for="@Model.ProfilePhoto" class="control-label"></label>
+                    <br />
+
+                    <div style="height:150px;width:190px;border:1px solid #ebedf2" class="mb-3 mt-2 d-flex justify-content-center">
+                        <img style="height: 148px;max-width: 188px" id="currentPhoto" src="@Model.ProfilePhotoUrl" />
+
+                        <img style="height: 148px;max-width: 188px" src="" id="Newphoto" />
+                    </div>
+
+
+                    <div class="col-md-4 pl-0">
+                        <input asp-for="@Model.ProfilePhoto" class="form-control" id="profilePhoto" />
+                        <span asp-validation-for="@Model.ProfilePhoto" class="text-danger"></span>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <div class="row">
+                <div class="submit-btn col-md-3 m-auto">
+                    <input type="submit" value="ثبت"
+                           onclick="event.preventDefault();saveAndupdateFile($(this.form), $(this.form).attr('action'));"
+                           />
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+            $("#ComissionMembership").kendoDropDownList({
+                dataTextField: "title",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCommission", CommissionController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+            $("#profilePhoto").change(
+                function () {
+                    var uploading = new FileReader();
+                    uploading.onload = function (displayimg) {
+                        $("#currentPhoto").addClass("d-none");
+                        $("#Newphoto").attr('src', displayimg.target.result);
+                    }
+                    if (event.target.files.length > 0) {
+                        uploading?.readAsDataURL(event.target.files[0]);
+                    } else {
+                        $("#Newphoto").addClass("d-none");
+                        $("#currentPhoto").addClass("d-flex");
+                    }
+
+                }
+            );
+
+
+            $("#btnPassword").click(
+                function () {
+                    if ($('#btnPassword').hasClass("fa-eye")) {
+                        $('#EditPassword').attr('type', 'text');
+                        $('#btnPassword').removeClass('fa-eye').addClass('fa-eye-slash');
+                    } else {
+                        $('#EditPassword').attr('type', 'password');
+                        $('#btnPassword').removeClass('fa-eye-slash').addClass('fa-eye');
+                    }
+                }
+            );
+
+            $("#btnConfirmPassword").click(
+                function () {
+                    if ($('#btnConfirmPassword').hasClass("fa-eye")) {
+                        $('#EditConfirmPassword').attr('type', 'text');
+                        $('#btnConfirmPassword').removeClass('fa-eye').addClass('fa-eye-slash');
+                    } else {
+                        $('#EditConfirmPassword').attr('type', 'password');
+                        $('#btnConfirmPassword').removeClass('fa-eye-slash').addClass('fa-eye');
+                    }
+                }
+            );
+
+            $('#btnBirthdate').MdPersianDateTimePicker({
+                targetTextSelector: '#BirthdateString',
+                dateFormat: 'yyyy-MM-dd',
+                dateFormat: 'yyyy-MM-dd',
+                isGregorian: false,
+                enableTimePicker: false,
+                disableBeforeToday: false,
+                modalMode: true,
+                inLine: false
+            });
+
+
+            $("#HozeEntekhabiInt").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetHozeEntekhabiForDropDown", SenatorController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            $("#ShoghleGhalebInt").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetShoghleGhalebForDropDown", SenatorController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            $("#MadrakTahsiliInt").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetMadrakTahsiliForDropDown", SenatorController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            $("#MahaleTahsilInt").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetMahaleTahsilForDropDown", SenatorController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            $("#GerayeshSiasiInt").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetGerayeshSiasiForDropDown", SenatorController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            $("#CityId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCitiesForDropDown", CityController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+            $("#BirthCityParentId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCitiesForDropDown", CityController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+            $("#HozeCityId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetCitiesForDropDown", CityController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}&parentId=@defaultBirthCityParentId`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true
+                }
+            });
+
+            //$("#BirthCityId").kendoDropDownList({
+            //    dataTextField: "name",
+            //    dataValueField: "id",
+            //    filter: "contains",
+            //    optionLabel: "یک آیتم انتخاب کنید...",
+            //    dataSource: {}
+            //});
+
+            $("#CityId").change(
+                function () {
+                    if ($("#CityId").val()) {
+                        var parentId = $("#CityId").val();
+                        $("#HozeCityId").kendoDropDownList({
+                            dataTextField: "name",
+                            dataValueField: "id",
+                            filter: "contains",
+                            optionLabel: "یک آیتم انتخاب کنید...",
+                            dataSource: {
+                                transport: {
+                                    read: {
+                                        dataType: "json",
+                                        contentType: 'application/json; charset=utf-8',
+                                        url: '@Url.Action("GetCitiesForDropDown", CityController.CONTROLLER)',
+                                    },
+                                    parameterMap: function (options) {
+                                        return `models=${kendo.stringify(options)}&parentId=${parentId}`;
+                                    }
+                                },
+                                schema: {
+                                    data: "data",
+                                    total: "totalRecords",
+                                    page: "page",
+                                    pageSize: "pageSize"
+                                },
+                                serverFiltering: true
+                            }
+                        });
+                    } else {
+
+                        $("#HozeCityId").kendoDropDownList({
+                            dataTextField: "name",
+                            dataValueField: "id",
+                            filter: "contains",
+                            optionLabel: "یک آیتم انتخاب کنید...",
+                            dataSource: {}
+                        });
+                    }
+                })
+
+
+
+        });
+
+    </script>
+}
