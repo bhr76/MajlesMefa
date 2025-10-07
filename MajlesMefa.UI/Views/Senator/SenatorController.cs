@@ -53,7 +53,7 @@ namespace MajlesMefa.UI.Views.Senator
 
         [RequestLimit(NoOfRequest = 30, Seconds = 5)]
         [Display(Name = "مدیریت نمایندگان")]
-        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin)]
+        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin, RoleTypeEnum.Organization)]
         public async Task<IActionResult> Index(Guid? commissionId)
         {
             Guid commissionIdValue = commissionId.HasValue ? commissionId.Value : @Guid.Empty;
@@ -65,7 +65,7 @@ namespace MajlesMefa.UI.Views.Senator
 
 
         [RequestLimit(NoOfRequest = 30, Seconds = 60)]
-        [Auth(RoleTypeEnum.Admin, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.MinistryMember)]
+        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin, RoleTypeEnum.Organization)]
         [HttpGet]
         public IActionResult PrintChoice(Guid senatorId)
         {
@@ -78,7 +78,7 @@ namespace MajlesMefa.UI.Views.Senator
 
 
         [RequestLimit(NoOfRequest = 30, Seconds = 60)]
-        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin)]
+        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin, RoleTypeEnum.Organization)]
         public async Task<IActionResult> Report(Guid senatorId)
         {
             var query = new GetSenatorProfileQuery
@@ -172,7 +172,7 @@ namespace MajlesMefa.UI.Views.Senator
 
 
         [RequestLimit(NoOfRequest = 30, Seconds = 60)]
-        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin)]
+        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin, RoleTypeEnum.Organization)]
         [HttpPost]
         public async Task<IActionResult> DownloadWord(PrintChiocesVm printChioces)
         {
@@ -521,7 +521,7 @@ namespace MajlesMefa.UI.Views.Senator
         }
         
         [RequestLimit(NoOfRequest = 50, Seconds = 5)]
-        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin)]
+        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin, RoleTypeEnum.Organization)]
         public async Task<IActionResult> GetSenator(string models, Guid? commissionId)
         {
             var Filter = JsonConvert.DeserializeObject<TableRequestModel>(models);
@@ -535,7 +535,7 @@ namespace MajlesMefa.UI.Views.Senator
         }
 
         [RequestLimit(NoOfRequest = 10, Seconds = 5)]
-        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin)]
+        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin, RoleTypeEnum.Organization)]
         public async Task<SenatorVm> GetSenatorById(Guid senatorId)
         {
             var query = new GetSenatorProfileQuery
@@ -714,7 +714,7 @@ namespace MajlesMefa.UI.Views.Senator
             });
         }
 
-        [Auth]
+        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin, RoleTypeEnum.Organization)]
         public async Task<IActionResult> GetSenatorsForDropDown(string models)
         {
             var Filter = JsonConvert.DeserializeObject<TableRequestModel>(models);
@@ -732,6 +732,7 @@ namespace MajlesMefa.UI.Views.Senator
             return Json(rslt);
         }
 
+        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin, RoleTypeEnum.Organization)]
         public async Task<IActionResult> GetSenatorsForMultiSelect(string models)
         {
             var query = new GetSenatorProfileQuery();

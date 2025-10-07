@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <Folder Include="Dtos\Common\DropDown\" />
-    <Folder Include="Midlewares\" />
     <Folder Include="Consts\" />
+    <Folder Include="Midlewares\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +38,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="StackExchange.Redis" Version="2.9.17" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.2" />
     <PackageReference Include="wilx.Kendo.DynamicLinq.Core" Version="2.1.2" />
   </ItemGroup>

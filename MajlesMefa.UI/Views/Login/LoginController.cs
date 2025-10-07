@@ -12,6 +12,7 @@ using MajlesMefa.UI.Views.Home;
 using MajlesMefa.UI.Views.Shared;
 using System.Diagnostics;
 using System.Web;
+using MajlesMefa.Back.Repositories.Reddis;
 
 namespace MajlesMefa.UI.Core.Login
 {
@@ -21,7 +22,9 @@ namespace MajlesMefa.UI.Core.Login
         private readonly ILogger<LoginController> _logger;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public LoginController(ILogger<LoginController> logger, IMapper mapper, IHttpContextAccessor contextAccessor) : base(mapper)
+        public LoginController(ILogger<LoginController> logger,
+                         IMapper mapper,
+                         IHttpContextAccessor contextAccessor) : base(mapper)
         {
             _logger = logger;
             _contextAccessor = contextAccessor;
@@ -77,11 +80,25 @@ namespace MajlesMefa.UI.Core.Login
 
             if (isValid)
             {
+                var userId = loginVm.Username;
+
+                var existingSession = await RedisRepository.GetUserSessionAsync(userId);
+                if (!string.IsNullOrEmpty(existingSession))
+                {
+                    await RedisRepository.AddToBlacklistAsync(existingSession, TimeSpan.FromHours(1));
+                }
+
                 var token = await Mediator.Send(new LoginCommand()
                 {
                     Username = loginVm.Username,
                     Password = loginVm.Password,
                 });
+
+                // ذخیره نشست جدید در Redis
+                await RedisRepository.SetUserSessionAsync(
+                    userId,
+                    token.SessionToken,
+                    TimeSpan.FromSeconds(token.RefresshTokenExpiresInSeconds));
 
                 Response.Cookies.Append("AccessToken", token.AccessToken, new CookieOptions()
                 {
@@ -103,14 +120,13 @@ namespace MajlesMefa.UI.Core.Login
                     SameSite = SameSiteMode.Strict,
                     Secure = true,
                 });
+
                 return Json(new { redirectToUrl = Url.Action("Index", "Loan") });
             }
             else
             {
                 throw new Exception("اطلاعات ورود نامعتبر است");
             }
-           
-            //return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).Replace("Controller", ""));
         }
 
         [RequestLimit(NoOfRequest = 15, Seconds = 10)]

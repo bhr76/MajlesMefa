@@ -17,6 +17,7 @@ using MajlesMefa.Back.Utilities.Limit;
 
 namespace MajlesMefa.UI.Views.Organization
 {
+    [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin)]
     public class OrganizationController : BaseController
     {
 

@@ -21,7 +21,7 @@
         public string Instance { get; private set; }
         public IEnumerable<Error> Errors { get; private set; }
 
-        public ErrorDetails(int? status, string title, string instance, IEnumerable<Error> errors = null)
+        public ErrorDetails(int? status, string title, string instance = null, IEnumerable<Error> errors = null)
         {
             Title = title;
             Status = status;

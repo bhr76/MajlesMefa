@@ -14,11 +14,12 @@ using System.Diagnostics;
 
 namespace MajlesMefa.UI.Views.Home
 {
+    [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin)]
     public class SupportController : BaseController
     {
         private readonly ILogger<SupportController> _logger;
 
-        public SupportController(ILogger<SupportController> logger, IMapper mapper): base(mapper)
+        public SupportController(IMapper mapper, ILogger<SupportController> logger) : base(mapper)
         {
             _logger = logger;
         }

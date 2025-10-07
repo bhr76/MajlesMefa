@@ -86,7 +86,7 @@ namespace MajlesMefa.Back.ActionFilters
                 var hasRole = _roles?.Any(x => context.HttpContext.User.IsInRole(x.ToString())) ?? false;
                 if (!hasRole)
                 {
-                    context.Result = new ForbidResult("نقش شما اجازه ی دسترسی ندارد");
+                    context.Result = new StatusCodeResult(403);
                 }
             }
         }

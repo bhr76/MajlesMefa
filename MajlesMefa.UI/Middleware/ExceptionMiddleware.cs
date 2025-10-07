@@ -55,7 +55,7 @@ namespace MajlesMefa.UI.Middleware
                         result = new ErrorDetails(
                             context.Response.StatusCode,
                             newStr,
-                            exception.StackTrace
+                            "عملیات با خطا مواجه شده است"
                         );
                     }
                     else
@@ -63,7 +63,7 @@ namespace MajlesMefa.UI.Middleware
                         result = new ErrorDetails(
                             context.Response.StatusCode,
                             exception.Message,
-                            exception.StackTrace
+                            "عملیات با خطا مواجه شده است"
                         );
                     }
 
@@ -74,7 +74,7 @@ namespace MajlesMefa.UI.Middleware
                     result = new ErrorDetails(
                     context.Response.StatusCode,
                     "خطا در انجام عملیات!",
-                    exception.StackTrace
+                    "عملیات با خطا مواجه شده است"
                     );
                 }
 
@@ -84,7 +84,7 @@ namespace MajlesMefa.UI.Middleware
                 result = new ErrorDetails(
                     context.Response.StatusCode,
                     "شما مجوز دسترسی به این بخش را ندارید!",
-                    exception.StackTrace
+                    "عملیات با خطا مواجه شده است"
                 );
             }
             else if (context.Response.StatusCode == 204)
@@ -92,7 +92,7 @@ namespace MajlesMefa.UI.Middleware
                 result = new ErrorDetails(
                     context.Response.StatusCode,
                     "داده ای از سمت سرویس دریافت نشد!",
-                    exception.StackTrace
+                    "عملیات با خطا مواجه شده است"
                 );
             }
             else if (exception is DbUpdateException && exception.InnerException.Message.Contains("DELETE statement conflicted"))
@@ -100,7 +100,7 @@ namespace MajlesMefa.UI.Middleware
                 result = new ErrorDetails(
                     context.Response.StatusCode,
                     "رکورد انتخابی دارای اطلاعات وابسته است!",
-                    exception.StackTrace
+                    "عملیات با خطا مواجه شده است"
                 );
             }
             else if (exception is AccessViolationException)
@@ -109,7 +109,7 @@ namespace MajlesMefa.UI.Middleware
                 result = new ErrorDetails(
                     context.Response.StatusCode,
                     exception.Message,
-                    exception.StackTrace
+                    "عملیات با خطا مواجه شده است"
                 );
             }
             else if (exception is InvalidOperationException)
@@ -118,7 +118,7 @@ namespace MajlesMefa.UI.Middleware
                 result = new ErrorDetails(
                     context.Response.StatusCode,
                     exception.Message,
-                    exception.StackTrace
+                    "عملیات با خطا مواجه شده است"
                 );
             }
             else if (exception is NullReferenceException)
@@ -126,7 +126,7 @@ namespace MajlesMefa.UI.Middleware
                 result = new ErrorDetails(
                    context.Response.StatusCode,
                    exception.Message,
-                   exception.StackTrace
+                   "عملیات با خطا مواجه شده است"
                );
             }
             else

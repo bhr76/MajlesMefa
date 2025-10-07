@@ -107,14 +107,14 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
                     //{
                     //    throw new InvalidOperationException("شما قادر به معرفی بیش از 2 نفر جهت اخذ تسهیلات در روز نمی‌باشید.");
                     //}
-                    if (todayLoans.Where(l => l.LoanType == LoanTypeEnum.Morabehe).Sum(x => x.Amount) >= long.Parse(_configuration.GetSection("AnnuallyMorabeheAmount").Value))
-                    {
-                        throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات مرابحه به پایان رسیده‌است.");
-                    }
-                    if (todayLoans.Where(l => l.LoanType == LoanTypeEnum.Gharzolhasane).Sum(x => x.Amount) >= long.Parse(_configuration.GetSection("AnnuallyGharzolhasaneAmount").Value))
-                    {
-                        throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات قرض الحسنه به پایان رسیده‌است.");
-                    }
+                    //if (todayLoans.Where(l => l.LoanType == LoanTypeEnum.Morabehe).Sum(x => x.Amount) >= long.Parse(_configuration.GetSection("AnnuallyMorabeheAmount").Value))
+                    //{
+                    //    throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات مرابحه به پایان رسیده‌است.");
+                    //}
+                    //if (todayLoans.Where(l => l.LoanType == LoanTypeEnum.Gharzolhasane).Sum(x => x.Amount) >= long.Parse(_configuration.GetSection("AnnuallyGharzolhasaneAmount").Value))
+                    //{
+                    //    throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات قرض الحسنه به پایان رسیده‌است.");
+                    //}
                     _context.Loans.Add(loan);
                     break;
                 case DataEntryTypeEnum.Mokatebe:

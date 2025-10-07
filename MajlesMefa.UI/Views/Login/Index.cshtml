@@ -18,7 +18,7 @@
 <div class="login-bg">
     <div class="login-box">
         <div class="login-bank-logo">
-            <img alt="vezarat-logo" src="/images/mefa-logo.png" />
+            <img alt="vezarat-logo" src="/images/shora-logo.jpeg" />
         </div>
         <div class="login-top-text">
             <p>به سامانه مدیریت تسهیلات مجلس شورای اسلامی خوش آمدید.</p>
@@ -26,14 +26,14 @@
                 <form method="post" id="formLogin">
                     <div class="form-group mt-2">
                         <label style="width:100%;text-align:right">نام کاربری</label>
-                        <input style="direction: ltr;text-align: left !important;" asp-for="Username" class="form-control" />
+                        <input autocomplete="off" style="direction: ltr;text-align: left !important;" asp-for="Username" class="form-control" />
                         <span asp-validation-for="Username" class="text-danger form-control-feedback"></span>
                     </div>
                     <div class="form-group mt-3">
                         <label style="width:100%;text-align:right">
                             رمز عبور
                         </label>
-                        <input style="direction: ltr;text-align: left !important;" asp-for="Password" type="password" class="form-control" />
+                        <input autocomplete="off" style="direction: ltr;text-align: left !important;" asp-for="Password" type="password" class="form-control" />
                         <span asp-validation-for="Password" class="text-danger form-control-feedback"></span>
                     </div>
                     <div class="form-group mt-3 row">
@@ -58,9 +58,9 @@
                                    class="btn btn-success" perform="action"/>
 
                         </div>
-                        <div class="all-rights">
+                        @*<div class="all-rights">
                             <p>تمامی حقوق متعلق به وزارت امور اقتصاد و دارایی است. نسخه 0.1</p>
-                        </div>
+                        </div>*@
                 </form>
             </div>
             <script src="~/js/ui-theme/vendors.bundle.js"></script>

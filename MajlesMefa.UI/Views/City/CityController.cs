@@ -16,6 +16,7 @@ using MajlesMefa.Back.Utilities.Limit;
 
 namespace MajlesMefa.UI.Views.City
 {
+    [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin)]
     public class CityController : BaseController
     {
 

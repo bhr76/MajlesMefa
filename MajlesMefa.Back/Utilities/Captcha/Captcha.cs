@@ -7,22 +7,48 @@ namespace MajlesMefa.Back.Utilities.Captcha
 {
     public static class Captcha
     {
-        private const string Letters = "12346789";
+        private const string Letters = "۰۱۲۳۴۵۶۷۸۹abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@#$!";
+        private const string PersianNumbers = "۰۱۲۳۴۵۶۷۸۹";
 
         public static string GenerateCaptchaCode()
         {
             var rand = new Random();
             var maxRand = Letters.Length - 1;
+            var persianNumbersCount = PersianNumbers.Length;
 
             var sb = new StringBuilder();
 
-            for (var i = 0; i < 5; i++)
+            // ابتدا یک عدد فارسی تصادفی اضافه می‌کنیم
+            var persianIndex = rand.Next(persianNumbersCount);
+            sb.Append(PersianNumbers[persianIndex]);
+
+            // سپس ۴ کاراکتر تصادفی از بین تمام کاراکترها اضافه می‌کنیم
+            for (var i = 0; i < 4; i++)
             {
                 var index = rand.Next(maxRand);
                 sb.Append(Letters[index]);
             }
-            return sb.ToString();
+
+            // حالا کاراکترها را به صورت تصادفی مخلوط می‌کنیم
+            return ShuffleString(sb.ToString());
         }
+
+        // تابع برای مخلوط کردن کاراکترهای رشته
+        private static string ShuffleString(string input)
+        {
+            var rand = new Random();
+            var chars = input.ToCharArray();
+
+            for (int i = chars.Length - 1; i > 0; i--)
+            {
+                int j = rand.Next(i + 1);
+                (chars[i], chars[j]) = (chars[j], chars[i]);
+            }
+
+            return new string(chars);
+        }
+
+
 
         public static bool ValidateCaptchaCode(string userInputCaptcha, HttpContext context)
         {
@@ -77,44 +103,70 @@ namespace MajlesMefa.Back.Utilities.Captcha
             void DrawCaptchaCode()
             {
                 var fontBrush = new SolidBrush(Color.Black);
-                var fontSize = GetFontSize(width, captchaCode.Length);
-                var font = new Font(FontFamily.GenericSerif, fontSize, FontStyle.Bold, GraphicsUnit.Pixel);
+                var fontSize = Math.Min(GetFontSize(width, captchaCode.Length), height - 20);
+
+                // Use more distorted fonts
+                FontFamily[] fontFamilies = {
+                FontFamily.GenericSerif,
+                FontFamily.GenericSansSerif,
+                FontFamily.GenericMonospace
+            };
+
                 for (var i = 0; i < captchaCode.Length; i++)
                 {
                     fontBrush.Color = GetRandomDeepColor();
 
-                    var shiftPx = fontSize / 6;
+                    // Random font selection
+                    var fontFamily = fontFamilies[rand.Next(fontFamilies.Length)];
+                    var font = new Font(fontFamily, fontSize,
+                                       FontStyle.Bold | FontStyle.Italic,  // ← Add Italic
+                                       GraphicsUnit.Pixel);
 
-                    float x = i * fontSize + rand.Next(-shiftPx, shiftPx) + rand.Next(-shiftPx, shiftPx);
-                    var maxY = height - fontSize;
-                    if (maxY < 0) maxY = 0;
-                    float y = rand.Next(0, maxY);
+                    var shiftPx = fontSize / 4;  // ← Increased distortion range
 
-                    graph.DrawString(captchaCode[i].ToString(), font, fontBrush, x, y);
+                    float x = 10 + i * (width - 20) / captchaCode.Length + rand.Next(-shiftPx, shiftPx);
+                    x = Math.Clamp(x, 10, width - fontSize - 10);
+
+                    float y = rand.Next(10, height - fontSize - 10);
+                    y = Math.Clamp(y, 10, height - fontSize - 10);
+
+                    // Add rotation
+                    graph.TranslateTransform(x, y);
+                    graph.RotateTransform(rand.Next(-15, 15));
+                    graph.DrawString(captchaCode[i].ToString(), font, fontBrush, 0, 0);
+                    graph.ResetTransform();
                 }
             }
 
             void DrawDisorderLine()
             {
                 var linePen = new Pen(new SolidBrush(Color.Black), 3);
-                for (var i = 0; i < rand.Next(3, 5); i++)
+
+                // Increase from 3-5 to 10-15 lines
+                for (var i = 0; i < rand.Next(10, 15); i++)  // ← Increased lines
                 {
                     linePen.Color = GetRandomDeepColor();
+                    linePen.Width = rand.Next(1, 4);  // ← Vary line thickness
 
-                    var startPoint = new Point(rand.Next(0, width), rand.Next(0, height));
-                    var endPoint = new Point(rand.Next(0, width), rand.Next(0, height));
+                    var startPoint = new Point(rand.Next(5, width - 5), rand.Next(5, height - 5));
+                    var endPoint = new Point(rand.Next(5, width - 5), rand.Next(5, height - 5));
                     graph.DrawLine(linePen, startPoint, endPoint);
+                }
 
-                    //Point bezierPoint1 = new Point(rand.Next(0, width), rand.Next(0, height));
-                    //Point bezierPoint2 = new Point(rand.Next(0, width), rand.Next(0, height));
-
-                    //graph.DrawBezier(linePen, startPoint, bezierPoint1, bezierPoint2, endPoint);
+                // Add random dots/ellipses
+                for (var i = 0; i < rand.Next(20, 30); i++)  // ← Add dots
+                {
+                    var brush = new SolidBrush(GetRandomDeepColor());
+                    var size = rand.Next(2, 5);
+                    var x = rand.Next(0, width);
+                    var y = rand.Next(0, height);
+                    graph.FillEllipse(brush, x, y, size, size); 
                 }
             }
 
             void AdjustRippleEffect()
             {
-                const short nWave = 6;
+                const short nWave = 8;
                 var nWidth = baseMap.Width;
                 var nHeight = baseMap.Height;
 
