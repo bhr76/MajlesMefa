@@ -20,6 +20,8 @@ using MajlesMefa.Back.Repositories.Implementation;
 using NToastNotify;
 using MajlesMefa.UI.Views.Home;
 using MajlesMefa.Back.Utilities.FTP;
+using MajlesMefa.Back.Repositories.Reddis;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +45,17 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(provider =>
+{
+    var configuration = builder.Configuration.GetConnectionString("Redis");
+    if (string.IsNullOrEmpty(configuration))
+    {
+        configuration = "localhost:6379,abortConnect=false,connectTimeout=5000";
+    }
+    return ConnectionMultiplexer.Connect(configuration);
+});
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AddCityCommand).Assembly));
 builder.Services.AddNotyf(config =>
 {
@@ -74,7 +87,7 @@ builder.Services.AddAntiforgery(opts =>
 builder.Services.AddMaper(typeof(DataEntryEntity).Assembly);
 builder.Services.AddCustomIdentity<OptionService>(builder.Configuration, "AuthDb");
 builder.Services.AddScoped<IFileService, FileService>();
-builder.Services.AddScoped<ISenatorBudgetRepository, SenatorBudgetRepository>();
+builder.Services.AddScoped<IRedisRepository, RedisRepository>();
 
 var app = builder.Build();
 await app.Services.AddBaseUserSeed();
@@ -120,6 +133,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseNToastNotify();
+app.UseMiddleware<SessionValidationMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 app.UseCors("AllowAll");

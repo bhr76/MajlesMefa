@@ -732,6 +732,7 @@ namespace MajlesMefa.UI.Views.Senator
             return Json(rslt);
         }
 
+        [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin, RoleTypeEnum.Organization)]
         public async Task<IActionResult> GetSenatorsForMultiSelect(string models)
         {
             var query = new GetSenatorProfileQuery();

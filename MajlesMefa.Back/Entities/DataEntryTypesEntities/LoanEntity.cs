@@ -41,13 +41,13 @@ namespace MajlesMefa.Back.Entities.DataEntryTypesEntities
             builder.HasOne(c => c.User)
                 .WithMany(x => x.Loans)
                 .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+               .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.RelatedBank)
                .WithMany(x => x.LoanRelatedBanks)
                .HasForeignKey(x => x.RelatedBankId)
                .OnDelete(DeleteBehavior.Restrict);
-            
+
             builder.HasOne(x => x.SenatorBudget) 
                 .WithMany(x => x.LoanRelatedBanks)
                 .HasForeignKey(x => x.SenatorBudgetId)

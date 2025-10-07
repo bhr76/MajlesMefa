@@ -29,6 +29,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Diagnostics;
+using MajlesMefa.Back.Utilities.Convertor;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
@@ -112,7 +114,7 @@ namespace MajlesMefa.UI.Views.Loan
                 }
 
             };
-
+            
             return vm;
         }
 
@@ -122,7 +124,7 @@ namespace MajlesMefa.UI.Views.Loan
         {
             LoanVm vm = new LoanVm
             {
-                UserSelectList = new SelectList(await Mediator.Send(new GetUsersDropDownQuery()), nameof(UserDropDownDto.Id), nameof(UserDropDownDto.Name)),
+             UserSelectList = new SelectList(await Mediator.Send(new GetUsersDropDownQuery()), nameof(UserDropDownDto.Id), nameof(UserDropDownDto.Name)),
             };
             
             var usersQuery = new GetUsersDropDownQuery();
@@ -148,7 +150,7 @@ namespace MajlesMefa.UI.Views.Loan
         public async Task<IActionResult> Details(Guid loanId)
         {
             var mokatebeData = await GetLoanById(loanId);
-
+            
             return View(mokatebeData);
         }
 
@@ -196,7 +198,7 @@ namespace MajlesMefa.UI.Views.Loan
             if (request.LoanData.LoanType == 0)
             {
                 return BadRequest("نوع تسهیلات را مشخص کنید");
-
+               
             }
             else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && long.Parse(request.LoanData.Amount) > 50000000)
             {
@@ -239,7 +241,7 @@ namespace MajlesMefa.UI.Views.Loan
             }
             var command = request.ConvertToCommand();
             LoanDtailDto loanInput = (LoanDtailDto)command.DataEntryData;
-
+            
             command.DataEntryData = loanInput;
             Guid dataEntryId = await Mediator.Send(command, cancellationToken);
             if (dataEntryId == Guid.Empty)

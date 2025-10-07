@@ -14,6 +14,7 @@ using System.Diagnostics;
 
 namespace MajlesMefa.UI.Views.Home
 {
+    [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin)]
     public class SupportController : BaseController
     {
         private readonly ILogger<SupportController> _logger;

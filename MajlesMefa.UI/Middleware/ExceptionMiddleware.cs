@@ -46,6 +46,7 @@ namespace MajlesMefa.UI.Middleware
             {
                 if (Regex.IsMatch(exception.Message, @"^.*([\u0600-\u06FF]).*$"))
                 {
+
                     if (exception.Message.IndexOf(':') > -1)
                     {
                         int substringStartIndex = exception.Message.IndexOf(':') + 1;
@@ -67,16 +68,19 @@ namespace MajlesMefa.UI.Middleware
                             null
                         );
                     }
+
+
                 }
                 else
                 {
                     result = new ErrorDetails(
-                        context.Response.StatusCode,
-                        "خطا در انجام عملیات!",
+                    context.Response.StatusCode,
+                    "خطا در انجام عملیات!",
                         exception.StackTrace ?? context.Request.Path,
                         null
                     );
                 }
+
             }
             else if (context.Response.StatusCode == 403)
             {
@@ -117,6 +121,7 @@ namespace MajlesMefa.UI.Middleware
             }
             else if (exception is InvalidOperationException)
             {
+                //var r = Regex.IsMatch(exception.Message, "^[آ-ی]$");
                 result = new ErrorDetails(
                     context.Response.StatusCode,
                     exception.Message,
@@ -127,11 +132,11 @@ namespace MajlesMefa.UI.Middleware
             else if (exception is NullReferenceException)
             {
                 result = new ErrorDetails(
-                    context.Response.StatusCode,
-                    exception.Message,
+                   context.Response.StatusCode,
+                   exception.Message,
                     exception.StackTrace ?? context.Request.Path,
                     null
-                );
+               );
             }
             else
             {
@@ -143,11 +148,20 @@ namespace MajlesMefa.UI.Middleware
                 );
             }
 
+            //if (context.IsDiplayMessageOnContext())
+            //{
+            //    context.WriteMessageOnContext(result);
+            //    return GetViewResultTask(context, context.Items["viewPath"].ToString());
+            //}
+            //else
+            //{
             return context.Response.WriteAsync(JsonSerializer.Serialize(result, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             }));
+            //}
         }
+
 
         private Task GetViewResultTask(HttpContext context, string viewName)
         {

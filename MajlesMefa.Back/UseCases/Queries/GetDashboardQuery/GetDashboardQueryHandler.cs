@@ -222,7 +222,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
             }
             if (dashboardData.Count == 0)
             {
-                return new List<DashboardMokatebeItemDto> {
+                return new List<DashboardMokatebeItemDto> { 
                 new DashboardMokatebeItemDto()
                 {
                     value = 0,
@@ -239,7 +239,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
                     category = "ارائه‌گزارش"
                 }
             };
-            }
+        }
             var answered = (dashboardData.Count(x => x.PasokhNo != null) * 100 / dashboardData.Count);
 
 

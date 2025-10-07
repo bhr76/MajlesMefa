@@ -20,6 +20,7 @@ using System.Diagnostics;
 
 namespace MajlesMefa.UI.Views.Commission
 {
+    [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin)]
     public class CommissionController : BaseController
     {
 

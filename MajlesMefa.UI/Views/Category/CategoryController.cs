@@ -19,6 +19,7 @@ using MajlesMefa.Back.Utilities.Limit;
 
 namespace MajlesMefa.UI.Views.Category
 {
+    [Auth(RoleTypeEnum.MinistryMember, RoleTypeEnum.MinistryAdmin, RoleTypeEnum.Admin)]
     public class CategoryController : BaseController
     {
 

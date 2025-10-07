@@ -65,14 +65,14 @@
                     <!-- BEGIN: Brand -->
                     <div class="m-stack__item m-brand  m-brand--skin-dark ">
                         <div class="m-stack m-stack--ver m-stack--general">
-                            <div class="m-stack__item m-stack__item--middle m-brand__logo d-flex">
+                            @*<div class="m-stack__item m-stack__item--middle m-brand__logo d-flex">
                                 <a href="" class="m-brand__logo-wrapper">
-                                    <img class="header-site-logo" width="135" src="~/images/mefa-logo.png" />@*App-Sign-Refah*@
+                                    <img class="header-site-logo" width="135" src="~/images/shora-logo.jpeg" />
                                 </a>
                                 <label class="majles-title-mobile" style="color:#fff;margin-top:30px;margin-right:30px;font-size:14px !important;font-weight:bold">
                                     سامانه مدیریت اطلاعات نمایندگان مجلس
                                 </label>
-                            </div>
+                            </div>*@
 
 
                             <div class="m-stack__item m-stack__item--middle m-brand__tools">
@@ -334,7 +334,7 @@
             //    }
             //);
 
-            $(document).off('submit.layout').on('submit.layout', 'form:not([data-ignore-layout-submit])', function (e) {
+            $("form").submit(function (e) {
                 e.preventDefault();
                 debugger;
                 if (!$(this).valid()) return false;
@@ -344,8 +344,8 @@
                     url: $(this).attr('action'),
                     success: function (data) {   
                 debugger;
-
-                toastr.success("عملیات با موفق انجام شد", "موفق", {
+                        
+                        toastr.success("عملیات با موفق انجام شد", "موفق", {
                             timeOut: 1000,
                             preventDuplicates: true,
                             positionClass: 'toast-top-right',
