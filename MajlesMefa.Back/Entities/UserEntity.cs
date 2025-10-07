@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MajlesMefa.Back.Entities.DataEntryTypesEntities;
 using MajlesMefa.Back.Extensions;
 
 namespace MajlesMefa.Back.Entities
@@ -46,6 +47,9 @@ namespace MajlesMefa.Back.Entities
         public virtual ICollection<DataEntryEntity> CreatorDataEntries { get; set; } = new HashSet<DataEntryEntity>();
 
         public virtual ICollection<UserRoleEntity> UserRoles { get; set; } = new HashSet<UserRoleEntity>();
+
+        public virtual ICollection<SenatorBudgetEntity> SenatorBudgets { get; set; } = new HashSet<SenatorBudgetEntity>();
+        public virtual ICollection<LoanEntity> Loans { get; set; } = new HashSet<LoanEntity>();
     }
 
     public class UserConfig : IEntityTypeConfiguration<UserEntity>

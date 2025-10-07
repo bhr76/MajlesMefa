@@ -18,6 +18,7 @@ namespace MajlesMefa.Back.Repositories
         IUserRepository UserRepository { get; }
         IRoleRepository RoleRepository { get; }
         ISenatorRepository SenatorRepository { get; }
+        ISenatorBudgetRepository SenatorBudgetRepository { get; }
         IPageRepository PageRepository { get; }
         ITahghighTafahosRepository TahghighTafahosReposity { get; }
         ITahghighTafahosSenatorRepository TahghighTafahosSenatorReposity { get; }

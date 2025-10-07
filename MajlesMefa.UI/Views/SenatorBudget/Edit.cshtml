@@ -1,0 +1,172 @@
+﻿@using MajlesMefa.UI.Views.SenatorBudget;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.Back.Enums.Senator;
+@{
+    ViewData["Title"] = "ویرایش تعیین بودجه";
+}
+@model SenatorBudgetVm
+
+<div class="m-portlet">
+    <div class="m-portlet__body">
+        <form asp-controller=@SenatorBudgetController.CONTROLLER asp-action="Edit" id="editSenatorBudgetForm" method="post" data-ignore-layout-submit="true">
+            <input type="hidden" asp-for="@Model.Id" />
+
+            <div class="row">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.SenatorId" class="control-label">نماینده</label>
+                    <select asp-for="@Model.SenatorId" id="SenatorId" class="form-control" asp-items="@Model.Senators">
+                        <option value="">انتخاب کنید...</option>
+                    </select>
+                    <span asp-validation-for="@Model.SenatorId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.UserId" class="control-label">بانک</label>
+                    <select asp-for="@Model.UserId" id="UserId" class="form-control" asp-items="@Model.Users">
+                        <option value="">انتخاب کنید...</option>
+                    </select>
+                    <span asp-validation-for="@Model.UserId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.Amount" class="control-label"></label>
+                    <input inputmode="numeric" asp-for="@Model.Amount" maxlength="20" id="Amount" class="form-control" />
+                    <span asp-validation-for="@Model.Amount" class="text-danger"></span>
+                </div>
+ 
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.RequestLoanTypeInt"></label>
+                    <input asp-for="@Model.RequestLoanTypeInt" id="RequestLoanTypeInt" class="form-control" />
+                    <span asp-validation-for="@Model.RequestLoanTypeInt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.ExecDate" class="control-label"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text cursor-pointer" id="btnExecDate"><i class="far fa-calendar-alt"></i></span>
+                        </div>
+                        <input asp-for="@Model.ExecDate" id="ExecDate" class="form-control"/>
+                    </div>
+                    <span class="help-block"><span asp-validation-for="@Model.ExecDate" class="text-danger"></span></span>
+                </div>
+
+                <div class="col-md-12 mt-4">
+                    <button type="submit" id="btnSubmit" class="btn btn-success">
+                        <i class="fa fa-save"></i> ویرایش
+                    </button>
+                    <a asp-controller=@SenatorBudgetController.CONTROLLER asp-action="Index" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> بازگشت
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function initExecDatePicker() {
+            $('#btnExecDate').MdPersianDateTimePicker({
+                targetTextSelector: '#ExecDate',
+                dateFormat: 'yyyy-MM-dd',
+                isGregorian: false,
+                enableTimePicker: false,
+                disableBeforeToday: false,
+                modalMode: true,
+                inLine: false
+            });
+        }
+
+        $(document).ready(function () {
+            initExecDatePicker();
+            $("#RequestLoanTypeInt").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetAllRequestLoanTypesForDropDown", SenatorBudgetController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+
+            // Form submission
+            $('#editSenatorBudgetForm').on('submit', function(e) {
+                e.preventDefault();
+
+                // Clean amount before submission
+                var amountInput = $('#Amount');
+                var cleanAmount = amountInput.val().replace(/,/g, '');
+                amountInput.val(cleanAmount);
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.redirectToUrl) {
+                            window.location.href = response.redirectToUrl;
+                        } else {
+                            toastr.success('عملیات با موفقیت انجام شد');
+                            setTimeout(function() {
+                                window.location.href = '@Url.Action("Index", SenatorBudgetController.CONTROLLER)';
+                            }, 1000);
+                        }
+                    },
+                    error: function(xhr) {
+                        debugger;
+                        // if (xhr.responseText) {
+                        //     toastr.error(xhr.responseText);
+                        // } else {
+                        //     toastr.error('خطایی در انجام عملیات رخ داده است');
+                        // }
+                        // // Restore formatted amount
+                        // if (cleanAmount && !isNaN(cleanAmount)) {
+                        //     amountInput.val(parseInt(cleanAmount).toLocaleString());
+                        // }
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+$(function () {
+    const $form = $("form"); // or a specific selector for this view's form
+    $form.off("submit.updateBudget").on("submit.updateBudget", function (e) {
+        e.preventDefault();
+        if (!$form.valid()) return;
+
+        $.ajax({
+            url: $form.attr("action"),
+            type: $form.attr("method"),
+            data: $form.serialize(),
+            success: function (data) {
+                toastr.success("با موفقیت بروزرسانی شد.", "موفق", {
+                    timeOut: 1000,
+                    preventDuplicates: true,
+                    positionClass: 'toast-top-right',
+                    onHidden: function () {
+                        window.location.href = data.redirectToUrl;
+                    }
+                });
+            },
+            error: function (xhr) {
+                const msg = xhr?.responseJSON?.title
+                    || xhr?.responseJSON?.reason
+                    || (typeof xhr?.responseText === "string" ? xhr.responseText : "")
+                    || "خطای نامشخص هنگام بروزرسانی بودجه.";
+                toastr.error(msg, "خطا", { tapToDismiss: false, timeOut: 100000000 });
+            }
+        });
+    });
+});
+</script>
+}

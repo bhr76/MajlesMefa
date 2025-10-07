@@ -1,0 +1,56 @@
+﻿@using MajlesMefa.UI.Views.SenatorBudget;
+@using MajlesMefa.Back.Enums;
+@using MajlesMefa.UI.Views.Peygiri;
+@using MajlesMefa.UI.Views.ActionReference;
+@using MajlesMefa.Back.Services.Abstractioin;
+@model Guid?
+@{
+    ViewData["Title"] = "لیست تعیین بودجه";
+    var id = Model.HasValue ? Model : Guid.Empty;
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+}
+
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid-senatorbudget"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script asp-append-version="true">
+        var userRole = '@role';
+        var url_get_senatorbudget = '';
+        var url_create = '';
+        var url_edit = '';
+        var fromReportPage = false;
+        var url_delete = '';
+        {
+            if ('@id' == null || '@id' == @Guid.Empty) {
+                url_get_senatorbudget = '@Url.Action(nameof(SenatorBudgetController.GetSenatorBudgets), SenatorBudgetController.CONTROLLER)';
+            }
+            else {
+                url_get_senatorbudget = '@Url.Action(nameof(SenatorBudgetController.GetSenatorBudgets), SenatorBudgetController.CONTROLLER)' + '?senatorId=@id';
+            }
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower() || @RoleTypeEnum.Admin.Equals(role).ToString().ToLower()) {
+                url_edit = '@Url.Action(nameof(SenatorBudgetController.Edit), SenatorBudgetController.CONTROLLER)';
+                url_delete = '@Url.Action(nameof(SenatorBudgetController.Delete), SenatorBudgetController.CONTROLLER)';
+            }
+        };
+        url_create = '';
+        {
+            if(@RoleTypeEnum.Senator.Equals(role).ToString().ToLower()){
+                url_create = '@Url.Action(nameof(SenatorBudgetController.Create), SenatorBudgetController.CONTROLLER)' + '?senatorId=@id';
+            }
+            else if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower()) {
+                url_create = '@Url.Action(nameof(SenatorBudgetController.Create), SenatorBudgetController.CONTROLLER)';
+            }
+        }
+
+        var btns = `#if('${url_delete}' != ''){# <button class="k-button mt-1" data-link="${url_delete}/?id=#:id#"> حذف </button>#}#
+                   #if('${url_edit}' != ''){#<a class="k-button mt-1" href="${url_edit}?id=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>#}#`;
+    </script>
+    <script src="~/js/pages/senatorBudget.js" asp-append-version="true"></script>
+}

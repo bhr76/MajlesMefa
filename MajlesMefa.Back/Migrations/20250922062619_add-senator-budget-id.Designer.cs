@@ -4,6 +4,7 @@ using MajlesMefa.Back.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MajlesMefa.Back.Migrations
 {
     [DbContext(typeof(RefahMajlesDbContext))]
-    partial class RefahMajlesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250922062619_add-senator-budget-id")]
+    partial class addsenatorbudgetid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -346,9 +349,6 @@ namespace MajlesMefa.Back.Migrations
                     b.Property<long>("Amount")
                         .HasColumnType("bigint");
 
-                    b.Property<Guid?>("BankEntityId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(512)
@@ -380,7 +380,7 @@ namespace MajlesMefa.Back.Migrations
                     b.Property<Guid?>("SenatorBudgetId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("SuggestedBankId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte>("VaziatPasokh")
@@ -388,13 +388,11 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.HasIndex("BankEntityId");
-
                     b.HasIndex("RelatedBankId");
 
                     b.HasIndex("SenatorBudgetId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("SuggestedBankId");
 
                     b.ToTable("Loans");
                 });
@@ -1337,10 +1335,6 @@ namespace MajlesMefa.Back.Migrations
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.LoanEntity", b =>
                 {
-                    b.HasOne("MajlesMefa.Back.Entities.BankEntity", null)
-                        .WithMany("LoanSuggestedBanks")
-                        .HasForeignKey("BankEntityId");
-
                     b.HasOne("MajlesMefa.Back.Entities.DataEntryEntity", "DataEntry")
                         .WithOne("Loan")
                         .HasForeignKey("MajlesMefa.Back.Entities.DataEntryTypesEntities.LoanEntity", "DataEntryId")
@@ -1357,11 +1351,10 @@ namespace MajlesMefa.Back.Migrations
                         .HasForeignKey("SenatorBudgetId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("MajlesMefa.Back.Entities.UserEntity", "User")
-                        .WithMany("Loans")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.HasOne("MajlesMefa.Back.Entities.BankEntity", "SuggestedBank")
+                        .WithMany("LoanSuggestedBanks")
+                        .HasForeignKey("SuggestedBankId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("DataEntry");
 
@@ -1369,7 +1362,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.Navigation("SenatorBudget");
 
-                    b.Navigation("User");
+                    b.Navigation("SuggestedBank");
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.MokatebeEntity", b =>
@@ -1774,8 +1767,6 @@ namespace MajlesMefa.Back.Migrations
                     b.Navigation("CreatorDataEntries");
 
                     b.Navigation("FromActionReferences");
-
-                    b.Navigation("Loans");
 
                     b.Navigation("SenatorBudgets");
 

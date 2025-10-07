@@ -74,6 +74,7 @@ namespace MajlesMefa.Back.Entities
         public DbSet<CityEntity> Cities { get; set; }
 
         public DbSet<SenatorProfileEntity> SenatorProfiles { get; set; }
+        public DbSet<SenatorBudgetEntity> SenatorBudgets { get; set; }
 
         public DbSet<PageEntity> Pages { get; set; }
         public DbSet<BankEntity> Banks { get; set; }

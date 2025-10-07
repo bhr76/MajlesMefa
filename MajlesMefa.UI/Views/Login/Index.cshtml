@@ -3,6 +3,7 @@
 @using MajlesMefa.UI.Core.Login;
 @{
     Layout = "";
+
     var errors = Context.ReadMessageOnContext<ErrorDetails>();
 }
 <link rel="icon" href="~/images/vezarat-icon.png">
@@ -46,21 +47,21 @@
                         </div>
                         <div class="d-flex align-self-end col-6">
                             <div class="text-center m--margin-top-10 btn p-0 ">
-                                <img id="img-captcha" src="~/get-captcha-image" style="border-radius:8px; width:100%" alt="captcha"/>
+                                <img id="img-captcha" src="~/get-captcha-image" style="border-radius:8px; width:100%" alt="captcha" />
                             </div>
                         </div>
                         <span asp-validation-for="CaptchaCode" class="text-danger form-control-feedback col-12"></span>
-                        </div>
+                    </div>
 
-                        <div class="submit-btn m-auto">
+                    <div class="submit-btn m-auto">
 
-                            <input value="ورود" type="submit" onclick="event.preventDefault();login($(this.form));"
-                                   class="btn btn-success" perform="action"/>
+                        <input value="ورود" type="submit" onclick="event.preventDefault();login($(this.form));"
+                               class="btn btn-success" perform="action" />
 
-                        </div>
-                        <div class="all-rights">
-                            <p>تمامی حقوق متعلق به وزارت امور اقتصاد و دارایی است. نسخه 0.1</p>
-                        </div>
+                    </div>
+                    <div class="all-rights">
+                        <p>تمامی حقوق متعلق به وزارت امور اقتصاد و دارایی است. نسخه 0.1</p>
+                    </div>
                 </form>
             </div>
             <script src="~/js/ui-theme/vendors.bundle.js"></script>
@@ -122,5 +123,6 @@
                 };
             </script>
         </div>
-
+    </div>
+</div>
 

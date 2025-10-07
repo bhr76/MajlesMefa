@@ -1,34 +1,38 @@
 ﻿using AutoMapper;
 using Duende.IdentityServer.Models;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using IdentityContext.Dtos;
 using MajlesMefa.Back.ActionFilters;
+using MajlesMefa.Back.Dtos;
 using MajlesMefa.Back.Dtos.DataEntryTypesDtos;
+using MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details;
+using MajlesMefa.Back.Dtos.DataEntryTypesDtos.Grid;
+using MajlesMefa.Back.Dtos.UserDtos;
 using MajlesMefa.Back.Enums;
+using MajlesMefa.Back.Repositories.Abstraction;
+using MajlesMefa.Back.Services.Abstractioin;
+using MajlesMefa.Back.UseCases.Commmands.CreateActionReferenceCommand;
 using MajlesMefa.Back.UseCases.Commmands.DeleteDataEntryCommand;
+using MajlesMefa.Back.UseCases.Queries.GetBanksQuery;
 using MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery;
+using MajlesMefa.Back.UseCases.Queries.GetSenatorBudgetRemainQuery;
+using MajlesMefa.Back.UseCases.Queries.GetSenatorProfileQuery;
+using MajlesMefa.Back.UseCases.Queries.GetUsersDropDownQuery;
+using MajlesMefa.Back.Utilities.Convertor;
 using MajlesMefa.Back.Utilities.Date;
 using MajlesMefa.Back.Utilities.Db.DynamicQuery.AbolFramework;
 using MajlesMefa.Back.Utilities.Db.DynamicQuery.AbolFramework.Models;
+using MajlesMefa.Back.Utilities.Limit;
 using MajlesMefa.Back.Utilities.Message;
 using MajlesMefa.UI.Models;
 using MajlesMefa.UI.Views.Shared;
-using System.Collections.Generic;
-using System.Diagnostics;
-using MajlesMefa.Back.Utilities.Convertor;
-using System.ComponentModel.DataAnnotations;
-using MajlesMefa.Back.Utilities.Limit;
-using IdentityContext.Dtos;
-using MajlesMefa.Back.Dtos.DataEntryTypesDtos.Grid;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MajlesMefa.Back.Dtos.UserDtos;
-using MajlesMefa.Back.UseCases.Queries.GetUsersDropDownQuery;
-using MajlesMefa.Back.UseCases.Commmands.CreateActionReferenceCommand;
-using MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details;
-using MajlesMefa.Back.UseCases.Queries.GetSenatorProfileQuery;
-using MajlesMefa.Back.UseCases.Queries.GetBanksQuery;
-using MajlesMefa.Back.Services.Abstractioin;
-using MajlesMefa.Back.Dtos;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+
+
 
 namespace MajlesMefa.UI.Views.Loan
 {
@@ -39,12 +43,14 @@ namespace MajlesMefa.UI.Views.Loan
         private readonly IConfiguration _configuration;
         private readonly ILogger<LoanController> _logger;
         private readonly ICurrentUserService _currentUserService;
+        private readonly ISenatorBudgetRepository _budgetRepository;
 
-        public LoanController(IMapper mapper, ILogger<LoanController> logger, IConfiguration configuration, ICurrentUserService currentUserService) : base(mapper)
+        public LoanController(IMapper mapper, ILogger<LoanController> logger, IConfiguration configuration, ICurrentUserService currentUserService, ISenatorBudgetRepository budgetRepository) : base(mapper)
         {
             _logger = logger;
             _configuration = configuration;
             _currentUserService = currentUserService;
+            _budgetRepository = budgetRepository;
         }
 
         [RequestLimit(NoOfRequest = 10, Seconds = 5)]
@@ -57,7 +63,7 @@ namespace MajlesMefa.UI.Views.Loan
 
         [RequestLimit(NoOfRequest = 30, Seconds = 5)]
         [Auth]
-        public async Task<IActionResult> GetLoans (string models, Guid? senatorId)
+        public async Task<IActionResult> GetLoans(string models, Guid? senatorId)
         {
             var Filter = JsonConvert.DeserializeObject<TableRequestModel>(models);
             var query = new GetDataEntriesQuery();
@@ -72,7 +78,7 @@ namespace MajlesMefa.UI.Views.Loan
 
         [RequestLimit(NoOfRequest = 10, Seconds = 5)]
         [Auth]
-        public async Task<LoanVm> GetLoanById (Guid loanId)
+        public async Task<LoanVm> GetLoanById(Guid loanId)
         {
             var query = new GetDataEntriesQuery
             {
@@ -95,18 +101,18 @@ namespace MajlesMefa.UI.Views.Loan
                     Id = loanId,
                     Amount = loanDto.Amount,
                     FullName = loanDto.FullName,
-                    MobileNo= loanDto.MobileNo,
+                    MobileNo = loanDto.MobileNo,
                     NationalNo = loanDto.NationalNo,
-                    SuggestedBankName= loanDto.SuggestedBankName,
-                    SuggestedBankId= loanDto.SuggestedBankId,
-                    LoanType= loanDto.LoanType,
-                    LoanTypeInt= (int)loanDto.LoanType,
+                    SuggestedBankName = loanDto.SuggestedBankName,
+                    SuggestedBankId = loanDto.SuggestedBankId,
+                    LoanType = loanDto.LoanType,
+                    LoanTypeInt = (int)loanDto.LoanType,
                     PasokhState = loanDto.PasokhState,
                     PasokhStateInt = (int)loanDto.PasokhState
                 }
 
             };
-            
+
             return vm;
         }
 
@@ -114,9 +120,18 @@ namespace MajlesMefa.UI.Views.Loan
         [Auth]
         public async Task<IActionResult> Create()
         {
-            LoanVm vm = new LoanVm {
-             UserSelectList = new SelectList(await Mediator.Send(new GetUsersDropDownQuery()), nameof(UserDropDownDto.Id), nameof(UserDropDownDto.Name)),
+            LoanVm vm = new LoanVm
+            {
+                UserSelectList = new SelectList(await Mediator.Send(new GetUsersDropDownQuery()), nameof(UserDropDownDto.Id), nameof(UserDropDownDto.Name)),
             };
+            
+            var usersQuery = new GetUsersDropDownQuery();
+            var users = await Mediator.Send(usersQuery);
+            vm.Users = users.Select(u => new SelectListItem
+            {
+                Value = u.Id.ToString(),
+                Text = u.Name,
+            }).ToList();
             return View(vm);
         }
 
@@ -133,7 +148,7 @@ namespace MajlesMefa.UI.Views.Loan
         public async Task<IActionResult> Details(Guid loanId)
         {
             var mokatebeData = await GetLoanById(loanId);
-            
+
             return View(mokatebeData);
         }
 
@@ -181,9 +196,9 @@ namespace MajlesMefa.UI.Views.Loan
             if (request.LoanData.LoanType == 0)
             {
                 return BadRequest("نوع تسهیلات را مشخص کنید");
-               
+
             }
-            else if(request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && long.Parse(request.LoanData.Amount) > 50000000)
+            else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && long.Parse(request.LoanData.Amount) > 50000000)
             {
                 return BadRequest("سقف تسهیلات قرض الحسنه برای هر شخص پنجاه میلیون تومان می‌باشد.");
             }
@@ -191,7 +206,28 @@ namespace MajlesMefa.UI.Views.Loan
             {
                 return BadRequest("سقف تسهیلات مرابحه برای هر شخص سیصد میلیون تومان می‌باشد.");
             }
+
             var currentSenator = _currentUserService.GetCurrentUser();
+
+            var remainRequest = new GetSenatorBudgetRemainQuery()
+            {
+                SenatorId = currentSenator.BussinessUserId,
+                UserId = request.LoanData.UserId 
+            };
+            var remainResponse = await Mediator.Send(remainRequest, cancellationToken);
+
+            if (!remainResponse.IsDefined)
+            {
+                return BadRequest(remainResponse.Dsc);
+            }
+
+            if (long.Parse(request.LoanData.Amount) > remainResponse.RemainAmount )
+            {
+                return BadRequest("مقدار باقیمانده از این نوع تسهیلات برای این نوع وام، از مقدار درخواستی بیشتر است.");
+            }
+
+            request.LoanData.SenatorBudgetId = remainResponse.SenatorBudgetId;
+
             request.SenatorId = currentSenator.BussinessUserId;
             if (request.LoanData.RelatedBankId == Guid.Empty)
             {
@@ -203,20 +239,28 @@ namespace MajlesMefa.UI.Views.Loan
             }
             var command = request.ConvertToCommand();
             LoanDtailDto loanInput = (LoanDtailDto)command.DataEntryData;
-            
+
             command.DataEntryData = loanInput;
             Guid dataEntryId = await Mediator.Send(command, cancellationToken);
-            if(dataEntryId == Guid.Empty)
+            if (dataEntryId == Guid.Empty)
             {
                 return BadRequest("عملیات به خطا مواجه شده است.");
             }
+
+            var parlemaniUserIdValue = _configuration["ParlemaniUserId"];
+            if (!Guid.TryParse(parlemaniUserIdValue, out var parlemaniUserId) || parlemaniUserId == Guid.Empty)
+            {
+                _logger.LogError("Invalid or missing ParlemaniUserId configuration. Value: {ConfigValue}", parlemaniUserIdValue);
+                return BadRequest("شناسه کاربر پارلمانی (ParlemaniUserId) در تنظیمات به‌درستی تعریف نشده است.");
+            }
+
             var referToShora = await Mediator.Send(new CreateActionReferenceCommand
             {
                 DataEntryId = dataEntryId,
                 Description = "",
                 Action = ActRefTypeEnum.Refer,
                 SetVisibilityForSenator = false,
-                RefrenceUserId = new Guid(_configuration.GetSection("ParlemaniUserId").Value),
+                RefrenceUserId = parlemaniUserId,
                 RefType = RefTypeEnum.JahateEstehzar,
             }, cancellationToken);
 

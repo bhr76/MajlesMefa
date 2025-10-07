@@ -1,0 +1,164 @@
+﻿@using MajlesMefa.UI.Views.SenatorBudget;
+@using MajlesMefa.UI.Models;
+@using MajlesMefa.Back.Enums.Senator;
+@{
+    ViewData["Title"] = "ثبت تعیین بودجه";
+}
+@model SenatorBudgetVm
+
+<div class="m-portlet">
+    <div class="m-portlet__body">
+        <form asp-controller=@SenatorBudgetController.CONTROLLER asp-action="Create" id="createSenatorBudgetForm" method="post">
+            <div class="row">
+                <div asp-validation-summary="ModelOnly"></div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.SenatorId"></label>
+                    <input asp-for="@Model.SenatorId" id="SenatorId" class="form-control"/>
+                    <span asp-valid
+                          ation-for="@Model.SenatorId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.UserId" class="control-label">بانک</label>
+                    <select asp-for="@Model.UserId" id="UserId" class="form-control" asp-items="@Model.Users">
+                        <option value="">انتخاب کنید...</option>
+                    </select>
+                    <span asp-validation-for="@Model.UserId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.Amount" class="control-label"></label>
+                    <input inputmode="numeric" asp-for="@Model.Amount" maxlength="18" id="Amount" class="form-control"/>
+                    <span asp-validation-for="@Model.Amount" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.RequestLoanTypeInt">نوع وام</label>
+                    <input asp-for="@Model.RequestLoanTypeInt" id="RequestLoanTypeInt" class="form-control" />
+                    <span asp-validation-for="@Model.RequestLoanTypeInt" class="text-danger"></span>
+                </div>
+                 
+                <div class="form-group mt-3 col-md-6">
+                    <label asp-for="@Model.ExecDate" class="control-label"></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text cursor-pointer" id="btnExecDate"><i class="far fa-calendar-alt"></i></span>
+                        </div>
+                        <input asp-for="@Model.ExecDate" id="ExecDate" class="form-control"/>
+                    </div>
+                    <span class="help-block"><span asp-validation-for="@Model.ExecDate" class="text-danger"></span></span>
+                </div>
+
+                <div class="col-md-12 mt-4">
+                    <button type="submit" id="submitBtn1" class="btn btn-success">
+                        <i class="fa fa-save"></i> ثبت
+                    </button>
+                    <a asp-controller=@SenatorBudgetController.CONTROLLER asp-action="Index" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> بازگشت
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function initExecDatePicker() {
+            $('#btnExecDate').MdPersianDateTimePicker({
+                targetTextSelector: '#ExecDate',
+                dateFormat: 'yyyy-MM-dd',
+                isGregorian: false,
+                enableTimePicker: false,
+                disableBeforeToday: false,
+                modalMode: true,
+                inLine: false
+            });
+        }
+
+        $(document).ready(function () {
+            initExecDatePicker();
+            // Initialize loan type dropdown
+            $("#RequestLoanTypeInt").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetAllRequestLoanTypesForDropDown", SenatorBudgetController.CONTROLLER)',
+                        },
+                    },
+                    serverFiltering: false
+                }
+            });
+ 
+            $("#SenatorId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                filter: "contains",
+                template: "<span>#:data.name# -  #:data.hozeCityName#</span>",
+                optionLabel: "یک آیتم انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            url: '@Url.Action("GetSenatorsForDropDown", SenatorBudgetController.CONTROLLER)',
+                        },
+                        parameterMap: function (options) {
+                            return `models=${kendo.stringify(options)}`;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "totalRecords",
+                        page: "page",
+                        pageSize: "pageSize"
+                    },
+                    serverFiltering: true,
+                    filter: function (item) {
+                        if (this.filterSource && this.filterSource.filter && this.filterSource.filter.filters.length > 0) {
+                            var filter = this.filterSource.filter.filters[0];
+                            var searchText = filter.value.toLowerCase();
+                            return item.name.toLowerCase().indexOf(searchText) >= 0 ||
+                                   item.hozeCityName.toLowerCase().indexOf(searchText) >= 0;
+                        }
+                        return true;
+                    }
+                },
+                filtering: function (e) {
+                    var filterValue = e.filter ? e.filter.value : "";
+                    if (this.dataSource.options.serverFiltering) {
+                        e.preventDefault();
+                        var filter = {
+                            logic: "or",
+                            filters: [
+                                { field: "name", operator: "contains", value: filterValue },
+                                { field: "hozeCityName", operator: "contains", value: filterValue }
+                            ]
+                        };
+                        this.dataSource.filter(filter);
+                    }
+                }
+            });
+         
+            $("#submitBtn").click(function () {
+                var validator = $("#createMokatebeForm").kendoValidator().data('kendoValidator');
+                validator.validate();
+            });
+
+            // Optional: client-side validate the correct form id
+            $("#submitBtn, #submitBtn1").on("click", function (e) {
+                var $form = $("#createSenatorBudgetForm");
+                if (!$form.valid()) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
+}

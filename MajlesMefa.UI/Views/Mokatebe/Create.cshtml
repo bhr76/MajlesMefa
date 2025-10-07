@@ -415,7 +415,6 @@
             //        serverFiltering: true
             //    }
             //});
-
             $("#SenatorId").kendoDropDownList({
                 dataTextField: "name",
                 dataValueField: "id",
@@ -469,6 +468,7 @@
                                 { field: "hozeCityName", operator: "contains", value: filterValue }
                             ]
                         };
+                        debugger;
 
                         // Apply the custom filter
                         this.dataSource.filter(filter);

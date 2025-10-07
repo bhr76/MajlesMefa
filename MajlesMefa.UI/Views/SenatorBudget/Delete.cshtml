@@ -1,0 +1,103 @@
+﻿@using MajlesMefa.UI.Views.SenatorBudget;
+@using MajlesMefa.UI.Models;
+@{
+    ViewData["Title"] = "حذف تعیین بودجه";
+}
+@model SenatorBudgetVm
+
+<div class="m-portlet">
+    <div class="m-portlet__head">
+        <div class="m-portlet__head-caption">
+            <div class="m-portlet__head-title">
+                <h3 class="m-portlet__head-text">
+                    حذف تعیین بودجه
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="m-portlet__body">
+        <div class="alert alert-warning">
+            <h4>آیا مطمئن هستید که می‌خواهید این تعیین بودجه را حذف کنید؟</h4>
+        </div>
+
+        <form asp-controller=@SenatorBudgetController.CONTROLLER asp-action="Delete" id="deleteSenatorBudgetForm" method="post">
+            <input type="hidden" asp-for="@Model.Id" />
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label font-weight-bold">مبلغ:</label>
+                        <p class="form-control-static">@Model.Amount.ToString("N0") ریال</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label font-weight-bold">تاریخ اجرا:</label>
+                        <p class="form-control-static">@Model.ExecDate</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label font-weight-bold">تاریخ ثبت:</label>
+                        <p class="form-control-static">@Model.ExecDate</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label font-weight-bold">نوع وام:</label>
+                        <p class="form-control-static">
+                            @(Model.RequestLoanType == MajlesMefa.Back.Enums.Senator.SenatorRequestLoanTypeEnum.Morabehe ? "مرابحه" : "قرض الحسنه")
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-danger" id="btnDelete">
+                        <i class="fa fa-trash"></i> حذف
+                    </button>
+                    <a asp-controller=@SenatorBudgetController.CONTROLLER asp-action="Index" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> بازگشت
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#deleteSenatorBudgetForm').on('submit', function(e) {
+                e.preventDefault();
+                debugger;
+                if (confirm('آیا از حذف این تعیین بودجه اطمینان دارید؟')) {
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            if (response.Message) {
+                                toastr.success('عملیات با موفقیت انجام شد');
+                            }
+                            setTimeout(function() {
+                                window.location.href = '@Url.Action("Index", SenatorBudgetController.CONTROLLER)';
+                            }, 1000);
+                        },
+                        error: function(xhr) {
+                            if (xhr.responseText) {
+                                toastr.error(xhr.responseText);
+                            } else {
+                                toastr.error('خطایی در حذف اطلاعات رخ داده است');
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

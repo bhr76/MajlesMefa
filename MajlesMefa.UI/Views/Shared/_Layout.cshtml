@@ -334,7 +334,7 @@
             //    }
             //);
 
-            $("form").submit(function (e) {
+            $(document).off('submit.layout').on('submit.layout', 'form:not([data-ignore-layout-submit])', function (e) {
                 e.preventDefault();
                 debugger;
                 if (!$(this).valid()) return false;
@@ -343,8 +343,9 @@
                     type: $(this).attr('method'),
                     url: $(this).attr('action'),
                     success: function (data) {   
-                        
-                        toastr.success("عملیات با موفق انجام شد", "موفق", {
+                debugger;
+
+                toastr.success("عملیات با موفق انجام شد", "موفق", {
                             timeOut: 1000,
                             preventDuplicates: true,
                             positionClass: 'toast-top-right',
@@ -354,6 +355,7 @@
                         });
                     },
                     error: function (data) {
+                        debugger;
                         console.log("aaaa",  data.responseText)
                         if (typeof data.responseText == "string" && data.responseText.length < 200) {
                             toastr["error"](data.responseText, "خطا", {

@@ -53,16 +53,27 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
             using (var connection = _dapperContext.CreateConnection())
             {
                 var mokatebat = await connection.QueryAsync<MokatebeDashboardItemDto>(query);
-                if(mokatebat.Count() == 0)
+                if (mokatebat.Count() == 0)
                 {
                     return null;
                 }
-                var groupedMokatebe = mokatebat.GroupBy(x =>  x.IsCentralOffice);
-                var centralProvincesCount = groupedMokatebe?.Where(q => q.Key == 1)?.ToList()[0].Sum(item => item.Count);
+                var groupedMokatebe = mokatebat.GroupBy(x => x.IsCentralOffice);
+
+                int centralProvincesTotal = 0;
+
+                var centralProvincesCheck = groupedMokatebe?.Where(q => q.Key == 1)?.ToList();
+
+                if (centralProvincesCheck.Count > 0)
+                {
+                    var centralProvincesCount =
+                        groupedMokatebe?.Where(q => q.Key == 1)?.ToList()[0].Sum(item => item.Count);
+                    centralProvincesTotal = (int)(centralProvincesCount);
+                }
+
                 var otherMokatebes = groupedMokatebe?.Where(q => q.Key == 0).ToList()[0].ToList();
                 otherMokatebes?.Add(new MokatebeDashboardItemDto()
                 {
-                    Count = (int)(centralProvincesCount),
+                    Count = centralProvincesTotal,
                     ItemName = "ادارات کل استان‌ها"
                 });
                 return otherMokatebes;
@@ -205,13 +216,13 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
         {
             var cuser = _currentUserService.GetCurrentUser();
             var dashboardData = await _context.Mokatebes.ToListAsync();
-            if(request.MokatebeType == MokatebeTypeEnum.PeyNevesht)
+            if (request.MokatebeType == MokatebeTypeEnum.PeyNevesht)
             {
                 dashboardData = dashboardData.Where(q => q.MokatebeType == MokatebeTypeEnum.PeyNevesht).ToList();
             }
-            if(dashboardData.Count == 0)
+            if (dashboardData.Count == 0)
             {
-                return new List<DashboardMokatebeItemDto> { 
+                return new List<DashboardMokatebeItemDto> {
                 new DashboardMokatebeItemDto()
                 {
                     value = 0,
@@ -228,7 +239,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
                     category = "ارائه‌گزارش"
                 }
             };
-        }
+            }
             var answered = (dashboardData.Count(x => x.PasokhNo != null) * 100 / dashboardData.Count);
 
 

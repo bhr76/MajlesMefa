@@ -74,6 +74,8 @@ namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details
 
         [Display(Name = "بانک پیشنهادی شورا")]
         public Guid? RelatedBankId { get; set; }
+        public Guid SenatorBudgetId { get; set; }
+        public Guid UserId { get; set; }
 
         public GetAccessActionRefrenceResultDto AccessActionRefrence { get; set; }
 

@@ -32,12 +32,13 @@ namespace MajlesMefa.UI.Models
         [Display(Name = "استان نماینده")]
         public string SenatorCity { get; set; }
 
-        
+
         public LoanDtailDto LoanData { get; set; }
 
         [ Display(Name = "کاربر جهت ارجاع")]
         public Guid? UserId { get; set; }
         public SelectList UserSelectList { get; set; }
+        public List<SelectListItem> Users { get; set; } = new();
 
         public CreateNewDataEntryCommand ConvertToCommand()
         {

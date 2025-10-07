@@ -2,6 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using MajlesMefa.Back.Entities;
 using MajlesMefa.Back.Extensions;
 using System.Reflection;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 using AutoMapper;
 using MajlesMefa.Back.Repositories;
 using MajlesMefa.Back.Utilities.Mapping;
@@ -12,6 +15,8 @@ using MajlesMefa.Back.Seeder;
 using MajlesMefa.UI.Middleware;
 using AspNetCoreHero.ToastNotification;
 using AspNetCoreHero.ToastNotification.Extensions;
+using MajlesMefa.Back.Repositories.Abstraction;
+using MajlesMefa.Back.Repositories.Implementation;
 using NToastNotify;
 using MajlesMefa.UI.Views.Home;
 using MajlesMefa.Back.Utilities.FTP;
@@ -69,6 +74,7 @@ builder.Services.AddAntiforgery(opts =>
 builder.Services.AddMaper(typeof(DataEntryEntity).Assembly);
 builder.Services.AddCustomIdentity<OptionService>(builder.Configuration, "AuthDb");
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<ISenatorBudgetRepository, SenatorBudgetRepository>();
 
 var app = builder.Build();
 await app.Services.AddBaseUserSeed();
@@ -78,6 +84,29 @@ await app.Services.AddPagesWithRoleAccessAsync(typeof(HomeController).Assembly);
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
+
+    //app.UseExceptionHandler(errorApp =>
+    //{
+    //    errorApp.Run(async context =>
+    //    {
+    //        context.Response.StatusCode = 500;
+    //        context.Response.ContentType = "application/json; charset=utf-8";
+        
+    //        var error = new
+    //        {
+    //            title = "Error",
+    //            status = 500,
+    //            instance = context.Request.Path,
+    //            errors = (object)null
+    //        };
+
+    //        await context.Response.WriteAsync(JsonSerializer.Serialize(error,
+    //            new JsonSerializerOptions 
+    //            { 
+    //                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) 
+    //            }));
+    //    });
+    //});
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }

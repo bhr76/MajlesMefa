@@ -28,6 +28,7 @@ namespace MajlesMefa.UI.Views.Home
         [RequestLimit(NoOfRequest = 15, Seconds = 10)]
         public async Task<IActionResult> Index()
         {
+
             var dashboard = await Mediator.Send(new GetDashboardQuery());
             var mokatebe = await Mediator.Send(new GetDashboardMokatebeByResponseStatusQuery());
             var mokatebeStatus = await Mediator.Send(new GetDashboardMokatebeByStatusQuery());

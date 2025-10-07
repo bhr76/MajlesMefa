@@ -135,7 +135,6 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
 
         private async Task<TableModel<DataEntryDto>> ApplyLoanFilterAsync(IQueryable<DataEntryEntity> query, TableRequestModel filter)
         {
-            query = query.Include(l => l.Loan.SuggestedBank);
             
             var result = await query.Select(x => new DataEntryDto()
             {
@@ -167,8 +166,6 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                     MobileNo = x.Loan.MobileNo,
                     Amount = x.Loan.Amount.ShowCurrencyFormat(),
                     LoanType= x.Loan.LoanType,
-                    SuggestedBankId= x.Loan.SuggestedBankId,
-                    SuggestedBankName = x.Loan.SuggestedBank.Name,
                     AccessActionRefrence = new GetAccessActionRefrenceResultDto(),
                     PasokhNo= x.Loan.PasokhNo,
                     PasokhState = x.Loan.VaziatPasokh

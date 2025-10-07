@@ -1,21 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using MajlesMefa.Back.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IdentityModel;
-using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MajlesMefa.Back.Entities.DataEntryTypesEntities
 {
     public class LoanEntity: BaseDataEntryTypeEntity
     {
-        public Guid? SuggestedBankId { get; set; }
-
-        public virtual BankEntity SuggestedBank { get; set; }
+        [ForeignKey(nameof(User))]
+        public Guid? UserId { get; set; }
+        public virtual UserEntity User { get; set; }
 
         public Guid? RelatedBankId { get; set; }
 
@@ -32,6 +26,10 @@ namespace MajlesMefa.Back.Entities.DataEntryTypesEntities
         public string MobileNo { get; set; }
         public string NationalNo { get; set; }
         public long Amount { get; set; }
+
+        public Guid? SenatorBudgetId { get; set; }
+
+        public virtual SenatorBudgetEntity SenatorBudget { get; set; }
     }
 
     public class LoanConfig : IEntityTypeConfiguration<LoanEntity>
@@ -39,15 +37,21 @@ namespace MajlesMefa.Back.Entities.DataEntryTypesEntities
         public void Configure(EntityTypeBuilder<LoanEntity> builder)
         {
             builder.AddRelationDataEntryConfig(x => x.Loan);
-            builder.HasOne(x => x.SuggestedBank)
-               .WithMany(x => x.LoanSuggestedBanks)
-               .HasForeignKey(x => x.SuggestedBankId)
-               .OnDelete(DeleteBehavior.Restrict);
+         
+            builder.HasOne(c => c.User)
+                .WithMany(x => x.Loans)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.RelatedBank)
                .WithMany(x => x.LoanRelatedBanks)
                .HasForeignKey(x => x.RelatedBankId)
                .OnDelete(DeleteBehavior.Restrict);
+            
+            builder.HasOne(x => x.SenatorBudget) 
+                .WithMany(x => x.LoanRelatedBanks)
+                .HasForeignKey(x => x.SenatorBudgetId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(c => c.FullName)
                 .IsRequired()

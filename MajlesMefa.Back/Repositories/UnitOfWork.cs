@@ -25,6 +25,7 @@ namespace MajlesMefa.Back.Repositories
         private ITahghighTafahosRepository _tahghighTafahosRepositroy;
         private ITahghighTafahosSenatorRepository _tahghighTafahosSenatorRepositroy;
         private ISenatorRepository _senatorRepository;
+        private ISenatorBudgetRepository _senatorBudgetRepository;
         private IKeywordRepository _keywordRepository;
 
         public UnitOfWork(RefahMajlesDbContext context)
@@ -44,6 +45,7 @@ namespace MajlesMefa.Back.Repositories
         public ITahghighTafahosRepository TahghighTafahosReposity => _tahghighTafahosRepositroy ??= new TahghighTafahosRepository(_context);
         public ITahghighTafahosSenatorRepository TahghighTafahosSenatorReposity => _tahghighTafahosSenatorRepositroy ??= new TahghighTafahosSenatorRepository(_context);
         public ISenatorRepository SenatorRepository => _senatorRepository ??= new SenatorRepository(_context);
+        public ISenatorBudgetRepository SenatorBudgetRepository => _senatorBudgetRepository ??= new SenatorBudgetRepository(_context);
         public IKeywordRepository KeywordRepository => _keywordRepository ??= new KeywordRepository(_context);
 
         public async Task SaveChangesAsync()

@@ -31,6 +31,7 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
         public List<Guid> Moavenats { get; set; }
 
         public Guid? SenatorId { get; set; }
+        public Guid? SenatorBudgetId { get; set; }
 
         public void Mapping(Profile profile)
         {
