@@ -17,6 +17,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using DocumentFormat.OpenXml.InkML;
 using IdentityContext.Entities;
+using Newtonsoft.Json;
+using MajlesMefa.Back.Entities;
+using Dapper;
+using MajlesMefa.Back.Dtos.DataEntryTypesDtos.Grid;
 
 namespace MajlesMefa.Back.UseCases.Commmands.LoginCommand
 {
@@ -25,14 +29,23 @@ namespace MajlesMefa.Back.UseCases.Commmands.LoginCommand
         private readonly IUserManagerService _userManagerService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly AuthDbContext authDbContext;
+        private readonly DapperContext _dapper;
 
         public LoginCommandHandler(IUserManagerService userManagerService,
             IUnitOfWork unitOfWork,
-            AuthDbContext authDbContext)
+            AuthDbContext authDbContext,
+            DapperContext dapper)
         {
             _userManagerService = userManagerService;
             _unitOfWork = unitOfWork;
             this.authDbContext = authDbContext;
+            _dapper = dapper;
+        }
+
+        public class NamayandeganPassword
+        {
+            public string UserCode { get; set; }
+            public string  NewPassword { get; set; }
         }
 
         public async Task<TokenDto> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -40,20 +53,39 @@ namespace MajlesMefa.Back.UseCases.Commmands.LoginCommand
     //        var users = authDbContext.Users
     //.FromSqlRaw("SELECT * FROM AspNetUsers WHERE UserName BETWEEN '1000' AND '1300' ORDER BY UserName")
     //.ToList();
-    //        foreach (var usr in users)
+
+    //        using (var connection = _dapper.CreateConnection())
     //        {
+    //            var query = "select * from NamayandeganPassword";
     //            try
     //            {
-    //                await _userManagerService.UpdatePassCodeAsync(usr.Id, usr.UserName + "Aa@1234");
+    //                var namayandeganPassword = await connection.QueryAsync<NamayandeganPassword>(query);
+
+    //                foreach (var usr in users)
+    //                {
+
+    //                    var namayande = namayandeganPassword.FirstOrDefault(n => n.UserCode == usr.UserName);
+    //                    if (namayande != null && namayande.NewPassword != string.Empty)
+    //                    {
+    //                        await _userManagerService.UpdatePassCodeAsync(usr.Id, namayande.NewPassword);
+    //                    }
+    //                    //var newPass = _unitOfWork.
+    //                }
     //            }
     //            catch (Exception ex)
     //            {
 
     //                throw;
     //            }
-             
-                
+
+
     //        }
+            //        System.IO.File.AppendAllText(@"c:\test\index.txt", $"before check pass - {DateTime.Now.ToString()}");
+
+
+            //var sdqw = JsonConvert.SerializeObject(await _unitOfWork.UserRepository.Tracking.FirstOrDefaultAsync(c=>c.UserId==new Guid("4196f437-8580-48b0-b6a6-a61f794f4991")));
+
+
             var user = await _userManagerService.CheckPasswordSignInAsync(request.Username, request.Password);
             var extraData = await _unitOfWork.UserRepository
                 .NoTracking

@@ -33,9 +33,6 @@ namespace MajlesMefa.UI.Views.Shared
             _mapper = mapper;
         }
 
-        private IMediator _mediator;
-
-        public IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
 
         public async Task<IActionResult> Signout()
         {

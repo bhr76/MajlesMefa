@@ -4,553 +4,270 @@
 @using MajlesMefa.Back.Services.Abstractioin;
 @{
     var cuser = Context.RequestServices.GetService<ICurrentUserService>().GetCurrentUser();
-    ViewData["Title"] = "داشبورد";
+    ViewData["Title"] = "خانه";
 }
-@model List<DashboardItemDto>
+@model DashboardLoanDto
 
-
-@if (cuser.Roles.FirstOrDefault() == RoleTypeEnum.Admin)
-{
-    <div class="m-portlet">
-        <div class="m-portlet__body">
-            <div id="report-box-1">
-
-                <div class="row m-row--no-padding m-row--col-separator-xl">
-                    <div id="mokatebe-by-organization-chart" class="col-12">
-                    </div>
+<div class="dashboard-container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar ms-2"></i>گزارش سریع تسهیلات
+                    </h5>
                 </div>
-                <hr />
-                <div class="row m-row--no-padding m-row--col-separator-xl">
-                    <div id="soalat-by-status-chart" class="col-12">
-                    </div>
-                </div>
-                <hr />
-                <div class="row m-row--no-padding m-row--col-separator-xl">
-                    <div id="soalat-by-organization-chart" class="col-12">
-                    </div>
-                </div>
-                <hr />
-                <div class="row m-row--no-padding m-row--col-separator-xl">
-                    <div id="soalat-by-city-chart" class="col-12">
-                    </div>
-                </div>
-                <hr />
-                <div class="row m-row--no-padding m-row--col-separator-xl">
-                    <div id="molaghat-by-month-chart" class="col-12">
-                    </div>
-                </div>
-                <hr />
-                <div class="row m-row--no-padding m-row--col-separator-xl">
-                    <div id="molaghat-by-city-chart" class="col-12">
-                    </div>
-                </div>
-                <hr />
-                @* <div class="row m-row--no-padding m-row--col-separator-xl">
-            <div id="chart" class="col-12">
-            </div>
-            </div>*@
-                @*@if (ViewBag.dashboardMokatebeData[0].value > 0 || ViewBag.dashboardMokatebeData[1].value > 0 || ViewBag.dashboardMokatebeData[2].value > 0 || ViewBag.dashboardMokatebeData[3].value > 0)
-            {*@
-                <div class="row w-100">
-                     <div class="row m-row--no-padding col-6">
-                        <div id="mokatebe-pie-chart-deatils" class="col-12">
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <div id="approvedLoan-chart"></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <div id="approvedLoanAmount-chart"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="row m-row--no-padding col-6">
-                        <div id="mokatebe-pie-chart" class="col-12">
+                    
+                    <!-- آمار خلاصه -->
+                    <div class="row mt-4">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="stat-icon text-primary">
+                                    <i class="fas fa-file-invoice-dollar fa-2x"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h4 class="stat-value">@ViewBag.TotalLoans</h4>
+                                    <p class="stat-label">تعداد کل وام‌ها</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="stat-icon text-success">
+                                    <i class="fas fa-check-circle fa-2x"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h4 class="stat-value">@ViewBag.ApprovedLoans</h4>
+                                    <p class="stat-label">وام‌های تایید شده</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="stat-icon text-warning">
+                                    <i class="fas fa-clock fa-2x"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h4 class="stat-value">@ViewBag.PendingLoans</h4>
+                                    <p class="stat-label">وام‌های در انتظار</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="stat-icon text-danger">
+                                    <i class="fas fa-times-circle fa-2x"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h4 class="stat-value">@ViewBag.RejectedLoans</h4>
+                                    <p class="stat-label">وام‌های رد شده</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <hr />
-                <div class="row w-100">
-                    <div class="row m-row--no-padding col-6">
-                        <div id="mokatebe-peynevesht-pie-chart-deatils" class="col-12">
-                        </div>
-                    </div>
-                    <div class="row m-row--no-padding col-6">
-                        <div id="mokatebe-peynevesht-pie-chart" class="col-12">
-                        </div>
-                    </div>
-                </div>
-
-                @*}*@
-
             </div>
         </div>
     </div>
+</div>
+
+@section styles {
+    <style>
+        .dashboard-container {
+            padding: 20px 0;
+        }
+        
+        .chart-container {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            height: 400px;
+        }
+        
+        .stat-card {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            margin-left: 15px;
+            flex-shrink: 0;
+        }
+        
+        .stat-content {
+            flex-grow: 1;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+        }
+        
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        /* بهبود ظاهر چارت‌های Kendo */
+        .k-chart {
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .k-chart-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        @@media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+                margin-bottom: 20px;
+            }
+            
+            .stat-card {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
 }
 
-@section scripts{
+@section scripts {
     <script>
         $(document).ready(function () {
-
-            $("#mokatebe-by-organization-chart").kendoChart({
-                title: {
-                    text: "تعداد مکاتبات به تفکیک معاونت‌ها/سازمان‌ها"
-                },
+            // تنظیمات مشترک برای چارت‌ها
+            const commonChartOptions = {
                 legend: {
                     position: "bottom",
                 },
                 seriesDefaults: {
                     type: 'column',
-                    stack: true,
-                    width: 3,
-                    gap: 20,
                     labels: {
                         visible: true,
-                        format: "{0}"
-                    }
-                },
-                seriesColors: ["#910766"],
-                series: [{
-                    spacing: 0,
-                    majorGridLines: {
-                        visible: false,
-                    },
-                    //type: "bar",
-                    //name: "نمودار اطلاعات ثبت شده",
-                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.mokatebeByOrganizationCountData)),
-                }],
-                categoryAxis: {
-                    categories: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.mokatebeByOrganizationData)),
-                    labels: {
-                        //padding: {
-                        //    right: 35
-                        //},
-                        rotation: 90
-                    },
-                },
-                valueAxes: {
-                    majorGridLines: {
-                        visible: false,
-                    },
-                },
-            });
-
-            $("#soalat-by-status-chart").kendoChart({
-                title: {
-                    text: "وضعیت کلی سوالات"
-                },
-                legend: {
-                    position: "bottom",
-                },
-                seriesDefaults: {
-                    type: 'column',
-                    stack: true,
-                    width: 50,
-                    gap: 5,
-                    labels: {
-                        visible: true,
-                        format: "{0}"
-                    }
-                },
-                seriesColors: ["#ed7d31"],
-                series: [{
-                    spacing: 0,
-                    majorGridLines: {
-                        visible: false,
-                    },
-                    //type: "bar",
-                    //name: "نمودار اطلاعات ثبت شده",
-                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.soalByStatusCountData)),
-                }],
-                categoryAxis: {
-                    categories: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.soalByStatusData)),
-                    labels: {
-                        padding: {
-                            right: 15
-                        },
-                        rotation: 270
-                    },
-                },
-                valueAxes: {
-                    majorGridLines: {
-                        visible: false,
-                    },
-                },
-            });
-
-            $("#soalat-by-organization-chart").kendoChart({
-                title: {
-                    text: "تعداد سوالات به تفکیک معاونت‌ها/سازمان‌ها"
-                },
-                legend: {
-                    position: "bottom",
-                },
-                seriesDefaults: {
-                    type: 'column',
-                    stack: true,
-                    width: 3,
-                    gap: 20,
-                    labels: {
-                        visible: true,
-                        format: "{0}"
-                    }
-                },
-                seriesColors: ["#5b9bd5"],
-                series: [{
-                    spacing: 0,
-                    majorGridLines: {
-                        visible: false,
-                    },
-                    //type: "bar",
-                    //name: "نمودار اطلاعات ثبت شده",
-                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.soalByOrganizationCountData)),
-                }],
-                categoryAxis: {
-                    categories: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.soalByOrganizationData)),
-                    labels: {
-                        padding: {
-                            right: 30
-                        },
-                        rotation: 90
-                    },
-                },
-                valueAxes: {
-                    majorGridLines: {
-                        visible: false,
-                    },
-                },
-            });
-
-            $("#soalat-by-city-chart").kendoChart({
-                title: {
-                    text: "تعداد سوالات به تفکیک استان"
-                },
-                legend: {
-                    position: "bottom",
-                },
-                seriesDefaults: {
-                    type: 'line',
-                    stack: true,
-                    width: 3,
-                    gap: 20,
-                    labels: {
-                        visible: true,
-                        format: "{0}"
-                    },
-                },
-                seriesColors: ["#5385c1"],
-                series: [{
-                    spacing: 0,
-                    //type: "bar",
-                    //name: "نمودار اطلاعات ثبت شده",
-                    majorGridLines: {
-                        visible: false,
-                    },
-                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.soalByCityCountData)),
-                }],
-                valueAxes: {
-                    majorGridLines: {
-                        visible: false,
-                    },
-                },
-                categoryAxis: {
-                    categories: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.soalByCityData)),
-                    labels: {
-                        padding: {
-                            right: 10
-                        },
-                        rotation: 270
-                    },
-                    majorGridLines: {
-                        visible: false,
-                    },
-                }
-            });
-
-            $("#molaghat-by-month-chart").kendoChart({
-                title: {
-                    text: " ملاقات نمایندگان با مقام عالی وزارت به تفکیک ماه "
-                },
-                legend: {
-                    position: "bottom",
-                },
-                seriesDefaults: {
-                    type: 'line',
-                    stack: true,
-                    width: 3,
-                    gap: 20,
-                    labels: {
-                        visible: true,
-                        format: "{0}"
-                    },
-                },
-                seriesColors: ["#5385c1"],
-                series: [{
-                    spacing: 0,
-                    //type: "bar",
-                    //name: "نمودار اطلاعات ثبت شده",
-                    majorGridLines: {
-                        visible: false,
-                    },
-                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.molaghatByMonthCountData)),
-                }],
-                valueAxes: {
-                    majorGridLines: {
-                        visible: false,
-                    },
-                },
-                categoryAxis: {
-                    categories: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.molaghatByMonthData)),
-                    labels: {
-                        padding: {
-                            right: 5
-                        },
-                        rotation: 270
-                    },
-                    majorGridLines: {
-                        visible: false,
-                    },
-                }
-            });
-
-            $("#molaghat-by-city-chart").kendoChart({
-                title: {
-                    text: "اعداد ملاقات نمایندگان با مقام عالی وزارت به تفکیک استان"
-                },
-                legend: {
-                    position: "bottom",
-                },
-                seriesDefaults: {
-                    type: 'column',
-                    stack: true,
-                    width: 30,
-                    gap: 20,
-                    labels: {
-                        visible: true,
-                        format: "{0}"
-                    }
-                },
-                seriesColors: ["#ca3f3c"],
-                series: [{
-                    spacing: 0,
-                    //type: "bar",
-                    //name: "نمودار اطلاعات ثبت شده",
-                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.molaghatCountData)),
-                }],
-                categoryAxis: {
-                    categories: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.molaghatData)),
-                    labels: {
-                        padding: {
-                            right: 10
-                        },
-                        rotation: 270
-                    },
-                }
-            });
-
-            $("#chart").kendoChart({
-                title: {
-                    text: "نمودار اطلاعات ذخیره شده"
-                },
-                legend: {
-                    position: "bottom",
-                },
-                seriesColors: ["#9a1493"],
-                series: [{
-                    //type: "bar",
-                    //name: "نمودار اطلاعات ثبت شده",
-                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.dashboardCountData)),
-                }],
-                categoryAxis: {
-                    categories: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.dashboardData)),
-                    labels: {
-                        rotation: 60
-                    },
-                }
-            });
-
-            $("#mokatebe-pie-chart").kendoChart({
-                title: {
-                    text: "وضعیت کلی مکاتبات"
-                },
-                legend: {
-                    position: "top",
-                    spacing: 25,
-                    margin: {
-                        bottom: 5
-                    }
-                },
-                seriesDefaults: {
-                    labels: {
-                        visible: true,
-                        format: "{0}%"
-                    }
-                },
-                seriesColors: [
-                    "#9fc1ed",
-                    "#184580",
-                    "#f6ad8e",
-                    "#9dadda",
-                    "#4D5360",
-                    "#abc7e7",
-                    "#00A65A",
-                    "#D2D6DE",
-                    "#4D5360",
-                    "#00C0EF"],
-                seriesDefaults: {
-                    labels: {
-                        visible: true,
-                        format: "{0}%"
-                    }
-                },
-                series: [{
-                    type: "pie",
-                    data:
-        @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.dashboardMokatebeData)),
-                }]
-
-            });
-
-            $("#mokatebe-pie-chart-deatils").kendoChart({
-                title: {
-                    text: ""
-                },
-                legend: {
-                    position: "top",
-                    spacing: 35,
-                    margin: {
-                        bottom: 5,
-                        top: 60
-                    },
-                    padding:{
-                        top: 20,
-                        bottom:20
-                    }
-                },
-                seriesDefaults: {
-                    labels: {
-                        visible: true,
-                        format: "{0}%"
+                        format: "{0}",
+                        font: "12px Vazir, Tahoma",
+                        color: "#333"
                     }
                 },
                 chartArea: {
-                    width: 350,
-                    height: 350,
-                },
-                seriesColors: [
-                    "#c4c4c4",
-                    "#ffd688",
-                    "#f6ad8e",
-                    "#9dadda",
-                    "#4D5360",
-                    "#abc7e7",
-                    "#00A65A",
-                    "#D2D6DE",
-                    "#4D5360",
-                    "#00C0EF"],
-                seriesDefaults: {
-                    labels: {
-                        visible: true,
-                        format: "{0}%",
-                    }
-                },
-                series: [{
-                    type: "pie",
-                    data:
-        @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.dashboardDetailsMokatebeData)),
-                }]
-
-            });
-
-            $("#mokatebe-peynevesht-pie-chart").kendoChart({
-                title: {
-                    text: "وضعیت مکاتبات پی‌نوشت"
-                },
-                legend: {
-                    position: "top",
-                    spacing: 25,
                     margin: {
-                        bottom: 5
-                    }
-                },
-                seriesDefaults: {
-                    labels: {
-                        visible: true,
-                        format: "{0}%"
-                    }
-                },
-                seriesColors: [
-                    "#D4BFFF",
-                    "#8547FF",
-                    "#f6ad8e",
-                    "#9dadda",
-                    "#4D5360",
-                    "#abc7e7",
-                    "#00A65A",
-                    "#D2D6DE",
-                    "#4D5360",
-                    "#00C0EF"],
-                seriesDefaults: {
-                    labels: {
-                        visible: true,
-                        format: "{0}%"
-                    }
-                },
-                series: [{
-                    type: "pie",
-                    data:
-        @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.dashboardMokatebePeyneveshtData)),
-                }]
-
-            });
-
-            $("#mokatebe-peynevesht-pie-chart-deatils").kendoChart({
-                title: {
-                    text: ""
-                },
-                legend: {
-                    position: "top",
-                    spacing: 35,
-                    margin: {
-                        bottom: 5,
-                        top: 60
-                    },
-                    padding: {
                         top: 20,
-                        bottom: 20
+                        left: 60,
+                        right: 40,
+                        bottom: 80
                     }
                 },
-                seriesDefaults: {
+                categoryAxis: {
                     labels: {
-                        visible: true,
-                        format: "{0}%"
-                    }
+                        padding: { right: 15 },
+                        rotation: 270,
+                        font: "11px Vazir, Tahoma"
+                    },
                 },
-                chartArea: {
-                    width: 350,
-                    height: 350,
-                },
-                seriesColors: [
-                    "#06FFCE",
-                    "#F65A7F",
-                    "#06B5FF",
-                    "#9dadda",
-                    "#4D5360",
-                    "#abc7e7",
-                    "#00A65A",
-                    "#D2D6DE",
-                    "#4D5360",
-                    "#00C0EF"],
-                seriesDefaults: {
+                valueAxes: {
                     labels: {
-                        visible: true,
-                        format: "{0}%",
-                    }
+                        font: "11px Vazir, Tahoma"
+                    },
+                    majorGridLines: {
+                        visible: false,
+                    },
                 },
-                series: [{
-                    type: "pie",
-                    data:
-        @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.dashboardDetailsMokatebePeyneveshtData)),
-                }]
+                tooltip: {
+                    visible: true,
+                    font: "12px Vazir, Tahoma",
+                    format: "{0}",
+                    background: "#333",
+                    color: "#fff"
+                }
+            };
 
+            // چارت تعداد وام‌های پرداخت شده
+            $("#approvedLoan-chart").kendoChart({
+                ...commonChartOptions,
+                title: {
+                    text: "تعداد وام‌های پرداخت شده در سال اخیر",
+                    font: "bold 14px Vazir, Tahoma",
+                    color: "#2c3e50"
+                },
+                seriesColors: ["#3498db"],
+                series: [{
+                    name: "تعداد وام",
+                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.approvedLoanCount)),
+                }],
+                categoryAxis: {
+                    ...commonChartOptions.categoryAxis,
+                    categories: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.loanByStatusLabels)),
+                }
             });
 
+            // چارت مبلغ تسهیلات
+            $("#approvedLoanAmount-chart").kendoChart({
+                ...commonChartOptions,
+                title: {
+                    text: "مبلغ کل تسهیلات پرداخت شده در سال اخیر",
+                    font: "bold 14px Vazir, Tahoma",
+                    color: "#2c3e50"
+                },
+                seriesColors: ["#2ecc71"],
+                series: [{
+                    name: "مبلغ ",
+                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.approvedLoanAmountData)),
+                }],
+                categoryAxis: {
+                    ...commonChartOptions.categoryAxis,
+                    categories: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(@ViewBag.loanByStatusLabels)),
+                },
+                valueAxes: {
+                    ...commonChartOptions.valueAxes,
+                    labels: {
+                        ...commonChartOptions.valueAxes.labels,
+                        template: "#= kendo.toString(value, 'n0') #"
+                    }
+                },
+                tooltip: {
+                    ...commonChartOptions.tooltip,
+                    template: "#= series.name #: #= kendo.toString(value, 'n0') #"
+                }
+            });
 
+            // پاسخگو کردن چارت‌ها
+            $(window).on('resize', function() {
+                $("#approvedLoan-chart").data("kendoChart").refresh();
+                $("#approvedLoanAmount-chart").data("kendoChart").refresh();
+            });
         });
     </script>
 }
-
-
-

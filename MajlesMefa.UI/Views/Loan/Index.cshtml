@@ -34,7 +34,10 @@
             else {
                 url_get_loan = '@Url.Action(nameof(LoanController.GetLoans), LoanController.CONTROLLER)' + '?senatorId=@id';
             }
-            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower() || @RoleTypeEnum.Organization.Equals(role).ToString().ToLower()) {
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || 
+            @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || 
+            @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower() || 
+            @RoleTypeEnum.Organization.Equals(role).ToString().ToLower()) {
                 url_edit = '@Url.Action(nameof(LoanController.Edit), LoanController.CONTROLLER)';
                 url_delete = '@Url.Action(nameof(LoanController.Delete), LoanController.CONTROLLER)';
             }
@@ -49,6 +52,8 @@
         {
             if(@RoleTypeEnum.Senator.Equals(role).ToString().ToLower()){
                url_create = '@Url.Action(nameof(LoanController.Create), LoanController.CONTROLLER)';
+
+                url_edit = '@Url.Action(nameof(LoanController.Edit), LoanController.CONTROLLER)';
             }
         }
         

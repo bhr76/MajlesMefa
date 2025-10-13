@@ -37,7 +37,10 @@ namespace MajlesMefa.Back.UseCases.Queries.GetSenatorBudgetRemainQuery
             var defineBudget = await _budgetRepository.GetDefineBudget(request.SenatorId, request.UserId);
 
             var usedBudget = await _context.Loans
-                .Where(x => x.DataEntry.SenatorId == request.SenatorId && x.UserId == request.UserId)
+                .Where(x => x.DataEntry.SenatorId == request.SenatorId 
+                && x.UserId == request.UserId
+                && x.VaziatPasokh != Enums.ResponseStatusEnum.Manfi
+                )
                 .SumAsync(x => (long?)x.Amount, cancellationToken) ?? 0L;
 
             if (defineBudget.Amount - usedBudget < 0)

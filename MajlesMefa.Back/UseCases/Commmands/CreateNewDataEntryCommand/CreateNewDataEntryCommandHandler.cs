@@ -19,6 +19,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.Extensions.Configuration;
+using System.Globalization;
 
 namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
 {
@@ -101,20 +102,32 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
                 case DataEntryTypeEnum.Loan:
                     var loan = _mapper.Map<LoanEntity>(request.DataEntryData as LoanDtailDto);
                     loan.DataEntry = dataEntity;
-                    var todayLoans = _context.Loans.Include(l => l.DataEntry)
-                        .Where(x => x.DataEntry.SenatorId == loan.DataEntry.SenatorId && x.DataEntry.Created.Date == DateTime.Today);
+
+                    //persian year
+                    var persianCalendar = new PersianCalendar();
+                    var now = DateTime.Now;
+                    var currentPersianYear = persianCalendar.GetYear(now);
+                    var startOfPersianYear = new DateTime(currentPersianYear, 1, 1, persianCalendar);
+                    var endOfPersianYear = new DateTime(currentPersianYear, 12, 29, 23, 59, 59, persianCalendar);
+                    //
+                    var yearlyLoans = _context.Loans.Include(l => l.DataEntry)
+                        .Where(x => x.DataEntry.SenatorId == loan.DataEntry.SenatorId
+                                && x.DataEntry.Created >= startOfPersianYear
+                                && x.DataEntry.Created <= endOfPersianYear);
                     //if (todayLoans.Count() >= int.Parse(_configuration.GetSection("DailyLoanCount").Value))
                     //{
                     //    throw new InvalidOperationException("شما قادر به معرفی بیش از 2 نفر جهت اخذ تسهیلات در روز نمی‌باشید.");
                     //}
-                    if (todayLoans.Where(l => l.LoanType == LoanTypeEnum.Morabehe).Sum(x => x.Amount) >= long.Parse(_configuration.GetSection("AnnuallyMorabeheAmount").Value))
+                    //phase 2
+
+                    var havemaxLoaninYearRequestConfig = long.TryParse(_configuration["maxLoanInYearRequest"], out long maxLoanInYearRequest);
+                    if (!havemaxLoaninYearRequestConfig) { maxLoanInYearRequest = 5000000000; } // پنج میلیارد تومن در سال
+
+                    if (yearlyLoans.Sum(x => x.Amount) >= maxLoanInYearRequest)
                     {
-                        throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات مرابحه به پایان رسیده‌است.");
+                        throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات به پایان رسیده‌است.");
                     }
-                    if (todayLoans.Where(l => l.LoanType == LoanTypeEnum.Gharzolhasane).Sum(x => x.Amount) >= long.Parse(_configuration.GetSection("AnnuallyGharzolhasaneAmount").Value))
-                    {
-                        throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات قرض الحسنه به پایان رسیده‌است.");
-                    }
+                   
                     _context.Loans.Add(loan);
                     break;
                 case DataEntryTypeEnum.Mokatebe:

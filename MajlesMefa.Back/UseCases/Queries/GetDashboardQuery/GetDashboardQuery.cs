@@ -9,54 +9,60 @@ using System.Threading.Tasks;
 
 namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
 {
-    public class GetDashboardQuery: IRequest<List<DashboardItemDto>>
-    {
-    }
+    //public class GetDashboardQuery: IRequest<List<DashboardItemDto>>
+    //{
+    //}
 
-    public class GetDashboardMokatebeByStatusQuery : IRequest<List<DashboardMokatebeItemDto>>
-    {
-        public MokatebeTypeEnum? MokatebeType { get; set; }
-        public GetDashboardMokatebeByStatusQuery(MokatebeTypeEnum? mokatebeType)
-        {
-            MokatebeType = mokatebeType;
-        }
-        public GetDashboardMokatebeByStatusQuery()
-        {
-        }
-    }
+    //public class GetDashboardMokatebeByStatusQuery : IRequest<List<DashboardMokatebeItemDto>>
+    //{
+    //    public MokatebeTypeEnum? MokatebeType { get; set; }
+    //    public GetDashboardMokatebeByStatusQuery(MokatebeTypeEnum? mokatebeType)
+    //    {
+    //        MokatebeType = mokatebeType;
+    //    }
+    //    public GetDashboardMokatebeByStatusQuery()
+    //    {
+    //    }
+    //}
 
-    public class GetDashboardMolaghatByCityQuery : IRequest<List<DashboardItemDto>>
-    {
-    }
+    //public class GetDashboardMolaghatByCityQuery : IRequest<List<DashboardItemDto>>
+    //{
+    //}
 
-    public class GetDashboardMolaghatByMonthQuery : IRequest<List<DashboardItemDto>>
-    {
-    }
+    //public class GetDashboardMolaghatByMonthQuery : IRequest<List<DashboardItemDto>>
+    //{
+    //}
 
-    public class GetDashboardSoalatByCityQuery : IRequest<List<DashboardItemDto>>
-    {
-    }
-    public class GetDashboardSoalatByOrganizationQuery : IRequest<List<DashboardItemDto>>
-    {
-    }
+    //public class GetDashboardSoalatByCityQuery : IRequest<List<DashboardItemDto>>
+    //{
+    //}
+    //public class GetDashboardSoalatByOrganizationQuery : IRequest<List<DashboardItemDto>>
+    //{
+    //}
 
-    public class GetDashboardMokatebeByResponseStatusQuery : IRequest<List<DashboardMokatebeItemDto>>
-    {
-        public MokatebeTypeEnum? MokatebeType { get; set; }
-        public GetDashboardMokatebeByResponseStatusQuery(MokatebeTypeEnum? mokatebeType)
-        {
-            MokatebeType = mokatebeType;
-        }
-        public GetDashboardMokatebeByResponseStatusQuery()
-        {
-        }
-    }
+    //public class GetDashboardMokatebeByResponseStatusQuery : IRequest<List<DashboardMokatebeItemDto>>
+    //{
+    //    public MokatebeTypeEnum? MokatebeType { get; set; }
+    //    public GetDashboardMokatebeByResponseStatusQuery(MokatebeTypeEnum? mokatebeType)
+    //    {
+    //        MokatebeType = mokatebeType;
+    //    }
+    //    public GetDashboardMokatebeByResponseStatusQuery()
+    //    {
+    //    }
+    //}
 
-    public class GetDashboardSoalatByStatusQuery : IRequest<List<DashboardItemDto>>
-    {
-    }
+    //public class GetDashboardSoalatByStatusQuery : IRequest<List<DashboardItemDto>>
+    //{
+    //}
 
-    public class GetDashboardMokatebeByOrganizationQuery : IRequest<List<MokatebeDashboardItemDto>>
+    //public class GetDashboardMokatebeByOrganizationQuery : IRequest<List<MokatebeDashboardItemDto>>
+    //{
+    //}
+
+    public class GetDashboardLoanByStatusQuery : IRequest<DashboardLoanDto>
     {
+        public Guid? SenatorId { get; set; } = Guid.Empty;
+        public ResponseStatusEnum? Status { get; set; } = null;
     }
 }

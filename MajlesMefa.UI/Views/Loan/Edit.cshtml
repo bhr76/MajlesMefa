@@ -5,6 +5,8 @@
 @using MajlesMefa.UI.Views.Senator;
 @{
     ViewData["Title"] = "تغییر وضعیت تسهیلات";
+
+    var isSenator = ViewBag.IsSenator;
 }
 @model LoanVm
 
@@ -14,58 +16,112 @@
             <div class="row">
                 <div asp-validation-summary="ModelOnly"></div>
                 <input asp-for="@Model.LoanData.Id" hidden />
-                <div class="form-group mt-3 col-md-4">
-                    <label asp-for="@Model.SenatorId"></label>
-                    <input asp-for="@Model.SenatorId" id="SenatorId" readonly class="form-control" />
-                </div>
+                @if (!isSenator)
+                {
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.SenatorId"></label>
+                        <input asp-for="@Model.SenatorId" id="SenatorId" readonly class="form-control" />
+                    </div>
 
-                <div class="form-group mt-3 col-md-4">
-                    <label asp-for="@Model.LoanData.FullName" class="control-label"></label>
-                    <input readonly asp-for="@Model.LoanData.FullName" maxlength="256" id="FullName" class="form-control" />
-                    <span asp-validation-for="@Model.LoanData.FullName" class="text-danger"></span>
-                </div>
-                <div class="form-group mt-3 col-md-4">
-                    <label asp-for="@Model.LoanData.NationalNo" class="control-label"></label>
-                    <input readonly asp-for="@Model.LoanData.NationalNo" maxlength="10" id="NationalNo" class="form-control" />
-                    <span asp-validation-for="@Model.LoanData.NationalNo" class="text-danger"></span>
-                </div>
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.FullName" class="control-label"></label>
+                        <input readonly asp-for="@Model.LoanData.FullName" maxlength="256" id="FullName" class="form-control" />
+                        <span asp-validation-for="@Model.LoanData.FullName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.NationalNo" class="control-label"></label>
+                        <input readonly asp-for="@Model.LoanData.NationalNo" maxlength="10" id="NationalNo" class="form-control" />
+                        <span asp-validation-for="@Model.LoanData.NationalNo" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group mt-3 col-md-4">
-                    <label asp-for="@Model.LoanData.MobileNo" class="control-label"></label>
-                    <input readonly asp-for="@Model.LoanData.MobileNo" id="MobileNo" class="form-control" />
-                    <span asp-validation-for="@Model.LoanData.MobileNo" class="text-danger"></span>
-                </div>
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.MobileNo" class="control-label"></label>
+                        <input readonly asp-for="@Model.LoanData.MobileNo" id="MobileNo" class="form-control" />
+                        <span asp-validation-for="@Model.LoanData.MobileNo" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group mt-3 col-md-4">
-                    <label asp-for="@Model.LoanData.LoanType"></label>
-                    <input readonly asp-for="@Model.LoanData.LoanTypeInt" id="LoanType" class="form-control" />
-                    <span asp-validation-for="@Model.LoanData.LoanTypeInt" class="text-danger"></span>
-                </div>
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.LoanType"></label>
+                        <input readonly asp-for="@Model.LoanData.LoanTypeInt" id="LoanType" class="form-control" />
+                        <span asp-validation-for="@Model.LoanData.LoanTypeInt" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group mt-3 col-md-4">
-                    <label asp-for="@Model.LoanData.Amount" class="control-label"></label>
-                    <input readonly asp-for="@Model.LoanData.Amount" maxlength="15" id="Amount" class="form-control" />
-                    <span asp-validation-for="@Model.LoanData.Amount" class="text-danger"></span>
-                </div>
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.Amount" class="control-label"></label>
+                        <input readonly asp-for="@Model.LoanData.Amount" maxlength="15" id="Amount" class="form-control" />
+                        <span asp-validation-for="@Model.LoanData.Amount" class="text-danger"></span>
+                    </div>
 
-                @*<div class="form-group mt-3 col-md-4">
-                    <label asp-for="@Model.LoanData.SuggestedBankId"></label>
-                    <input readonly asp-for="@Model.LoanData.SuggestedBankId" id="SuggestedBankId" class="form-control" />
-                    <span asp-validation-for="@Model.LoanData.SuggestedBankId" class="text-danger"></span>
+                    @*<div class="form-group mt-3 col-md-4">
+                <label asp-for="@Model.LoanData.SuggestedBankId"></label>
+                <input readonly asp-for="@Model.LoanData.SuggestedBankId" id="SuggestedBankId" class="form-control" />
+                <span asp-validation-for="@Model.LoanData.SuggestedBankId" class="text-danger"></span>
                 </div>*@
 
-                <div class="form-group mt-3 col-md-12">
-                    <label asp-for="@Model.Description"></label>
-                    <textarea readonly asp-for="@Model.Description" id="Description" class="form-control" rows="4"></textarea>
-                    <span asp-validation-for="@Model.Description" class="text-danger"></span>
-                </div>
+                    <div class="form-group mt-3 col-md-12">
+                        <label asp-for="@Model.Description"></label>
+                        <textarea readonly asp-for="@Model.Description" id="Description" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                    </div>
 
-                <hr/>
-                <div class="form-group mt-3 col-md-4">
-                    <label asp-for="@Model.LoanData.PasokhStateInt"></label>
-                    <input asp-for="@Model.LoanData.PasokhStateInt" id="PasokhState" class="form-control">
-                    <span asp-validation-for="@Model.LoanData.PasokhStateInt" class="text-danger"></span>
-                </div>
+                    <hr />
+
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.PasokhStateInt"></label>
+                        <input asp-for="@Model.LoanData.PasokhStateInt" id="PasokhState" class="form-control">
+                        <span asp-validation-for="@Model.LoanData.PasokhStateInt" class="text-danger"></span>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.SenatorId"></label>
+                        <input readonly asp-for="@Model.SenatorId" id="SenatorId" class="form-control" />
+                    </div>
+
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.FullName" class="control-label"></label>
+                        <input  asp-for="@Model.LoanData.FullName" maxlength="256" id="FullName" class="form-control" />
+                        <span asp-validation-for="@Model.LoanData.FullName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.NationalNo" class="control-label"></label>
+                        <input  asp-for="@Model.LoanData.NationalNo" maxlength="10" id="NationalNo" class="form-control" />
+                        <span asp-validation-for="@Model.LoanData.NationalNo" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.MobileNo" class="control-label"></label>
+                        <input  asp-for="@Model.LoanData.MobileNo" id="MobileNo" class="form-control" />
+                        <span asp-validation-for="@Model.LoanData.MobileNo" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.LoanType"></label>
+                        <input  asp-for="@Model.LoanData.LoanTypeInt" id="LoanType" class="form-control" />
+                        <span asp-validation-for="@Model.LoanData.LoanTypeInt" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.Amount" class="control-label"></label>
+                        <input  asp-for="@Model.LoanData.Amount" maxlength="15" id="Amount" class="form-control" />
+                        <span asp-validation-for="@Model.LoanData.Amount" class="text-danger"></span>
+                    </div>
+
+                    @*<div class="form-group mt-3 col-md-4">
+                <label asp-for="@Model.LoanData.SuggestedBankId"></label>
+                <input readonly asp-for="@Model.LoanData.SuggestedBankId" id="SuggestedBankId" class="form-control" />
+                <span asp-validation-for="@Model.LoanData.SuggestedBankId" class="text-danger"></span>
+                </div>*@
+
+                    <div class="form-group mt-3 col-md-12">
+                        <label asp-for="@Model.Description"></label>
+                        <textarea  asp-for="@Model.Description" id="Description" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                    </div>
+                }
+               
+              
 
 
                 @*<div class="col-12 mt-4">

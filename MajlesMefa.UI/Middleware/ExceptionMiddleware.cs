@@ -147,7 +147,7 @@ namespace MajlesMefa.UI.Middleware
                     null
                 );
             }
-
+            File.AppendAllText(@"c:\test\log.txt", $"{exception.Message} - {exception.StackTrace} - {DateTime.Now.ToString()}");
             //if (context.IsDiplayMessageOnContext())
             //{
             //    context.WriteMessageOnContext(result);

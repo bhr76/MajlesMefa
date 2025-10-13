@@ -1,11 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
 using MajlesMefa.Back.Entities;
 using MajlesMefa.Back.Extensions;
-using System.Reflection;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Unicode;
-using AutoMapper;
 using MajlesMefa.Back.Repositories;
 using MajlesMefa.Back.Utilities.Mapping;
 using MajlesMefa.Back.UseCases.Commmands.AddCityCommand;
@@ -22,6 +16,7 @@ using MajlesMefa.UI.Views.Home;
 using MajlesMefa.Back.Utilities.FTP;
 using MajlesMefa.Back.Repositories.Reddis;
 using StackExchange.Redis;
+using MajlesMefa.Core.ApplicationService.Services.SOAPlus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +83,17 @@ builder.Services.AddMaper(typeof(DataEntryEntity).Assembly);
 builder.Services.AddCustomIdentity<OptionService>(builder.Configuration, "AuthDb");
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IRedisRepository, RedisRepository>();
+builder.Services.AddScoped<ISenatorBudgetRepository, SenatorBudgetRepository>();
+
+
+//soaplus
+builder.Services.AddHttpClient<ISoaPlusService, SoaPlusService>("soa-plus", c =>
+{
+    c.BaseAddress = new Uri(builder.Configuration["soaPlus:baseUrl"]);
+}).AddHttpMessageHandler<SoaPlusHttpClientRequestDelegatingHandler>();
+//.AddHttpMessageHandler<LoggingHttpMessageHandler>();
+builder.Services.AddScoped<SoaPlusHttpClientRequestDelegatingHandler>();
+builder.Services.AddScoped<ISoaPlusAuthorizationService, SoaPlusAuthorizationService>();
 
 var app = builder.Build();
 await app.Services.AddBaseUserSeed();

@@ -16,6 +16,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using MajlesMefa.Back.Repositories;
+using System.Globalization;
+using Microsoft.Extensions.Configuration;
 
 namespace MajlesMefa.Back.UseCases.Commmands.UpdateDataEntryCommand
 {
@@ -25,16 +27,19 @@ namespace MajlesMefa.Back.UseCases.Commmands.UpdateDataEntryCommand
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IConfiguration _configuration;
 
         public UpdateDataEntryCommandHandler(RefahMajlesDbContext context,
             IMapper mapper,
             ICurrentUserService currentUserService,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
+            _configuration = configuration;
         }
 
         public async Task Handle(UpdateDataEntryCommand request, CancellationToken cancellationToken)
@@ -236,8 +241,40 @@ namespace MajlesMefa.Back.UseCases.Commmands.UpdateDataEntryCommand
                         data.DataEntry.EzhaaratResaneee = _mapper.Map(request.DataEntryData as EzhaaratResaneeeDetailDto, data.DataEntry.EzhaaratResaneee);
                         break;
                     case DataEntryTypeEnum.Loan:
+                        var isRefrencedToBank =  _context.ActionReferences
+                            .Include(a => a.ToUser)
+                            .Where(a => a.ToUser.OrganizationId != null && a.DataEntryId == data.DataEntryId)
+                            .Count() > 0;
+                        if (isRefrencedToBank)
+                        {
+                            throw new InvalidOperationException("تسهیلات انتخابی به بانک ارجاع شده است و قابل ویرایش نمی باشد");
+                        }
                         data.DataEntry.Loan = _mapper.Map(request.DataEntryData as LoanDtailDto, data.DataEntry.Loan);
                         data.DataEntry.Loan.VaziatPasokh = (request.DataEntryData as LoanDtailDto).PasokhState;
+                        var persianCalendar = new PersianCalendar();
+                        var now = DateTime.Now;
+                        var currentPersianYear = persianCalendar.GetYear(now);
+                        var startOfPersianYear = new DateTime(currentPersianYear, 1, 1, persianCalendar);
+                        var endOfPersianYear = new DateTime(currentPersianYear, 12, 29, 23, 59, 59, persianCalendar);
+                        //
+                        var yearlyLoans = _context.Loans.Include(l => l.DataEntry)
+                            .Where(x => x.DataEntry.SenatorId == data.DataEntry.SenatorId
+                                    && x.DataEntry.Created >= startOfPersianYear
+                                    && x.DataEntry.Created <= endOfPersianYear);
+                        //if (todayLoans.Count() >= int.Parse(_configuration.GetSection("DailyLoanCount").Value))
+                        //{
+                        //    throw new InvalidOperationException("شما قادر به معرفی بیش از 2 نفر جهت اخذ تسهیلات در روز نمی‌باشید.");
+                        //}
+                        //phase 2
+
+                        var havemaxLoaninYearRequestConfig = long.TryParse(_configuration["maxLoanInYearRequest"], out long maxLoanInYearRequest);
+                        if (!havemaxLoaninYearRequestConfig) { maxLoanInYearRequest = 5000000000; } // پنج میلیارد تومن در سال
+
+                        if (yearlyLoans.Sum(x => x.Amount) >= maxLoanInYearRequest)
+                        {
+                            throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات به پایان رسیده‌است.");
+                        }
+
                         break;
                     case DataEntryTypeEnum.TahghighTafahos:
                         data.DataEntry.TahghighTafahos = _mapper.Map<TahghighTafahosEntity>(request.DataEntryData as TahghighTafahosDetailDto);

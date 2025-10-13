@@ -13,6 +13,8 @@ using MajlesMefa.UI.Views.Shared;
 using System.Diagnostics;
 using System.Web;
 using MajlesMefa.Back.Repositories.Reddis;
+using DocumentFormat.OpenXml.InkML;
+using Newtonsoft.Json;
 
 namespace MajlesMefa.UI.Core.Login
 {
@@ -76,23 +78,29 @@ namespace MajlesMefa.UI.Core.Login
         [MessageOnContext("~/Views/Login/Index.cshtml")]
         public async Task<IActionResult> Index(LoginVm loginVm)
         {
-            var isValid = Captcha.ValidateCaptchaCode(loginVm.CaptchaCode, HttpContext);
 
+            var isValid = Captcha.ValidateCaptchaCode(loginVm.CaptchaCode, HttpContext);
+            //System.IO.File.AppendAllText(@"c:\test\index.txt", $"before isValid - {DateTime.Now.ToString()}");
             if (isValid)
             {
                 var userId = loginVm.Username;
 
                 var existingSession = await RedisRepository.GetUserSessionAsync(userId);
+                _logger.LogTrace($"redis session: {existingSession}");
                 if (!string.IsNullOrEmpty(existingSession))
                 {
                     await RedisRepository.AddToBlacklistAsync(existingSession, TimeSpan.FromHours(1));
+                    _logger.LogTrace($"add to redis blacklist: {existingSession}");
                 }
+                //System.IO.File.AppendAllText(@"c:\test\index.txt", $"before mediator - {DateTime.Now.ToString()}");
 
                 var token = await Mediator.Send(new LoginCommand()
                 {
                     Username = loginVm.Username,
                     Password = loginVm.Password,
                 });
+
+                _logger.LogTrace($"user token get successfully {loginVm.Username}");
 
                 // ذخیره نشست جدید در Redis
                 await RedisRepository.SetUserSessionAsync(
@@ -121,11 +129,11 @@ namespace MajlesMefa.UI.Core.Login
                     Secure = true,
                 });
 
-                return Json(new { redirectToUrl = Url.Action("Index", "Loan") });
+                return Json(new { redirectToUrl = Url.Action("Index", "Home") });
             }
             else
             {
-                throw new Exception("اطلاعات ورود نامعتبر است");
+                throw new Exception("کد امنیتی وارد شده نامعتبر است");
             }
            
             //return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).Replace("Controller", ""));

@@ -255,7 +255,7 @@ namespace MajlesMefa.UI.Views.SenatorBudget
         [RequestLimit(NoOfRequest = 15, Seconds = 10)]
         public IActionResult GetAllRequestLoanTypesForDropDown()
         {
-            return Json(SenatorRequestLoanTypeEnumHelper.GetList());
+            return Json(LoanTypeEnumHelper.GetList());
         }
 
         [Auth]

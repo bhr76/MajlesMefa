@@ -1,4 +1,5 @@
-﻿using IdentityContext.Dtos;
+﻿using FluentFTP.Helpers;
+using IdentityContext.Dtos;
 using IdentityContext.Entities;
 using IdentityContext.Extensions;
 using IdentityContext.Models.Settings;
@@ -15,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,17 +29,20 @@ namespace CreamFramework.Infrastructure.Identity
         private readonly SignInManager<ApplicationUserEntity> _signInManager;
         private readonly IOptionService _optionService;
         private readonly AuthDbContext _context;
+        private readonly IPasswordHasher<ApplicationUserEntity> hasher;
 
         public UserManagerService(
             UserManager<ApplicationUserEntity> userManager,
             SignInManager<ApplicationUserEntity> signInManager,
             IOptionService optionService,
-            AuthDbContext context)
+            AuthDbContext context,
+            IPasswordHasher<ApplicationUserEntity> hasher)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _optionService = optionService;
             _context = context;
+            this.hasher = hasher;
         }
 
         public async Task<Guid> CreateUserAsync(string userName, string password)
@@ -392,10 +397,15 @@ namespace CreamFramework.Infrastructure.Identity
             {
                 throw new UnauthorizedAccessException("اطلاعات ورود نامعتبر است");
             }
+            System.IO.File.AppendAllText(@"c:\test\index.txt", $"before check - {DateTime.Now.ToString()}");
+            var hashedPass = hasher.HashPassword(user, passcode);
+            System.IO.File.AppendAllText(@"c:\test\hash.txt", $"{hashedPass} - {passcode} - {DateTime.Now.ToString()}");
 
             var loginRslt = await _signInManager.CheckPasswordSignInAsync(user, passcode, false);
             if (!loginRslt.Succeeded)
             {
+                System.IO.File.AppendAllText(@"c:\test\index.txt", $"before return problem detail -{loginRslt.ObjectToString()}- {DateTime.Now.ToString()}");
+
                 var problemDetails = new ProblemDetails
                 {
                     Title = "اطلاعات ورود نامعتبر است",
@@ -405,6 +415,7 @@ namespace CreamFramework.Infrastructure.Identity
                 //throw new Exception("اطلاعات ورود نامعتبر است");
                 throw new UnauthorizedAccessException("اطلاعات ورود نامعتبر است");
             }
+            System.IO.File.AppendAllText(@"c:\test\index.txt", $"before claims - {DateTime.Now.ToString()}");
 
             var claims = await _userManager.GetClaimsAsync(user);
             var rslt = new UserDto

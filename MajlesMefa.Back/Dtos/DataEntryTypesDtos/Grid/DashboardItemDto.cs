@@ -1,13 +1,18 @@
 ﻿using MajlesMefa.Back.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Grid
 {
-    public class DashboardItemDto
+    public class DashboardLoanDto
+    {
+        public int CountAllLoan { get; set; }
+        public int CountOfApprovedLoan { get; set; }
+        public int CountOfDeniedLoan { get; set; }
+        public int CountOfInProgressLoan { get; set; }
+        public long AmountOfApprovedLoan { get; set; }
+        public long AmountOfInprogressLoan { get; set; }
+        public List<DashboardLoanItemDto> DashboardChartData { get; set; }
+    }
+    public class DashboardLoanItemDto
     {
         public string ItemName { get; set; }
 
@@ -16,5 +21,7 @@ namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Grid
         public Guid Id { get; set; }
 
         public DataEntryTypeEnum ItemType { get; set; }
+
+        public long TotalAmount { get; set; } = 0;
     }
 }
