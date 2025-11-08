@@ -27,7 +27,8 @@
         var url_get_loan = '';
         var url_create = '';
         var url_edit = '';
-        var fromReportPage = false;
+        var fromReportPage = true;
+        var url_details_loan = '/ActionReference';
         var url_delete = '';
         {
             if ('@id' == null || '@id' == @Guid.Empty) { url_get_loan = '@Url.Action(nameof(LoanController.GetLoans), LoanController.CONTROLLER)'; }
@@ -74,7 +75,7 @@
                         `;
 
     </script>
-    <script src="~/js/pages/loan.js" asp-append-version="true"></script>
+    <script src="~/js/pages/Readonlyloan.js" asp-append-version="true"></script>
 
 }
 

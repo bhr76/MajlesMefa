@@ -1,0 +1,174 @@
+﻿
+@using MajlesMefa.Back.Enums;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.UI.Views.Report;
+@model Guid?
+@{
+    ViewData["Title"] = "گزارش تسهیلات";
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+}
+
+<div class="home-page">
+    <div class="m-portlet">
+       
+        <div class="m-portlet__body">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <label for="responseStatusFilter">وضعیت پاسخ:</label>
+                    <input id="responseStatusFilter" />
+                </div>
+               
+                <div class="col-md-3 mt-4">
+                    <button id="filterBtn" class="k-button k-primary">اعمال فیلتر</button>
+                    <button id="resetBtn" class="k-button">پاک کردن فیلتر</button>
+                </div>
+            </div>
+
+            <div class="k-rtl">
+                <div id="loan-report-grid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script asp-append-version="true">
+        var url_get_loan_report = '@Url.Action(nameof(LoanReportController.GetLoanReport), LoanReportController.CONTROLLER)';
+        var url_response_status_dropdown = '@Url.Action(nameof(LoanReportController.GetResponseStatusForDropDown), LoanReportController.CONTROLLER)';
+       
+
+        $(document).ready(function () {
+            // Initialize response status dropdown
+            $("#responseStatusFilter").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: url_response_status_dropdown,
+                            type: "GET",
+                            dataType: "json"
+                        }
+                    }
+                },
+                optionLabel: "همه وضعیت‌ها"
+            });
+
+            
+
+            // Initialize grid
+            var grid = $("#loan-report-grid").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: url_get_loan_report,
+                            type: "POST",
+                            contentType: "application/json",
+                            data: function () {
+                                
+                                var responseStatus = $("#responseStatusFilter").data("kendoDropDownList").value();
+
+                                var requestModel = {
+                                    Filter: {
+                                        skip: this.skip,
+                                        take: this.pageSize,
+                                        page: this.page,
+                                        pageSize: this.pageSize,
+                                        sort: this.sort
+                                    },
+                                 
+                                    ResponseStatus: responseStatus ? parseInt(responseStatus) : 0 // Default to Inprogress
+                                };
+
+                                return requestModel;
+                            }
+                        },
+                        parameterMap: function (data, operation) {
+                            if (operation === "read") {
+                                return kendo.stringify(data);
+                            }
+                            return data;
+                        }
+                    },
+                    schema: {
+                        data: "data",
+                        total: "total",
+                        model: {
+                            id: "id",
+                            fields: {
+                                "myData.bankFullName": { type: "string" },
+                                "myData.loanType": { type: "number" },
+                                "myData.amount": { type: "number" },
+                                "myData.count": { type: "number" }
+                            }
+                        }
+                    },
+                    pageSize: 20,
+                    serverPaging: true,
+                    serverFiltering: false, // We handle filtering manually
+                    serverSorting: true
+                },
+                height: 550,
+                sortable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: [10, 20, 50, 100],
+                    buttonCount: 5
+                },
+                columns: [
+                    {
+                        field: "myData.bankFullName",
+                        title: "نام بانک",
+                        width: "200px",
+                        template: function (dataItem) {
+                            return dataItem.myData.bankFullName;
+                        }
+                    },
+                    {
+                        field: "myData.loanType",
+                        title: "نوع تسهیلات",
+                        width: "150px",
+                        template: function (dataItem) {
+                            var loanTypeText = "";
+                            switch (dataItem.myData.loanType) {
+                                case 1: loanTypeText = "قرض الحسنه"; break;
+                                case 2: loanTypeText = "مرابحه"; break;
+                                default: loanTypeText = "نامشخص";
+                            }
+                            return loanTypeText;
+                        }
+                    },
+                    {
+                        field: "myData.amount",
+                        title: "مبلغ کل (تومان)",
+                        width: "150px",
+                        template: function (dataItem) {
+                            return dataItem.myData.amount ? kendo.toString(dataItem.myData.amount, "n0") : "0";
+                        }
+                    },
+                    {
+                        field: "myData.count",
+                        title: "تعداد",
+                        width: "100px",
+                        template: function (dataItem) {
+                            return dataItem.myData.count ? kendo.toString(dataItem.myData.count, "n0") : "0";
+                        }
+                    }
+                ]
+            }).data("kendoGrid");
+
+            // Filter button click event - simply refresh the grid
+            $("#filterBtn").click(function () {
+                grid.dataSource.read();
+            });
+
+            // Reset button click event
+            $("#resetBtn").click(function () {
+                $("#responseStatusFilter").data("kendoDropDownList").value("");
+
+                grid.dataSource.read();
+            });
+        });
+    </script>
+}

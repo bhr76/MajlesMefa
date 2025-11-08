@@ -32,7 +32,10 @@ namespace MajlesMefa.UI.Models
         [Display(Name = "استان نماینده")]
         public string SenatorCity { get; set; }
 
-        
+        [Display(Name = "استان نماینده")]
+        public long RemainBudget { get; set; }
+
+
         public LoanDtailDto LoanData { get; set; }
 
         [ Display(Name = "کاربر جهت ارجاع")]

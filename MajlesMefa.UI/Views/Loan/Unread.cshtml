@@ -6,7 +6,7 @@
 @using MajlesMefa.Back.Enums;
 @model Guid?
 @{
-    ViewData["Title"] = "لیست ارجاعات";
+    ViewData["Title"] = "لیست ارجاعات جدید";
     var id = Model.HasValue ? Model : Guid.Empty;
     var user = Context.RequestServices.GetService<ICurrentUserService>();
     var role = user.GetCurrentUser().Roles.FirstOrDefault();
@@ -30,9 +30,9 @@
         var fromReportPage = false;
         var url_delete = '';
         {
-            if ('@id' == null || '@id' == @Guid.Empty) { url_get_loan = '@Url.Action(nameof(LoanController.GetLoans), LoanController.CONTROLLER)'; }
+            if ('@id' == null || '@id' == @Guid.Empty) { url_get_loan = '@Url.Action(nameof(LoanController.GetUnreadLoans), LoanController.CONTROLLER)'; }
             else {
-                url_get_loan = '@Url.Action(nameof(LoanController.GetLoans), LoanController.CONTROLLER)' + '?senatorId=@id';
+                url_get_loan = '@Url.Action(nameof(LoanController.GetUnreadLoans), LoanController.CONTROLLER)' + '?senatorId=@id';
             }
             if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || 
             @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || 
@@ -74,7 +74,7 @@
                         `;
 
     </script>
-    <script src="~/js/pages/loan.js" asp-append-version="true"></script>
+    <script src="~/js/pages/unreadLoan.js" asp-append-version="true"></script>
 
 }
 

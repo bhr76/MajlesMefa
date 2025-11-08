@@ -27,6 +27,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
         public Guid? RelatedSenatorId { get; set; }
 
         public Guid? DataEntryId { get; set; }
+        public Guid? CurrentUserId { get; set; }
 
         public TableRequestModel Filter {get;set;} = new TableRequestModel()
         {

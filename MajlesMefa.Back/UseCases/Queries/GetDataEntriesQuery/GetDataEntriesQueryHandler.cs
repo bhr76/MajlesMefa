@@ -52,7 +52,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
             #region permission
             if (cuser.Roles.Any(u => u == RoleTypeEnum.MinistryMember))
             {
-                if(request.DataEntryType != DataEntryTypeEnum.DastoorJalasatComission)
+                if (request.DataEntryType != DataEntryTypeEnum.DastoorJalasatComission)
                     query = query.Where(q => (q.ActionReferences.Any(ar =>
                     ar.FromUserId == cuser.BussinessUserId ||
                     ar.ToUserId == cuser.BussinessUserId)) ||
@@ -65,10 +65,10 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
             }
             if (request.SenatorIdId.HasValue && !Guid.Empty.Equals(request.SenatorIdId))
             {
-                if(request.DataEntryType == DataEntryTypeEnum.TahghighTafahos)
+                if (request.DataEntryType == DataEntryTypeEnum.TahghighTafahos)
                 {
                     var result = query.Include(x => x.TahghighTafahos.TahghighTafahosSenators);
-                    query = result.Where(x => (x.SenatorId == request.SenatorIdId) || (x.TahghighTafahos.TahghighTafahosSenators).Where(y => y.SenatorId == request.SenatorIdId).ToList().Count != 0 ).AsQueryable();
+                    query = result.Where(x => (x.SenatorId == request.SenatorIdId) || (x.TahghighTafahos.TahghighTafahosSenators).Where(y => y.SenatorId == request.SenatorIdId).ToList().Count != 0).AsQueryable();
                 }
                 else
                 {
@@ -111,7 +111,15 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
             {
                 query = query.Where(q => q.Title.Contains(request.Title));
             }
-
+            if (request.CurrentUserId.HasValue)
+            {
+                query = query.Where(x => x.ActionReferences
+                            .Where(a => a.ActRefType == ActRefTypeEnum.Refer)
+                         .OrderByDescending(a => a.Created)
+                         .Select(a => a.ToUserId)
+                         .FirstOrDefault() == request.CurrentUserId);  
+                query = query.Where(x => x.Loan.VaziatPasokh == ResponseStatusEnum.Inprogress);
+            }
             return request.DataEntryType switch
             {
                 DataEntryTypeEnum.Mokatebe => await ApplyMokatebeFilterAsync(query, request.Filter),
@@ -135,8 +143,8 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
 
         private async Task<TableModel<DataEntryDto>> ApplyLoanFilterAsync(IQueryable<DataEntryEntity> query, TableRequestModel filter)
         {
-           
-            
+
+
             var result = await query.Select(x => new DataEntryDto()
             {
                 CategoryId = x.Category.ParentId != null ? x.CategoryId : null,
@@ -166,11 +174,11 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                     NationalNo = x.Loan.NationalNo,
                     MobileNo = x.Loan.MobileNo,
                     Amount = x.Loan.Amount.ShowCurrencyFormat(),
-                    LoanType= x.Loan.LoanType,
-
+                    LoanType = x.Loan.LoanType,
                     AccessActionRefrence = new GetAccessActionRefrenceResultDto(),
-                    PasokhNo= x.Loan.PasokhNo,
-                    PasokhState = x.Loan.VaziatPasokh
+                    PasokhNo = x.Loan.PasokhNo,
+                    PasokhState = x.Loan.VaziatPasokh,
+
                 }
             }).ToTableResultAsync(filter);
 
@@ -181,41 +189,41 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
         private async Task<TableModel<DataEntryDto>> ApplyKhadamatFilterAsync(IQueryable<DataEntryEntity> query, TableRequestModel filter)
         {
 
-                var result = await query.Select(x => new DataEntryDto()
+            var result = await query.Select(x => new DataEntryDto()
+            {
+                CategoryId = x.Category.ParentId != null ? x.CategoryId : null,
+                CategoryName = x.Category.ParentId != null ? x.Category.Name : null,
+                CategoryParentId = x.Category.ParentId != null ? x.Category.ParentId : x.CategoryId,
+                CategoryParentName = x.Category.ParentId != null ? x.Category.Parent.Name : x.Category.Name,
+                Moavenats = x.Moavenats != null ? x.Moavenats.Split(",", StringSplitOptions.None).ToList() : null,
+                CreatorUserName = x.Creator.Name,
+                DataEntryType = x.DataEntryType,
+                Description = x.Description,
+                Title = x.Title,
+                Id = x.Id,
+                SenatorCity = x.Senator.City.Name,
+                SenatorName = x.Senator.SenatorProfile.Name,
+                SenatorHozeEntekhabi = x.Senator.SenatorProfile.HozeCity.Name,
+                Senator = x.SenatorId.HasValue ? new SenatorDto()
                 {
-                    CategoryId = x.Category.ParentId != null ? x.CategoryId : null,
-                    CategoryName = x.Category.ParentId != null ? x.Category.Name : null,
-                    CategoryParentId = x.Category.ParentId != null ? x.Category.ParentId : x.CategoryId,
-                    CategoryParentName = x.Category.ParentId != null ? x.Category.Parent.Name : x.Category.Name,
-                    Moavenats = x.Moavenats != null ? x.Moavenats.Split(",", StringSplitOptions.None).ToList() : null,
-                    CreatorUserName = x.Creator.Name,
-                    DataEntryType = x.DataEntryType,
-                    Description = x.Description,
-                    Title = x.Title,
-                    Id = x.Id,
-                    SenatorCity = x.Senator.City.Name,
-                    SenatorName = x.Senator.SenatorProfile.Name,
-                    SenatorHozeEntekhabi = x.Senator.SenatorProfile.HozeCity.Name,
-                    Senator = x.SenatorId.HasValue ? new SenatorDto()
-                    {
-                        Name = x.Senator.SenatorProfile.Name,
-                        UserId = x.SenatorId.Value,
-                        HozeEntekhabi = x.Senator.SenatorProfile.HozeEntekhabi.GetPersianName(),
-                        City = x.Senator.City.Name,
-                    } : null,
-                    MyData = new KhadamatDto()
-                    {
-                        TarikhKhedmat = x.Khadamat.TarikhKhedmat,
-                        AccessActionRefrence = new GetAccessActionRefrenceResultDto()
-                    }
-                }).ToTableResultAsync(filter);
-
-                foreach (var item in result.Items)
+                    Name = x.Senator.SenatorProfile.Name,
+                    UserId = x.SenatorId.Value,
+                    HozeEntekhabi = x.Senator.SenatorProfile.HozeEntekhabi.GetPersianName(),
+                    City = x.Senator.City.Name,
+                } : null,
+                MyData = new KhadamatDto()
                 {
-                    item.CategoryParentName = item.Moavenats != null ? string.Join(" - ", item.Moavenats?.Select(x => GetMoavenatTitle(x)).ToList()) : item.CategoryParentName;
+                    TarikhKhedmat = x.Khadamat.TarikhKhedmat,
+                    AccessActionRefrence = new GetAccessActionRefrenceResultDto()
                 }
-                return result;
-           
+            }).ToTableResultAsync(filter);
+
+            foreach (var item in result.Items)
+            {
+                item.CategoryParentName = item.Moavenats != null ? string.Join(" - ", item.Moavenats?.Select(x => GetMoavenatTitle(x)).ToList()) : item.CategoryParentName;
+            }
+            return result;
+
         }
 
 
@@ -223,7 +231,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
         #region DataEntryTypes
         private async Task<TableModel<DataEntryDto>> ApplyNotghFilterAsync(IQueryable<DataEntryEntity> query, TableRequestModel filter)
         {
-            var result= await query.Select(x => new DataEntryDto()
+            var result = await query.Select(x => new DataEntryDto()
             {
                 CategoryId = x.Category.ParentId != null ? x.CategoryId : null,
                 CategoryName = x.Category.ParentId != null ? x.Category.Name : null,
@@ -250,7 +258,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                     AnswerFromProUnitDate = x.Notgh.AnswerFromProUnitDate,
                     AnswerFromProUnitNo = x.Notgh.AnswerFromProUnitNo,
                     JalaseAlaniDate = x.Notgh.JalaseAlaniDate,
-                    GardeshErjaat= x.Notgh.GardeshErjaat,
+                    GardeshErjaat = x.Notgh.GardeshErjaat,
                     Chekide = x.Notgh.Chekide,
                     PasokhNo = x.Notgh.PasokhNo,
                     PasokhState = x.Notgh.PasokhState,
@@ -271,7 +279,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
         //public static string getCommissionTitleById(string id)
         //{
         //    var query = _context.DastoorJalasatComissions.Where(x => x.DataEntryId.ToString() == id).FirstOrDefault();
-            
+
         //    return query.DataEntry.Title;
         //}
 
@@ -327,7 +335,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
             }
 
             query = query.OrderByDescending(x => x.Created);
-            var result= await query.Select(x => new DataEntryDto()
+            var result = await query.Select(x => new DataEntryDto()
             {
                 CategoryId = x.Category.ParentId != null ? x.CategoryId : null,
                 CategoryName = x.Category.ParentId != null ? x.Category.Name : null,
@@ -352,10 +360,10 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                 } : null,
                 MyData = new MokatebeRsltDto()
                 {
-                    Amount =x.Mokatebe.Amount,
+                    Amount = x.Mokatebe.Amount,
                     MokatebeKonande = x.Mokatebe.MokatebeKonande,
                     MokatebeType = x.Mokatebe.MokatebeType,
-                    Contact= x.Mokatebe.Contact,
+                    Contact = x.Mokatebe.Contact,
                     VaziatPasokh = x.Mokatebe.VaziatPasokh,
                     ShomareDabirkhane = x.Mokatebe.ShomareDabirkhane,
                     PasokhNo = x.Mokatebe.PasokhNo,
@@ -379,12 +387,12 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
             foreach (var item in result.Items)
             {
                 var id = (Guid)(item.GetType().GetProperty("Id").GetValue(item));
-                item.CategoryParentName = item.Moavenats != null ?  string.Join(" - ", item.Moavenats?.Select(x => GetMoavenatTitle(x)).ToList()) : item.CategoryParentName;
+                item.CategoryParentName = item.Moavenats != null ? string.Join(" - ", item.Moavenats?.Select(x => GetMoavenatTitle(x)).ToList()) : item.CategoryParentName;
                 item.MyData.GetType().GetProperty("AccessActionRefrence").SetValue(item.MyData, CheckAccess(id).Result);
             }
             return result;
         }
-        private string GetMoavenatTitle (string id)
+        private string GetMoavenatTitle(string id)
         {
             return _context.Categories.Where(x => x.Id == new Guid(id)).Select(x => x.Name).FirstOrDefault();
         }
@@ -396,7 +404,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
             {
                 query = query.Where(x => x.ActionReferences.Any(a => a.FromUser.OrganizationId == currentUserOrgId || a.ToUser.OrganizationId == currentUserOrgId));
             }
-            var result= await query.Select(x => new DataEntryDto()
+            var result = await query.Select(x => new DataEntryDto()
             {
                 CategoryId = x.Category.ParentId != null ? x.CategoryId : null,
                 CategoryName = x.Category.ParentId != null ? x.Category.Name : null,
@@ -465,16 +473,16 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                     NatijeBarresiShoraNegahban = x.Tarh.NatijeBarresiShoraNegahban,
                     Shenase = x.Tarh.Shenase,
                     VazeyatBarresi = x.Tarh.VazeyatBarresi,
-                    NatijeBarresiShoraNegahbanDescription= x.Tarh.NatijeBarresiShoraNegahbanDescription,
+                    NatijeBarresiShoraNegahbanDescription = x.Tarh.NatijeBarresiShoraNegahbanDescription,
                     ErsalBeVazir = x.Tarh.ErsalBeVazir,
                     SavabeghEblagh = x.Tarh.SavabeghEblagh,
                     GhozarshNahayi = x.Tarh.GhozarshNahayi,
-                    Havashi=x.Tarh.Havashi,
-                    HamahangiBaraSherkat= x.Tarh.HamahangiBaraSherkat,
-                    Gardeshkar= x.Tarh.Gardeshkar,
-                    GozareshMozakerat= x.Tarh.GhozareshMozakerat,
-                    NamayandeghanBaraSherkat=x.Tarh.NamayandeghanBaraSherkat,
-                    NamayandeghanEmzaKonande=x.Tarh.NamayandeghanEmzaKonande,
+                    Havashi = x.Tarh.Havashi,
+                    HamahangiBaraSherkat = x.Tarh.HamahangiBaraSherkat,
+                    Gardeshkar = x.Tarh.Gardeshkar,
+                    GozareshMozakerat = x.Tarh.GhozareshMozakerat,
+                    NamayandeghanBaraSherkat = x.Tarh.NamayandeghanBaraSherkat,
+                    NamayandeghanEmzaKonande = x.Tarh.NamayandeghanEmzaKonande,
                     NazarNamayande = x.Tarh.NazarNamayande,
                     RelatedComission = x.Tarh.RelatedComission
 
@@ -488,7 +496,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
         }
         private async Task<TableModel<DataEntryDto>> ApplyTazakorShafahiFilterAsync(IQueryable<DataEntryEntity> query, TableRequestModel filter)
         {
-            var result= await query.Select(x => new DataEntryDto()
+            var result = await query.Select(x => new DataEntryDto()
             {
                 CategoryId = x.Category.ParentId != null ? x.CategoryId : null,
                 CategoryName = x.Category.ParentId != null ? x.Category.Name : null,
@@ -531,29 +539,29 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
         }
         private async Task<TableModel<DataEntryDto>> ApplyTazakorKatbiFilterAsync(IQueryable<DataEntryEntity> query, TableRequestModel filter)
         {
-           var result= await query.Select(x => new DataEntryDto()
+            var result = await query.Select(x => new DataEntryDto()
             {
-                CategoryId = x.Category.ParentId != null? x.CategoryId : null,
+                CategoryId = x.Category.ParentId != null ? x.CategoryId : null,
                 CategoryName = x.Category.ParentId != null ? x.Category.Name : null,
                 CategoryParentId = x.Category.ParentId != null ? x.Category.ParentId : x.CategoryId,
-                CategoryParentName = x.Category.ParentId != null? x.Category.Parent.Name : x.Category.Name,
-               Moavenats = x.Moavenats != null ? x.Moavenats.Split(",", StringSplitOptions.None).ToList() : null,
-               CreatorUserName = x.Creator.Name,
+                CategoryParentName = x.Category.ParentId != null ? x.Category.Parent.Name : x.Category.Name,
+                Moavenats = x.Moavenats != null ? x.Moavenats.Split(",", StringSplitOptions.None).ToList() : null,
+                CreatorUserName = x.Creator.Name,
                 DataEntryType = x.DataEntryType,
                 Description = x.Description,
                 Title = x.Title,
                 Id = x.Id,
-               SenatorCity = x.Senator.City.Name,
-               SenatorName = x.Senator.SenatorProfile.Name,
-               SenatorHozeEntekhabi = x.Senator.SenatorProfile.HozeCity.Name,
-               Senator = x.SenatorId.HasValue ? new SenatorDto()
-               {
-                   Name = x.Senator.SenatorProfile.Name,
-                   UserId = x.SenatorId.Value,
-                   HozeEntekhabi = x.Senator.SenatorProfile.HozeEntekhabi.GetPersianName(),
-                   City = x.Senator.City.Name,
-               } : null,
-               MyData = new TazakorKatbiDto()
+                SenatorCity = x.Senator.City.Name,
+                SenatorName = x.Senator.SenatorProfile.Name,
+                SenatorHozeEntekhabi = x.Senator.SenatorProfile.HozeCity.Name,
+                Senator = x.SenatorId.HasValue ? new SenatorDto()
+                {
+                    Name = x.Senator.SenatorProfile.Name,
+                    UserId = x.SenatorId.Value,
+                    HozeEntekhabi = x.Senator.SenatorProfile.HozeEntekhabi.GetPersianName(),
+                    City = x.Senator.City.Name,
+                } : null,
+                MyData = new TazakorKatbiDto()
                 {
                     GheraatSahnDate = x.TazakorKatbi.GheraatSahnDate,
                     PishnevisDate = x.TazakorKatbi.PishnevisDate,
@@ -561,10 +569,10 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                     PasokhNo = x.TazakorKatbi.PasokhNo,
                     PasokhState = x.TazakorKatbi.PasokhState,
                     PasokhDate = x.TazakorKatbi.PasokhDate,
-                    AccessActionRefrence=new GetAccessActionRefrenceResultDto()
+                    AccessActionRefrence = new GetAccessActionRefrenceResultDto()
                 }
             }).ToTableResultAsync(filter);
-            foreach(var item in result.Items)
+            foreach (var item in result.Items)
             {
                 var id = (Guid)(item.GetType().GetProperty("Id").GetValue(item));
                 item.CategoryParentName = item.Moavenats != null ? string.Join(" - ", item.Moavenats?.Select(x => GetMoavenatTitle(x)).ToList()) : item.CategoryParentName;
@@ -608,7 +616,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                     TazakorType = x.Tazakor.TazakorType,
                     AccessActionRefrence = new GetAccessActionRefrenceResultDto(),
                     NameVaseleDabirkhaneNo = x.Tazakor.NameVaseleDabirkhaneNo,
-                    NameVaseleDate= x.Tazakor.NameVaseleDate,
+                    NameVaseleDate = x.Tazakor.NameVaseleDate,
                     NameVaseleNo = x.Tazakor.NameVaseleNo,
                     VaseleAz = x.Tazakor.VaseleAz
                 }
@@ -698,7 +706,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
         private async Task<TableModel<DataEntryDto>> ApplyTahghighTafahosFilterAsync(IQueryable<DataEntryEntity> query, TableRequestModel filter)
         {
             var res = query;
-            var result= await query.Select(x => new DataEntryDto()
+            var result = await query.Select(x => new DataEntryDto()
             {
                 CategoryId = x.Category.ParentId != null ? x.CategoryId : null,
                 CategoryName = x.Category.ParentId != null ? x.Category.Name : null,
@@ -739,7 +747,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
             }
             return result;
         }
-        
+
         private async Task<TableModel<DataEntryDto>> ApplyMolaghatFilterAsync(IQueryable<DataEntryEntity> query, TableRequestModel filter)
         {
             var currentUserOrgId = _currentUserService.GetCurrentUser()?.Organization?.Id;
@@ -754,7 +762,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                 query = query.Where(x => x.SenatorId == currentUser.BussinessUserId);
             }
 
-            var result = await  query.Select( x => new DataEntryDto()
+            var result = await query.Select(x => new DataEntryDto()
             {
                 CategoryId = x.Category.ParentId != null ? x.CategoryId : null,
                 CategoryName = x.Category.ParentId != null ? x.Category.Name : null,
@@ -800,13 +808,13 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
             return finalData;
         }
 
-        private async Task<string> GetCommissionById (string id)
+        private async Task<string> GetCommissionById(string id)
         {
-           return _context.DataEntries.Where(x => x.Id == new Guid(id)).FirstOrDefault().Title;
+            return _context.DataEntries.Where(x => x.Id == new Guid(id)).FirstOrDefault().Title;
         }
         private async Task<GetAccessActionRefrenceResultDto> CheckAccess(Guid dataEntryId)
         {
-             var cuser =  _currentUserService.GetCurrentUser();
+            var cuser = _currentUserService.GetCurrentUser();
             var result = new GetAccessActionRefrenceResultDto();
             if (cuser.Roles.Any(x => x == RoleTypeEnum.MinistryAdmin || x == RoleTypeEnum.Admin || x == RoleTypeEnum.MinistryMember))
             {
@@ -815,18 +823,19 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
             }
             else
             {
-                var hasAccessList =await  _context.ActionReferences
+                var hasAccessList = await _context.ActionReferences
                    .Where(x => x.DataEntryId == dataEntryId).OrderByDescending(o => o.Created)
                    .ToListAsync();
-                var hasAccessAction = hasAccessList?.Where(x=>x.ActRefType != ActRefTypeEnum.Refer)
+                var hasAccessAction = hasAccessList?.Where(x => x.ActRefType != ActRefTypeEnum.Refer)
                    .FirstOrDefault();
                 var hasAccessRefer = hasAccessList?.Where(x => x.ActRefType == ActRefTypeEnum.Refer)
                    .FirstOrDefault();
-                if (hasAccessRefer != null && hasAccessRefer?.ToUserId== cuser.BussinessUserId) { 
+                if (hasAccessRefer != null && hasAccessRefer?.ToUserId == cuser.BussinessUserId)
+                {
                     result.AccessRefrence = true;
                     result.AccessAction = true;
                 }
-               
+
             }
             return result;
         }

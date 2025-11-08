@@ -36,7 +36,9 @@ namespace MajlesMefa.UI.Views.Loan
         private readonly ISoaPlusService _soaPlusService;
         //private readonly ISenatorBudgetRepository _budgetRepository;
 
-        public LoanController(IMapper mapper, ILogger<LoanController> logger, IConfiguration configuration, ICurrentUserService currentUserService, ISoaPlusService soaPlusService) : base(mapper)
+        public LoanController(IMapper mapper, ILogger<LoanController> logger, 
+            IConfiguration configuration, ICurrentUserService currentUserService,
+            ISoaPlusService soaPlusService) : base(mapper)
         {
             _logger = logger;
             _configuration = configuration;
@@ -46,9 +48,17 @@ namespace MajlesMefa.UI.Views.Loan
         }
 
         [RequestLimit(NoOfRequest = 10, Seconds = 5)]
-        [Display(Name = "مدیریت تسهیلات")]
+        [Display(Name = "همه ارجاعات")]
         [Auth]
         public IActionResult Index(Guid? senatorId)
+        {
+            return View(senatorId);
+        }
+
+        [RequestLimit(NoOfRequest = 10, Seconds = 5)]
+        [Display(Name = "همه ارجاعات فقط خواندنی")]
+        [Auth]
+        public IActionResult ReadOnlyIndex(Guid? senatorId)
         {
             return View(senatorId);
         }
@@ -344,5 +354,32 @@ namespace MajlesMefa.UI.Views.Loan
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
+        [RequestLimit(NoOfRequest = 10, Seconds = 5)]
+        [Display(Name = "ارجاعات جدید")]
+        [Auth]
+        public IActionResult Unread(Guid? senatorId)
+        {
+            return View(senatorId);
+        }
+
+        [RequestLimit(NoOfRequest = 30, Seconds = 5)]
+        [Auth]
+        public async Task<IActionResult> GetUnreadLoans(string models, Guid? senatorId)
+        {
+            var cuser = _currentUserService.GetCurrentUser();
+            var Filter = JsonConvert.DeserializeObject<TableRequestModel>(models);
+            var query = new GetDataEntriesQuery();
+            query.Filter = Filter;
+            query.SenatorIdId = senatorId;
+            query.DataEntryType = DataEntryTypeEnum.Loan;
+            query.CurrentUserId = cuser.BussinessUserId;
+            var list = await Mediator.Send(query);
+            var rslt = DataSourceResult.GetFromTable(list);
+
+            return Json(rslt);
+        }
+
     }
 }

@@ -25,7 +25,8 @@
                 url_delete = '@Url.Action(nameof(ActionReferenceController.DeleteRefrence), ActionReferenceController.CONTROLLER)';
             }
         };
-        var btns = ` #if('${url_delete}' != ''){#<button class="k-button mt-1" data-confirmation="آیا مطمئن هستید؟" data-href="${url_delete}/?refrenceId=#:id#"> حذف </button>#}# `;
+        // var btns = ` #if('${url_delete}' != ''){#<button class="k-button mt-1" data-confirmation="آیا مطمئن هستید؟" data-href="${url_delete}/?refrenceId=#:id#"> حذف </button>#}# `;
+        var btns = ``;
     </script>
 
     <script src="~/js/pages/actionReference.js" asp-append-version="true"></script>
