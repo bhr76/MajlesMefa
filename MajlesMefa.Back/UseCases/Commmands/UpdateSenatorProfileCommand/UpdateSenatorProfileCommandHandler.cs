@@ -1,19 +1,9 @@
 ﻿using AutoMapper;
-using FluentFTP.Helpers;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using MajlesMefa.Back.Entities;
 using MajlesMefa.Back.Repositories;
 using MajlesMefa.Back.Utilities.FTP;
-using MajlesMefa.Back.Utilities.Helpers;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MajlesMefa.Back.UseCases.Commmands.UpdateSenatorProfileCommand
 {

@@ -5,6 +5,7 @@ namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Grid
     public class DashboardLoanDto
     {
         public int CountAllLoan { get; set; }
+        public int CountShoraRefrences { get; set; }
         public int CountOfApprovedLoan { get; set; }
         public int CountOfDeniedLoan { get; set; }
         public int CountOfInProgressLoan { get; set; }

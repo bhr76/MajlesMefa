@@ -110,8 +110,17 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
                     var startOfPersianYear = new DateTime(currentPersianYear, 1, 1, persianCalendar);
                     var endOfPersianYear = new DateTime(currentPersianYear, 12, 29, 23, 59, 59, persianCalendar);
                     //
+                    var haveOpenLoan = _context.Loans.Include(l => l.DataEntry)
+                        .Where(x => x.DataEntry.Loan.NationalNo == loan.NationalNo
+                                && x.LoanType == loan.LoanType
+                                && x.VaziatPasokh != ResponseStatusEnum.Manfi).Count() > 0;
+                    if (haveOpenLoan)
+                    {
+                        throw new InvalidOperationException("فرد مورد درخواست در حال حاضر وامی بدون تعیین وضعیت در سیستم دارد.‌");
+                    }
                     var yearlyLoans = _context.Loans.Include(l => l.DataEntry)
                         .Where(x => x.DataEntry.SenatorId == loan.DataEntry.SenatorId
+                                && x.VaziatPasokh != ResponseStatusEnum.Manfi
                                 && x.DataEntry.Created >= startOfPersianYear
                                 && x.DataEntry.Created <= endOfPersianYear);
                     //if (todayLoans.Count() >= int.Parse(_configuration.GetSection("DailyLoanCount").Value))
@@ -120,14 +129,20 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
                     //}
                     //phase 2
 
-                    var havemaxLoaninYearRequestConfig = long.TryParse(_configuration["maxLoanInYearRequest"], out long maxLoanInYearRequest);
-                    if (!havemaxLoaninYearRequestConfig) { maxLoanInYearRequest = 5000000000; } // پنج میلیارد تومن در سال
-
-                    if (yearlyLoans.Sum(x => x.Amount) >= maxLoanInYearRequest)
+                    var havemaxGharzolhasaneInYearRequestConfig = long.TryParse(_configuration["maxGharzolhasaneInYearRequest"], out long maxGharzolhasaneInYearRequest);
+                    if (!havemaxGharzolhasaneInYearRequestConfig) { maxGharzolhasaneInYearRequest = 3000000000; } // سه میلیارد تومن در سال
+                    if (yearlyLoans.Where(l=>l.LoanType==LoanTypeEnum.Gharzolhasane).Sum(x => x.Amount) >= maxGharzolhasaneInYearRequest)
                     {
-                        throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات به پایان رسیده‌است.");
+                        throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات قرض الحسنه به پایان رسیده‌است.");
                     }
-                   
+
+                    var havemaxmaxMorabeheInYearRequestConfig = long.TryParse(_configuration["maxMorabeheInYearRequest"], out long maxMorabeheInYearRequest);
+                    if (!havemaxmaxMorabeheInYearRequestConfig) { maxMorabeheInYearRequest = 3000000000; } // سه میلیارد تومن در سال
+                    if (yearlyLoans.Where(l => l.LoanType == LoanTypeEnum.Morabehe).Sum(x => x.Amount) >= maxMorabeheInYearRequest)
+                    {
+                        throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات مرابحه به پایان رسیده‌است.");
+                    }
+
                     _context.Loans.Add(loan);
                     break;
                 case DataEntryTypeEnum.Mokatebe:

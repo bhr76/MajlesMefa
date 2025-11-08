@@ -64,5 +64,6 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
     {
         public Guid? SenatorId { get; set; } = Guid.Empty;
         public ResponseStatusEnum? Status { get; set; } = null;
+        public Guid? ShoraUserId { get; set; } = Guid.Empty;
     }
 }

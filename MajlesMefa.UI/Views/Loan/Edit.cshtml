@@ -74,6 +74,7 @@
                 }
                 else
                 {
+                    <p>کد ملی و موبایل متقاضی قابل ویرایش نیست.</p>
                     <div class="form-group mt-3 col-md-4">
                         <label asp-for="@Model.SenatorId"></label>
                         <input readonly asp-for="@Model.SenatorId" id="SenatorId" class="form-control" />
@@ -86,13 +87,13 @@
                     </div>
                     <div class="form-group mt-3 col-md-4">
                         <label asp-for="@Model.LoanData.NationalNo" class="control-label"></label>
-                        <input  asp-for="@Model.LoanData.NationalNo" maxlength="10" id="NationalNo" class="form-control" />
+                        <input asp-for="@Model.LoanData.NationalNo" readonly maxlength="10" id="NationalNo" class="form-control" />
                         <span asp-validation-for="@Model.LoanData.NationalNo" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mt-3 col-md-4">
                         <label asp-for="@Model.LoanData.MobileNo" class="control-label"></label>
-                        <input  asp-for="@Model.LoanData.MobileNo" id="MobileNo" class="form-control" />
+                        <input asp-for="@Model.LoanData.MobileNo" readonly id="MobileNo" class="form-control" />
                         <span asp-validation-for="@Model.LoanData.MobileNo" class="text-danger"></span>
                     </div>
 

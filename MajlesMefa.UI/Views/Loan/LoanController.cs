@@ -187,14 +187,14 @@ namespace MajlesMefa.UI.Views.Loan
         public async Task<IActionResult> CreateAsync(LoanVm request, CancellationToken cancellationToken)
         {
             request.LoanData.Amount = request.LoanData.Amount.Replace(",", string.Empty);
-            var haveMaxGharzolHasaneConfig = long.TryParse(_configuration["maxGharzolHasanePerRequest"],out long gharzolHasaneMaxPerRequest);
-            var haveMaxMorabeheConfig = long.TryParse(_configuration["maxMorabehePerRequest"],out long morabeheMaxPerRequest);
+            var haveMaxGharzolHasaneConfig = long.TryParse(_configuration["maxGharzolHasanePerRequest"], out long gharzolHasaneMaxPerRequest);
+            var haveMaxMorabeheConfig = long.TryParse(_configuration["maxMorabehePerRequest"], out long morabeheMaxPerRequest);
             if (!haveMaxGharzolHasaneConfig) { gharzolHasaneMaxPerRequest = 50000000; }
-            if (!haveMaxMorabeheConfig) { morabeheMaxPerRequest = 400000000; }
+            if (!haveMaxMorabeheConfig) { morabeheMaxPerRequest = 300000000; }
             if (request.LoanData.LoanType == 0)
             {
                 return BadRequest("نوع تسهیلات را مشخص کنید");
-               
+
             }
             else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && long.Parse(request.LoanData.Amount) > gharzolHasaneMaxPerRequest)
             {
@@ -205,16 +205,22 @@ namespace MajlesMefa.UI.Views.Loan
                 return BadRequest($"سقف تسهیلات مرابحه برای هر شخص {morabeheMaxPerRequest} تومان می‌باشد.");
             }
 
-            var shahkarInquiry = await _soaPlusService.ShahkarInquiry(new GetShahkarInquiryRequest
-            (0,request.LoanData.NationalNo,request.LoanData.MobileNo)) ;
-            if (!shahkarInquiry.Done)
+            var haveshahkarByPassConfig = bool.TryParse(_configuration["shahkarByPass"], out bool shahkarByPass);
+            if (!haveshahkarByPassConfig) { shahkarByPass = true; }
+            if (!shahkarByPass)
             {
-                return BadRequest(shahkarInquiry.ErrorMessage);
+                var shahkarInquiry = await _soaPlusService.ShahkarInquiry(new GetShahkarInquiryRequest
+                    (0, request.LoanData.NationalNo, request.LoanData.MobileNo));
+                if (!shahkarInquiry.Done)
+                {
+                    return BadRequest(shahkarInquiry.ErrorMessage);
+                }
+                if (shahkarInquiry.Result.Response != 200)
+                {
+                    return BadRequest("شماره ملی و موبایل وارد شده متعلق به یک شخص نیست.");
+                }
             }
-            if(shahkarInquiry.Result.Response != 200)
-            {
-                return BadRequest("شماره ملی و موبایل وارد شده متعلق به یک شخص نیست.");
-            }
+           
 
             var currentSenator = _currentUserService.GetCurrentUser();
              
@@ -294,16 +300,7 @@ namespace MajlesMefa.UI.Views.Loan
                 return BadRequest("سقف تسهیلات مرابحه برای هر شخص سیصد میلیون تومان می‌باشد.");
             }
 
-            var shahkarInquiry = await _soaPlusService.ShahkarInquiry(new GetShahkarInquiryRequest
-            (0, request.LoanData.NationalNo, request.LoanData.MobileNo));
-            if (!shahkarInquiry.Done)
-            {
-                return BadRequest(shahkarInquiry.ErrorMessage);
-            }
-            if (shahkarInquiry.Result.Response != 200)
-            {
-                return BadRequest("شماره ملی و موبایل وارد شده متعلق به یک شخص نیست.");
-            }
+           
 
             request.LoanData.Amount = request.LoanData.Amount.Replace(",", string.Empty);
             var command = request.ConvertToUpdateCommand();

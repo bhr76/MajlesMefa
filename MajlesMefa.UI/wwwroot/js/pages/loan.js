@@ -192,12 +192,12 @@
             grid.dataSource.filter({
                 logic: "or",
                 filters: [{
-                    field: "title",
+                    field: "nationalNo",
                     operator: "contains",
                     value: value
                 },
                 {
-                    field: "categoryName",
+                    field: "fullName",
                     operator: "contains",
                     value: value
                 },

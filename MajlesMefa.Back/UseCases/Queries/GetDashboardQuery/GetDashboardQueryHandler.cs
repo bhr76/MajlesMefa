@@ -375,7 +375,10 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
 
 
             var cuser = _currentUserService.GetCurrentUser();
-
+            var queryShora = _context.ActionReferences
+                .AsNoTracking()
+                .Include(a=>a.DataEntry)
+                .Where(a => a.FromUserId == request.ShoraUserId);
             var query = _context.DataEntries
                 .AsNoTracking()
                 .Include(x=>x.Loan)
@@ -387,12 +390,19 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
             {
                 query = query.Where(q => (q.ActionReferences.Any(ar =>
                     ar.ToUserId == cuser.BussinessUserId)));
+
+                queryShora = queryShora.Where(q=>q.ToUserId == cuser.BussinessUserId);
             }
 
             if (cuser.Roles.Any(e => e == RoleTypeEnum.Senator))
             {
                 query = query.Where(x => x.SenatorId == cuser.BussinessUserId);
+                queryShora = queryShora.Where(x => x.DataEntry.SenatorId == cuser.BussinessUserId);
             }
+
+            
+            var countOfRefrenceShora = queryShora
+                .Count();
             //Mohasebe data kolli
             // تعداد کل وام‌ها
             var countOfAllLoans = query.Count();
@@ -498,7 +508,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
             dto.CountOfDeniedLoan = countOfDeniedLoan;
             dto.CountOfInProgressLoan = countOfInProgressLoan;
             dto.DashboardChartData = dashboardFinalData;
-
+            dto.CountShoraRefrences = countOfRefrenceShora;
             return dto;
         }
     }

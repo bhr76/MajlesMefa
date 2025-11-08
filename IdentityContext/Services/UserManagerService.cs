@@ -397,14 +397,14 @@ namespace CreamFramework.Infrastructure.Identity
             {
                 throw new UnauthorizedAccessException("اطلاعات ورود نامعتبر است");
             }
-            System.IO.File.AppendAllText(@"c:\test\index.txt", $"before check - {DateTime.Now.ToString()}");
+            
             var hashedPass = hasher.HashPassword(user, passcode);
-            System.IO.File.AppendAllText(@"c:\test\hash.txt", $"{hashedPass} - {passcode} - {DateTime.Now.ToString()}");
+           
 
             var loginRslt = await _signInManager.CheckPasswordSignInAsync(user, passcode, false);
             if (!loginRslt.Succeeded)
             {
-                System.IO.File.AppendAllText(@"c:\test\index.txt", $"before return problem detail -{loginRslt.ObjectToString()}- {DateTime.Now.ToString()}");
+                
 
                 var problemDetails = new ProblemDetails
                 {
@@ -415,7 +415,7 @@ namespace CreamFramework.Infrastructure.Identity
                 //throw new Exception("اطلاعات ورود نامعتبر است");
                 throw new UnauthorizedAccessException("اطلاعات ورود نامعتبر است");
             }
-            System.IO.File.AppendAllText(@"c:\test\index.txt", $"before claims - {DateTime.Now.ToString()}");
+            
 
             var claims = await _userManager.GetClaimsAsync(user);
             var rslt = new UserDto

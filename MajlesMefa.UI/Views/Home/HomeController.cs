@@ -14,10 +14,11 @@ namespace MajlesMefa.UI.Views.Home
     public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger, IMapper mapper): base(mapper)
+        private readonly IConfiguration _configuration;
+        public HomeController(ILogger<HomeController> logger, IMapper mapper, IConfiguration configuration) : base(mapper)
         {
             _logger = logger;
+            _configuration = configuration;
         }
 
         [Display(Name = "داشبورد")]
@@ -37,7 +38,8 @@ namespace MajlesMefa.UI.Views.Home
             //var soalByCity = await Mediator.Send(new GetDashboardSoalatByCityQuery());
             //var soalByOrganization = await Mediator.Send(new GetDashboardSoalatByOrganizationQuery());
             //var soalByStatus = await Mediator.Send(new GetDashboardSoalatByStatusQuery());
-            var loanInfo = await Mediator.Send(new GetDashboardLoanByStatusQuery{ Status = ResponseStatusEnum.Mosbat });
+            var shoraUserIdValue = Guid.Parse(_configuration["ShoraUserId"]);
+            var loanInfo = await Mediator.Send(new GetDashboardLoanByStatusQuery{ Status = ResponseStatusEnum.Mosbat , ShoraUserId = shoraUserIdValue });
 
             //mokatebe-by-answer
             //ViewBag.dashboardMokatebeData = mokatebeStatus;
@@ -84,7 +86,7 @@ namespace MajlesMefa.UI.Views.Home
             ViewBag.ApprovedLoans = loanInfo.CountOfApprovedLoan;
             ViewBag.PendingLoans = loanInfo.CountOfInProgressLoan;
             ViewBag.RejectedLoans = loanInfo.CountOfDeniedLoan;
-
+            ViewBag.TotalShoraRefrence = loanInfo.CountShoraRefrences;
 
             return View();
         }
