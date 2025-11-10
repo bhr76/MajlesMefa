@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 @using MajlesMefa.Back.Enums;
 @using MajlesMefa.Back.Services.Abstractioin;
 @using MajlesMefa.UI.Views.Report;
@@ -11,7 +11,7 @@
 
 <div class="home-page">
     <div class="m-portlet">
-       
+
         <div class="m-portlet__body">
             <div class="row mb-4">
                 <div class="col-md-3">
@@ -22,6 +22,7 @@
                 <div class="col-md-3 mt-4">
                     <button id="filterBtn" class="k-button k-primary">اعمال فیلتر</button>
                     <button id="resetBtn" class="k-button">پاک کردن فیلتر</button>
+                    <button id="exportBtn" class="k-button k-button-success">خروجی Excel</button>
                 </div>
             </div>
 
@@ -112,6 +113,43 @@
                     pageSizes: [10, 20, 50, 100],
                     buttonCount: 5
                 },
+                excel: {
+                    fileName: "گزارش_تسهیلات_نمایندگان.xlsx",
+                    filterable: true,
+                    allPages: true
+                },
+                excelExport: function (e) {
+                    var sheet = e.workbook.sheets[0];
+
+                    // اضافه کردن عنوان به فایل اکسل
+                    sheet.title = "گزارش تسهیلات نمایندگان";
+
+                    // تنظیم جهت راست به چپ برای شیت
+                    sheet.rtl = true;
+
+                    // فرمت کردن ستون‌ها
+                    for (var rowIndex = 1; rowIndex < sheet.rows.length; rowIndex++) {
+                        var row = sheet.rows[rowIndex];
+                        for (var cellIndex = 0; cellIndex < row.cells.length; cellIndex++) {
+                            var cell = row.cells[cellIndex];
+
+                            // فرمت اعداد برای ستون مبلغ
+                            if (cellIndex === 2 && rowIndex > 0) { // ستون مبلغ
+                                if (cell.value) {
+                                    cell.format = "#,##0";
+                                }
+                            }
+
+                            // فرمت اعداد برای ستون تعداد
+                            if (cellIndex === 3 && rowIndex > 0) { // ستون تعداد
+                                if (cell.value) {
+                                    cell.format = "#,##0";
+                                }
+                            }
+                        }
+                    }
+                },
+                toolbar: ["excel"],
                 columns: [
                     {
                         field: "myData.senatorFullName",
@@ -164,6 +202,11 @@
                 $("#responseStatusFilter").data("kendoDropDownList").value("");
 
                 grid.dataSource.read();
+            });
+
+            // Export to Excel button click event
+            $("#exportBtn").click(function () {
+                grid.saveAsExcel();
             });
         });
     </script>

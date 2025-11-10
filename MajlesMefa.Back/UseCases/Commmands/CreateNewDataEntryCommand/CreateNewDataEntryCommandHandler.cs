@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
+using MajlesMefa.Back.Utilities.Convertor;
 
 namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
 {
@@ -142,7 +143,8 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
                     {
                         throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات مرابحه به پایان رسیده‌است.");
                     }
-
+                    loan.NationalNo = PersianToEnglish.ConvertPersianToEnglishNumber(loan.NationalNo);
+                    loan.MobileNo = PersianToEnglish.ConvertPersianToEnglishNumber(loan.MobileNo);
                     _context.Loans.Add(loan);
                     break;
                 case DataEntryTypeEnum.Mokatebe:

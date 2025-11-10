@@ -58,12 +58,14 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
             }
 
             var tempTable17 = query
+                .Where(l=>l.Loan.VaziatPasokh == request.ResponseStatus)
                 .Select(l => new
                 {
                     Amount = l.Loan.Amount,
                     LoanType = l.Loan.LoanType,
                     BankUserId = l.ActionReferences
-                     .Where(a => a.ActRefType == ActRefTypeEnum.Refer)
+                     .Where(a => a.ActRefType == ActRefTypeEnum.Refer
+                     )
                         .OrderByDescending(a => a.Created)
                         .Select(a => a.ToUserId)
                         .FirstOrDefault(),
@@ -71,7 +73,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
                 }); 
 
             var tempTable19 = tempTable17
-                .Where(t => t.BankUserId == request.BankUserId)
+                .Where(t => t.BankUserId == request.BankUserId )
                 .Join(_context.Users,
                       t => t.BankUserId,
                       u => u.Id,

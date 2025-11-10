@@ -7,8 +7,11 @@ namespace MajlesMefa.Back.Utilities.Captcha
 {
     public static class Captcha
     {
-        private const string Letters = "۰۱۲۳۴۵۶۷۸۹abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@#$!";
-        private const string PersianNumbers = "۰۱۲۳۴۵۶۷۸۹";
+        //private const string Letters = "۰۱۲۳۴۵۶۷۸۹abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@#$!";
+        //private const string PersianNumbers = "۰۱۲۳۴۵۶۷۸۹";
+
+        private const string Letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@#$!";
+        private const string PersianNumbers = "0123456789";
 
         public static string GenerateCaptchaCode()
         {
@@ -143,7 +146,7 @@ namespace MajlesMefa.Back.Utilities.Captcha
                 var linePen = new Pen(new SolidBrush(Color.Black), 3);
 
                 // Increase from 3-5 to 10-15 lines
-                for (var i = 0; i < rand.Next(10, 15); i++)  // ← Increased lines
+                for (var i = 0; i < rand.Next(5, 8); i++)  // ← Increased lines
                 {
                     linePen.Color = GetRandomDeepColor();
                     linePen.Width = rand.Next(1, 4);  // ← Vary line thickness
