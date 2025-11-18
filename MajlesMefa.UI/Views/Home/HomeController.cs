@@ -85,6 +85,7 @@ namespace MajlesMefa.UI.Views.Home
             ViewBag.TotalLoans = loanInfo.CountAllLoan;
             ViewBag.ApprovedLoans = loanInfo.CountOfApprovedLoan;
             ViewBag.PendingLoans = loanInfo.CountOfInProgressLoan;
+            ViewBag.BranchLoans = loanInfo.CountOfInBranchLoan;
             ViewBag.RejectedLoans = loanInfo.CountOfDeniedLoan;
             ViewBag.TotalShoraRefrence = loanInfo.CountShoraRefrences;
 

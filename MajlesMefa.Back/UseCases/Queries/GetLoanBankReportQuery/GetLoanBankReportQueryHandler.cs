@@ -42,6 +42,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
                     q.ActionReferences.FirstOrDefault().FromUser.OrganizationId != null);
             }
             #endregion
+
             if (request.DataEntryId.HasValue)
             {
                 query = query.Where(x => x.Id == request.DataEntryId);
@@ -51,6 +52,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
             {
                 query = query.Where(x => x.SenatorId == cuser.BussinessUserId);
             }
+
             if (cuser.Roles.Any(e => e == RoleTypeEnum.Organization))
             {
                 query = query.Where(q => (q.ActionReferences.Any(ar =>
@@ -58,22 +60,22 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
             }
 
             var tempTable17 = query
-                .Where(l=>l.Loan.VaziatPasokh == request.ResponseStatus)
+                // فیلتر VaziatPasokh حذف شد
                 .Select(l => new
                 {
                     Amount = l.Loan.Amount,
                     LoanType = l.Loan.LoanType,
+                    VaziatPasokh = l.Loan.VaziatPasokh, // اضافه شد
                     BankUserId = l.ActionReferences
-                     .Where(a => a.ActRefType == ActRefTypeEnum.Refer
-                     )
+                     .Where(a => a.ActRefType == ActRefTypeEnum.Refer)
                         .OrderByDescending(a => a.Created)
                         .Select(a => a.ToUserId)
                         .FirstOrDefault(),
-                    DataEntryId = l.Loan.DataEntryId 
-                }); 
+                    DataEntryId = l.Loan.DataEntryId
+                });
 
             var tempTable19 = tempTable17
-                .Where(t => t.BankUserId == request.BankUserId )
+                .Where(t => t.BankUserId == request.BankUserId)
                 .Join(_context.Users,
                       t => t.BankUserId,
                       u => u.Id,
@@ -81,9 +83,10 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
                       {
                           t.Amount,
                           t.LoanType,
+                          t.VaziatPasokh, // اضافه شد
                           t.BankUserId,
                           BankName = u.Name
-                      }); 
+                      });
 
             var result1 = tempTable19
                 .GroupBy(x => new { x.BankName, x.LoanType })
@@ -91,16 +94,41 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
                 {
                     BankName = g.Key.BankName,
                     LoanType = g.Key.LoanType,
-                    Cnt = g.Count(),
-                    Amount = g.Sum(x => x.Amount)
+
+                    TotalCount = g.Count(),
+                    TotalAmount = g.Sum(x => x.Amount),
+
+                    PaidCount = g.Count(x => x.VaziatPasokh == ResponseStatusEnum.Mosbat),
+                    PaidAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Mosbat).Sum(x => x.Amount ),
+
+                    UnpaidCount = g.Count(x => x.VaziatPasokh == ResponseStatusEnum.Manfi 
+                    || x.VaziatPasokh == null),
+                    UnpaidAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Manfi 
+                    || x.VaziatPasokh == null).Sum(x => x.Amount ),
+
+                    InBranchCount = g.Count(x => x.VaziatPasokh == ResponseStatusEnum.Shobe),
+                    InBranchAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Shobe).Sum(x => x.Amount)
                 });
 
             var result = await result1.Select(x => new DataEntryDto()
             {
                 MyData = new GetLoanBankReportQueryResponse()
                 {
-                    Amount=x.Amount,
-                    count = x.Cnt,
+                    // کل
+                    TotalAmount = x.TotalAmount,
+                    TotalCount = x.TotalCount,
+
+                    // پرداخت شده
+                    PaidAmount = x.PaidAmount,
+                    PaidCount = x.PaidCount,
+
+                    // پرداخت نشده
+                    UnPaidAmount = x.UnpaidAmount,
+                    UnPaidCount = x.UnpaidCount,
+
+                    InBranchAmount= x.InBranchAmount,
+                    InBranchCount = x.InBranchCount,
+
                     LoanType = x.LoanType,
                     BankFullName = x.BankName
                 }
@@ -108,7 +136,5 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
 
             return result;
         }
-
     }
-
 }

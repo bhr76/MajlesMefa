@@ -34,6 +34,17 @@ namespace MajlesMefa.Back.Entities
             //var entitiesAssembly = typeof(AuditEntity<>).Assembly;
 
             //typeof(RefahMajlesDbContext).RegisterConfigurations( builder, entitiesAssembly);
+
+            builder.Entity<LoanEntity>(entity =>
+            {
+                entity.Property(e => e.TrackingCode)
+                    .UseIdentityColumn(seed: 1000, increment: 1)
+                    .ValueGeneratedOnAdd();
+
+                // ایجاد ایندکس برای جستجوی سریع‌تر
+                entity.HasIndex(e => e.TrackingCode)
+                    .IsUnique();
+            });
         }
 
         public DbSet<DataEntryEntity> DataEntries { get; set; }

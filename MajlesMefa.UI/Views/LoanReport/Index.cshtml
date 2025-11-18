@@ -12,26 +12,13 @@
 <div class="home-page">
     <div class="m-portlet">
 
-        <div class="m-portlet__body">
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <label for="responseStatusFilter">وضعیت پاسخ:</label>
-                    <input id="responseStatusFilter" />
-                </div>
-
-                <div class="col-md-3 mt-4">
-                    <button id="filterBtn" class="k-button k-primary">اعمال فیلتر</button>
-                    <button id="resetBtn" class="k-button">پاک کردن فیلتر</button>
-                    <button id="exportBtn" class="k-button k-button-success">خروجی Excel</button>
-                </div>
-            </div>
 
             <div class="k-rtl">
                 <div id="loan-report-grid"></div>
             </div>
         </div>
     </div>
-</div>
+
 
 @section scripts{
     <script asp-append-version="true">
@@ -41,21 +28,7 @@
 
         $(document).ready(function () {
             // Initialize response status dropdown
-            $("#responseStatusFilter").kendoDropDownList({
-                dataTextField: "name",
-                dataValueField: "id",
-                dataSource: {
-                    transport: {
-                        read: {
-                            url: url_response_status_dropdown,
-                            type: "GET",
-                            dataType: "json"
-                        }
-                    }
-                },
-                optionLabel: "همه وضعیت‌ها"
-            });
-
+          
 
 
             // Initialize grid
@@ -68,8 +41,6 @@
                             contentType: "application/json",
                             data: function () {
 
-                                var responseStatus = $("#responseStatusFilter").data("kendoDropDownList").value();
-
                                 var requestModel = {
                                     Filter: {
                                         skip: this.skip,
@@ -79,7 +50,6 @@
                                         sort: this.sort
                                     },
 
-                                    ResponseStatus: responseStatus ? parseInt(responseStatus) : 0 // Default to Inprogress
                                 };
 
                                 return requestModel;
@@ -100,8 +70,14 @@
                             fields: {
                                 "myData.bankFullName": { type: "string" },
                                 "myData.loanType": { type: "number" },
-                                "myData.amount": { type: "number" },
-                                "myData.count": { type: "number" }
+                                "myData.totalAmount": { type: "number" },
+                                "myData.totalCount": { type: "number" },
+                                "myData.paidAmount": { type: "number" },
+                                "myData.paidCount": { type: "number" },
+                                "myData.unPaidAmount": { type: "number" },
+                                "myData.unPaidCount": { type: "number" },
+                                "myData.inBranchAmount": { type: "number" },
+                                "myData.inBranchCount": { type: "number" },
                             }
                         }
                     },
@@ -178,35 +154,75 @@
                         }
                     },
                     {
-                        field: "myData.amount",
+                        field: "myData.totalAmount",
                         title: "مبلغ کل (تومان)",
                         width: "150px",
                         template: function (dataItem) {
-                            return dataItem.myData.amount ? kendo.toString(dataItem.myData.amount, "n0") : "0";
+                            return dataItem.myData.totalAmount ? kendo.toString(dataItem.myData.totalAmount, "n0") : "0";
                         }
                     },
                     {
-                        field: "myData.count",
-                        title: "تعداد",
+                        field: "myData.totalCount",
+                        title: "تعداد کل",
                         width: "100px",
                         template: function (dataItem) {
-                            return dataItem.myData.count ? kendo.toString(dataItem.myData.count, "n0") : "0";
+                            return dataItem.myData.totalCount ? kendo.toString(dataItem.myData.totalCount, "n0") : "0";
+                        }
+                    },
+                    {
+                        field: "myData.paidAmount",
+                        title: "مبلغ کل پرداخت شده(تومان)",
+                        width: "150px",
+                        template: function (dataItem) {
+                            return dataItem.myData.paidAmount ? kendo.toString(dataItem.myData.paidAmount, "n0") : "0";
+                        }
+                    },
+                    {
+                        field: "myData.paidCount",
+                        title: "تعداد پرداخت شده",
+                        width: "100px",
+                        template: function (dataItem) {
+                            return dataItem.myData.paidCount ? kendo.toString(dataItem.myData.paidCount, "n0") : "0";
+                        }
+                    },
+                    {
+                        field: "myData.unPaidAmount",
+                        title: "مبلغ کل رد شده (تومان)",
+                        width: "150px",
+                        template: function (dataItem) {
+                            return dataItem.myData.unPaidAmount ? kendo.toString(dataItem.myData.unPaidAmount, "n0") : "0";
+                        }
+                    },
+                    {
+                        field: "myData.unPaidCount",
+                        title: "تعداد رد شده",
+                        width: "100px",
+                        template: function (dataItem) {
+                            return dataItem.myData.unPaidCount ? kendo.toString(dataItem.myData.unPaidCount, "n0") : "0";
+                        }
+                    }
+                    ,
+                    {
+                        field: "myData.inBranchAmount",
+                        title: "مبلغ کل وام های در دست شعبه (تومان)",
+                        width: "150px",
+                        template: function (dataItem) {
+                            return dataItem.myData.inBranchAmount ? kendo.toString(dataItem.myData.inBranchAmount, "n0") : "0";
+                        }
+                    },
+                    {
+                        field: "myData.inBranchCount",
+                        title: "تعداد وام های در دست شعبه",
+                        width: "100px",
+                        template: function (dataItem) {
+                            return dataItem.myData.inBranchCount ? kendo.toString(dataItem.myData.inBranchCount, "n0") : "0";
                         }
                     }
                 ]
             }).data("kendoGrid");
 
             // Filter button click event - simply refresh the grid
-            $("#filterBtn").click(function () {
-                grid.dataSource.read();
-            });
-
-            // Reset button click event
-            $("#resetBtn").click(function () {
-                $("#responseStatusFilter").data("kendoDropDownList").value("");
-
-                grid.dataSource.read();
-            });
+       
 
             // Export to Excel button click event
             $("#exportBtn").click(function () {

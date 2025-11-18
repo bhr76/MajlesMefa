@@ -241,39 +241,88 @@ namespace MajlesMefa.Back.UseCases.Commmands.UpdateDataEntryCommand
                         data.DataEntry.EzhaaratResaneee = _mapper.Map(request.DataEntryData as EzhaaratResaneeeDetailDto, data.DataEntry.EzhaaratResaneee);
                         break;
                     case DataEntryTypeEnum.Loan:
+                        //
+                        var requestLoanData = request.DataEntryData as LoanDtailDto;
                         var isRefrencedToBank =  _context.ActionReferences
                             .Include(a => a.ToUser)
                             .Where(a => a.ToUser.OrganizationId != null && a.DataEntryId == data.DataEntryId)
                             .Count() > 0;
-                        if (isRefrencedToBank)
+                        if (isRefrencedToBank &&
+                            !cuser.Roles.Any(e => e == RoleTypeEnum.Organization)
+                            )
                         {
                             throw new InvalidOperationException("تسهیلات انتخابی به بانک ارجاع شده است و قابل ویرایش نمی باشد");
                         }
-                        data.DataEntry.Loan = _mapper.Map(request.DataEntryData as LoanDtailDto, data.DataEntry.Loan);
-                        data.DataEntry.Loan.VaziatPasokh = (request.DataEntryData as LoanDtailDto).PasokhState;
-                        var persianCalendar = new PersianCalendar();
-                        var now = DateTime.Now;
-                        var currentPersianYear = persianCalendar.GetYear(now);
-                        var startOfPersianYear = new DateTime(currentPersianYear, 1, 1, persianCalendar);
-                        var endOfPersianYear = new DateTime(currentPersianYear, 12, 29, 23, 59, 59, persianCalendar);
-                        //
-                        var yearlyLoans = _context.Loans.Include(l => l.DataEntry)
-                            .Where(x => x.DataEntry.SenatorId == data.DataEntry.SenatorId
-                                    && x.DataEntry.Created >= startOfPersianYear
-                                    && x.DataEntry.Created <= endOfPersianYear);
-                        //if (todayLoans.Count() >= int.Parse(_configuration.GetSection("DailyLoanCount").Value))
-                        //{
-                        //    throw new InvalidOperationException("شما قادر به معرفی بیش از 2 نفر جهت اخذ تسهیلات در روز نمی‌باشید.");
-                        //}
-                        //phase 2
-
-                        var havemaxLoaninYearRequestConfig = long.TryParse(_configuration["maxLoanInYearRequest"], out long maxLoanInYearRequest);
-                        if (!havemaxLoaninYearRequestConfig) { maxLoanInYearRequest = 5000000000; } // پنج میلیارد تومن در سال
-
-                        if (yearlyLoans.Sum(x => x.Amount) >= maxLoanInYearRequest)
+                       
+                        //عدم اجازه ویرایش مجدد برای کابرای غیر بانک
+                        if(data.DataEntry.Loan.VaziatPasokh != ResponseStatusEnum.Inprogress
+                             &&
+                            !cuser.Roles.Any(e => e == RoleTypeEnum.Organization)
+                            )
                         {
-                            throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات به پایان رسیده‌است.");
+                            throw new InvalidOperationException("تسهیلات انتخابی قابل ویرایش مجدد نمی باشد.");
                         }
+                       
+                        //بررسی ویرایش برای کاربر بانک
+                        if ( cuser.Roles.Any(e => e == RoleTypeEnum.Organization))
+                        {
+                            if(
+                                data.DataEntry.Loan.VaziatPasokh == ResponseStatusEnum.Mosbat
+                                ||
+                                data.DataEntry.Loan.VaziatPasokh == ResponseStatusEnum.Manfi
+                                )
+                            {
+                                throw new InvalidOperationException("تسهیلات انتخابی قابل ویرایش مجدد نمی باشد.");
+
+                            }
+                            if(
+                                data.DataEntry.Loan.VaziatPasokh == ResponseStatusEnum.Shobe
+                                &&
+                                requestLoanData.PasokhState == ResponseStatusEnum.Inprogress)
+                            {
+                                throw new InvalidOperationException("وضعیت تسهیلات انتخابی قابل بازگشت به قبل نمی باشد.");
+                            }
+
+
+
+                        }
+
+
+                       
+                       
+                        requestLoanData.Amount = requestLoanData.Amount.Replace(",", "");
+                        if (data.DataEntry.Loan.Amount != long.Parse(requestLoanData.Amount)) // mablagh taghir karde to edit
+                        {
+
+                            var persianCalendar = new PersianCalendar();
+                            var now = DateTime.Now;
+                            var currentPersianYear = persianCalendar.GetYear(now);
+                            var startOfPersianYear = new DateTime(currentPersianYear, 1, 1, persianCalendar);
+                            var endOfPersianYear = new DateTime(currentPersianYear, 12, 29, 23, 59, 59, persianCalendar);
+
+                            // checking saghf haye etebari
+                            var yearlyLoans = _context.Loans.Include(l => l.DataEntry)
+                           .Where(x => x.DataEntry.SenatorId == data.DataEntry.SenatorId
+                                   && x.DataEntry.Created >= startOfPersianYear
+                                   && x.DataEntry.Created <= endOfPersianYear);
+                            //if (todayLoans.Count() >= int.Parse(_configuration.GetSection("DailyLoanCount").Value))
+                            //{
+                            //    throw new InvalidOperationException("شما قادر به معرفی بیش از 2 نفر جهت اخذ تسهیلات در روز نمی‌باشید.");
+                            //}
+                            //phase 2
+
+                            var havemaxLoaninYearRequestConfig = long.TryParse(_configuration["maxLoanInYearRequest"], out long maxLoanInYearRequest);
+                            if (!havemaxLoaninYearRequestConfig) { maxLoanInYearRequest = 5000000000; } // پنج میلیارد تومن در سال
+
+                            if (yearlyLoans.Sum(x => x.Amount) >= maxLoanInYearRequest)
+                            {
+                                throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات به پایان رسیده‌است.");
+                            }
+                        }
+
+                        data.DataEntry.Loan = _mapper.Map(requestLoanData, data.DataEntry.Loan);
+                        data.DataEntry.Loan.VaziatPasokh = requestLoanData.PasokhState;
+
 
                         break;
                     case DataEntryTypeEnum.TahghighTafahos:

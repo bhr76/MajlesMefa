@@ -36,6 +36,9 @@ namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details
         public string PasokhPersianDate => this.PasokhDate.ToPersianDate();
 
 
+        [Display(Name = "تاریخ ارجا به شعبه")]
+        public string ActionRefrenceDate { get; set; }
+
         [Display(Name = "نام و نام خانوادگی متقاضی تسهیلات")]
         [Required(ErrorMessage = "پرکردن این فیلد اجباری است")]
         public string FullName { get; set; }
@@ -76,6 +79,9 @@ namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details
         public Guid? RelatedBankId { get; set; }
         public Guid? SenatorBudgetId { get; set; }
         public Guid? UserId { get; set; }
+
+        [Display(Name = "شناسه یکتا")]
+        public int? TrackingCode { get; set; }
 
         public GetAccessActionRefrenceResultDto AccessActionRefrence { get; set; }
 

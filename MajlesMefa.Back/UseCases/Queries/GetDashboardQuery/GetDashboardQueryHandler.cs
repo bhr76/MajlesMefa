@@ -426,6 +426,13 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
                     de.Loan.VaziatPasokh == ResponseStatusEnum.Inprogress)
                 .Count();
 
+            // تعداد وام‌های در حال بررسی
+            var countOfInBranchRequest = query
+                .Where(de =>
+                    de.Loan.VaziatPasokh == ResponseStatusEnum.Shobe)
+                .Count();
+
+
 
 
 
@@ -507,6 +514,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
             dto.CountOfApprovedLoan = countOfApprovedLoan;
             dto.CountOfDeniedLoan = countOfDeniedLoan;
             dto.CountOfInProgressLoan = countOfInProgressLoan;
+            dto.CountOfInBranchLoan = countOfInBranchRequest;
             dto.DashboardChartData = dashboardFinalData;
             dto.CountShoraRefrences = countOfRefrenceShora;
             return dto;

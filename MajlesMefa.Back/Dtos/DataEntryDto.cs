@@ -43,6 +43,10 @@ namespace MajlesMefa.Back.Dtos
         public HozeEntekhabiEnum SenatorHozeEntekhabiEnum { get; set; }
 
         public string SenatorCity { get; set; }
+        public string TrackingCode { get; set; }
+        public string LoanOwnerFullName { get; set; }
+        public string LoanOwnerNationalCode { get; set; }
+        public string LoanOwnerMobile { get; set; }
     }
 
     public class DataEntryDto: DataEntryDto<object>

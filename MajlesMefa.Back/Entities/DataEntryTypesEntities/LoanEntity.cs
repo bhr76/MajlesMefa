@@ -26,10 +26,17 @@ namespace MajlesMefa.Back.Entities.DataEntryTypesEntities
         public string MobileNo { get; set; }
         public string NationalNo { get; set; }
         public long Amount { get; set; }
+     
+
 
         public Guid? SenatorBudgetId { get; set; }
 
         public virtual SenatorBudgetEntity SenatorBudget { get; set; }
+
+
+        //شناسه یکتای تسهیلات
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int TrackingCode { get; set; }
     }
 
     public class LoanConfig : IEntityTypeConfiguration<LoanEntity>

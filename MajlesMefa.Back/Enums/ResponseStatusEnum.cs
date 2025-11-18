@@ -11,8 +11,11 @@ namespace MajlesMefa.Back.Enums
         [Display(Name = "پرداخت شده")]
         Mosbat = 1,
 
-        [Display(Name = "رد خواست")]
+        [Display(Name = "رد درخواست")]
         Manfi = 2,
+
+        [Display(Name = "در دست شعبه")]
+        Shobe = 3,
 
     }
 
@@ -31,7 +34,9 @@ namespace MajlesMefa.Back.Enums
                  IdNameDto.Create(
                     (int)ResponseStatusEnum.Manfi ,
                     ResponseStatusEnum.Manfi.GetPersianName()),
-                 
+                 IdNameDto.Create(
+                    (int)ResponseStatusEnum.Shobe ,
+                    ResponseStatusEnum.Shobe.GetPersianName()),
 
 
             };
@@ -47,6 +52,7 @@ namespace MajlesMefa.Back.Enums
                 case ResponseStatusEnum.Mosbat: return "پرداخت شده";
                 case ResponseStatusEnum.Manfi: return "رد درخواست";
                 case ResponseStatusEnum.Inprogress: return "در دست اقدام";
+                case ResponseStatusEnum.Shobe: return "در دست شعبه";
 
                 default: return "بدون پاسخ";
             }

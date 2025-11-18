@@ -11,8 +11,18 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanReportQuery
     /// </summary>
     public class GetLoanReportQueryResponse 
     {
-        public Int64 Amount{ get; set; }
-        public int count{ get; set; }
+        public Int64 TotalAmount { get; set; }
+        public int TotalCount { get; set; }
+
+        public Int64 PaidAmount { get; set; }
+        public int PaidCount { get; set; }
+
+        public Int64 UnPaidAmount { get; set; }
+        public int UnPaidCount { get; set; }
+
+        public Int64 InBranchAmount { get; set; }
+        public int InBranchCount { get; set; }
+
         public LoanTypeEnum LoanType { get; set; }
         public Guid CurrentUserId { get; set; }
         public string BankFullName { get; set; }

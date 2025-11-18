@@ -168,6 +168,10 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                     HozeEntekhabi = x.Senator.SenatorProfile.HozeEntekhabi.GetPersianName(),
                     City = x.Senator.City.Name,
                 } : null,
+                LoanOwnerFullName = x.Loan.FullName,
+                LoanOwnerMobile = x.Loan.MobileNo,
+                LoanOwnerNationalCode = x.Loan.NationalNo,
+                TrackingCode = x.Loan.TrackingCode.ToString(),
                 MyData = new LoanDtailDto()
                 {
                     FullName = x.Loan.FullName,
@@ -178,7 +182,12 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                     AccessActionRefrence = new GetAccessActionRefrenceResultDto(),
                     PasokhNo = x.Loan.PasokhNo,
                     PasokhState = x.Loan.VaziatPasokh,
-
+                    TrackingCode = x.Loan.TrackingCode,
+                    ActionRefrenceDate = x.ActionReferences
+                    .Where(a => a.ToUser != null && a.ToUser.Name != null && a.ToUser.Name.StartsWith("بانک"))
+                    .Select(a => a.Created.ToPersianDate("yyyy/MM/dd"))
+                    .FirstOrDefault() ?? "-",
+                    SuggestedBankName = x.ActionReferences.Where(a=>a.ToUser.Name.StartsWith("بانک")).FirstOrDefault().ToUser.Name,
                 }
             }).ToTableResultAsync(filter);
 

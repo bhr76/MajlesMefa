@@ -134,23 +134,26 @@
             { title: "ردیف", template: "#: ++record #", width: 50, attributes: { class: "text-center" }, media: "(min-width: 200px)" },
             { field: "id", hidden: true },
             //{ field: "creatorUserName", title: "ثبت کننده", media: "(min-width: 200px)", width: "105px" },
+            { field: "trackingCode", title: "شناسه یکتا", media: "(min-width: 200px)", width: "105px" },
             { field: "senatorName", title: "نام نماینده", media: "(min-width: 200px)", width: "105px" },
             { field: "senatorCity", title: "استان نماینده", media: "(min-width: 200px)", width: "105px" },
             { field: "senatorHozeEntekhabi", title: "حوزه انتخابی ", media: "(min-width: 200px)", width: "105px" },
-            { field: "myData.fullName", title: "نام متقاضی", media: "(min-width: 400px)", sortable: false, width: "105px", filterable: false },
-            { field: "myData.mobileNo", title: "موبایل متقاضی", media: "(min-width: 400px)", sortable: false, width: "105px", filterable: false },
-            { field: "myData.nationalNo", title: "کدملی متقاضی", media: "(min-width: 400px)", sortable: false, width: "105px", filterable: false },
+            { field: "loanOwnerFullName", title: "نام متقاضی", media: "(min-width: 400px)", width: "105px" },
+            { field: "loanOwnerMobile", title: "موبایل متقاضی", media: "(min-width: 400px)", width: "105px" },
+            { field: "loanOwnerNationalCode", title: "کدملی متقاضی", media: "(min-width: 400px)", width: "105px" },
             //{ field: "myData.vaziatPasokhDesc.name", title: "وضعیت پاسخ", media: "(min-width: 200px)", sortable: false, filterable: false, width: "105px" },
             //{ field: "myData.pasokhNo", title: "شماره پاسخ", media: "(min-width: 200px)", sortable: false, filterable: false, width: "105px" },
             { field: "persianCreatedDate", title: "تاریخ درخواست", media: "(min-width: 200px)", sortable: false, filterable: false, width: "105px" },
+            { field: "myData.actionRefrenceDate", title: "تاریخ ارجا به بانک", media: "(min-width: 200px)", sortable: false, filterable: false, width: "105px" },
             { field: "myData.amount", title: "مبلغ تسهیلات(تومان)", media: "(min-width: 200px)", sortable: false, filterable: false, width: "105px" },
             { field: "myData.loanTypeDesc", title: "نوع تسهیلات", sortable: false, media: "(min-width: 400px)", filterable: false, width: "105px" },
             //{ field: "myData.suggestedBankName", title: "بانک پیشنهادی", sortable: false, media: "(min-width: 400px)", filterable: false, width: "105px" },
-            { field: "description", title: "توضیحات", media: "(min-width: 400px)", filterable: false, width: "105px" },
+            /*{ field: "description", title: "توضیحات", media: "(min-width: 400px)", filterable: false, width: "105px" },*/
             { field: "myData.pasokhStateDesc", title: "وضعیت", media: "(min-width: 400px)", filterable: false, width: "105px" },
             { field: "myData.accessActionRefrence.accessRefrence", hidden: true },
             { field: "myData.accessActionRefrence.accessAction", hidden: true },
             { field: "myData.pasokhStateInt", title: "وضعیت", hidden: true, sortable: false, media: "(min-width: 400px)", filterable: false, width: "105px" },
+            { field: "myData.suggestedBankName", title: "بانک عامل", media: "(min-width: 200px)", width: "105px" },
             
             {
                 title: "عملیات",
@@ -191,16 +194,27 @@
 
             grid.dataSource.filter({
                 logic: "or",
-                filters: [{
-                    field: "nationalNo",
+                filters: [
+                    {
+                    field: "loanOwnerNationalCode",
                     operator: "contains",
                     value: value
                 },
-                {
-                    field: "fullName",
-                    operator: "contains",
-                    value: value
-                },
+                    {
+                        field: "loanOwnerFullName",
+                        operator: "contains",
+                        value: value
+                    },
+                    {
+                        field: "trackingCode",
+                        operator: "contains",
+                        value: value
+                    },
+                    {
+                        field: "loanOwnerMobile",
+                        operator: "contains",
+                        value: value
+                    },
                     //{
                     //    field: "myData.mokatebeKonande",
                     //    operator: "contains",

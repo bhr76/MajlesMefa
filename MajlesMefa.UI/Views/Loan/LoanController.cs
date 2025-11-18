@@ -291,28 +291,29 @@ namespace MajlesMefa.UI.Views.Loan
         [HttpPost]
         public async Task<IActionResult> EditAsync(LoanVm request, CancellationToken cancellationToken)
         {
-            request.LoanData.Amount = request.LoanData.Amount.Replace(",", string.Empty);
-            var haveMaxGharzolHasaneConfig = long.TryParse(_configuration["maxGharzolHasanePerRequest"], out long gharzolHasaneMaxPerRequest);
-            var haveMaxMorabeheConfig = long.TryParse(_configuration["maxMorabehePerRequest"], out long morabeheMaxPerRequest);
-            if (!haveMaxGharzolHasaneConfig) { gharzolHasaneMaxPerRequest = 50000000; }
-            if (!haveMaxMorabeheConfig) { morabeheMaxPerRequest = 400000000; }
-            if (request.LoanData.LoanType == 0)
+            if(request.LoanData.PasokhState == ResponseStatusEnum.Inprogress)
             {
-                return BadRequest("نوع تسهیلات را مشخص کنید");
+                //edited by Senator
+                request.LoanData.Amount = request.LoanData.Amount.Replace(",", string.Empty);
+                var haveMaxGharzolHasaneConfig = long.TryParse(_configuration["maxGharzolHasanePerRequest"], out long gharzolHasaneMaxPerRequest);
+                var haveMaxMorabeheConfig = long.TryParse(_configuration["maxMorabehePerRequest"], out long morabeheMaxPerRequest);
+                if (!haveMaxGharzolHasaneConfig) { gharzolHasaneMaxPerRequest = 50000000; }
+                if (!haveMaxMorabeheConfig) { morabeheMaxPerRequest = 300000000; }
+                if (request.LoanData.LoanType == 0)
+                {
+                    return BadRequest("نوع تسهیلات را مشخص کنید");
 
-            }
-            else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && long.Parse(request.LoanData.Amount) > gharzolHasaneMaxPerRequest)
-            {
-                return BadRequest("سقف تسهیلات قرض الحسنه برای هر شخص پنجاه میلیون تومان می‌باشد.");
-            }
-            else if (request.LoanData.LoanType == LoanTypeEnum.Morabehe && long.Parse(request.LoanData.Amount) > morabeheMaxPerRequest)
-            {
-                return BadRequest("سقف تسهیلات مرابحه برای هر شخص سیصد میلیون تومان می‌باشد.");
+                }
+                else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && long.Parse(request.LoanData.Amount) > gharzolHasaneMaxPerRequest)
+                {
+                    return BadRequest("سقف تسهیلات قرض الحسنه برای هر شخص پنجاه میلیون تومان می‌باشد.");
+                }
+                else if (request.LoanData.LoanType == LoanTypeEnum.Morabehe && long.Parse(request.LoanData.Amount) > morabeheMaxPerRequest)
+                {
+                    return BadRequest("سقف تسهیلات مرابحه برای هر شخص سیصد میلیون تومان می‌باشد.");
+                }
             }
 
-           
-
-            request.LoanData.Amount = request.LoanData.Amount.Replace(",", string.Empty);
             var command = request.ConvertToUpdateCommand();
             LoanDtailDto loanDetails = (LoanDtailDto)command.DataEntryData;
             command.DataEntryId = request.LoanData.Id;

@@ -42,6 +42,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanReportQuery
                     q.ActionReferences.FirstOrDefault().FromUser.OrganizationId != null);
             }
             #endregion
+
             if (request.DataEntryId.HasValue)
             {
                 query = query.Where(x => x.Id == request.DataEntryId);
@@ -51,6 +52,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanReportQuery
             {
                 query = query.Where(x => x.SenatorId == cuser.BussinessUserId);
             }
+
             if (cuser.Roles.Any(e => e == RoleTypeEnum.Organization))
             {
                 query = query.Where(q => (q.ActionReferences.Any(ar =>
@@ -65,36 +67,78 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanReportQuery
                           .OrderByDescending(a => a.Created)
                           .Select(a => a.ToUserId)
                           .FirstOrDefault()
-                  });  
-            
-                    var tempTable1100 = tempTable10
-                        .Where(x => x.Loan.VaziatPasokh == request.ResponseStatus)
-                        .GroupBy(x => new { x.CurrentUserId, x.Loan.LoanType })
-                        .Select(g => new
-                        {
-                            CurrentUserId = g.Key.CurrentUserId,
-                            LoanType = g.Key.LoanType,
-                            Amount = g.Sum(x => x.Loan.Amount),
-                            Cnt = g.Count()
-                        });  
+                  });
+
+            // فیلتر VaziatPasokh حذف شد و VaziatPasokh به GroupBy اضافه نشد
+            var tempTable1100 = tempTable10
+                .GroupBy(x => new { x.CurrentUserId, x.Loan.LoanType })
+                .Select(g => new
+                {
+                    CurrentUserId = g.Key.CurrentUserId,
+                    LoanType = g.Key.LoanType,
+
+                    // کل
+                    TotalAmount = g.Sum(x => x.Loan.Amount),
+                    TotalCount = g.Count(),
+
+                    // پرداخت شده
+                    PaidAmount = g.Where(x => x.Loan.VaziatPasokh == ResponseStatusEnum.Mosbat).Sum(x => x.Loan.Amount ),
+                    PaidCount = g.Count(x => x.Loan.VaziatPasokh == ResponseStatusEnum.Mosbat),
+
+                    // پرداخت نشده
+                    UnpaidAmount = g.Where(x => x.Loan.VaziatPasokh == ResponseStatusEnum.Manfi || x.Loan.VaziatPasokh == null).Sum(x => x.Loan.Amount),
+                    UnpaidCount = g.Count(x => x.Loan.VaziatPasokh == ResponseStatusEnum.Manfi || x.Loan.VaziatPasokh == null),
+
+                    //بانک
+                     InBranchAmount = g.Where(x => x.Loan.VaziatPasokh == ResponseStatusEnum.Shobe).Sum(x => x.Loan.Amount),
+                    InBranchCount = g.Count(x => x.Loan.VaziatPasokh == ResponseStatusEnum.Shobe),
+
+                });
 
             var result1 = (from t in tempTable1100
-                          join u in _context.Users on t.CurrentUserId equals u.Id
-                          where u.Name.Contains("بان")
-                          select new
-                          {
-                              Name = u.Name,
-                              Amount = t.Amount,
-                              LoanType = t.LoanType,
-                              Cnt = t.Cnt
-                          });
+                           join u in _context.Users on t.CurrentUserId equals u.Id
+                           where u.Name.Contains("بان")
+                           select new
+                           {
+                               Name = u.Name,
+                               LoanType = t.LoanType,
+
+                               // کل
+                               TotalAmount = t.TotalAmount,
+                               TotalCount = t.TotalCount,
+
+                               // پرداخت شده
+                               PaidAmount = t.PaidAmount,
+                               PaidCount = t.PaidCount,
+
+                               // پرداخت نشده
+                               UnpaidAmount = t.UnpaidAmount,
+                               UnpaidCount = t.UnpaidCount,
+
+                               //بانک
+                               InBranchAmount = t.InBranchAmount,
+                               InBranchCount = t.InBranchCount
+                           });
 
             var result = await result1.Select(x => new DataEntryDto()
             {
                 MyData = new GetLoanReportQueryResponse()
                 {
-                    Amount=x.Amount,
-                    count = x.Cnt,
+                    // کل
+                    TotalAmount = x.TotalAmount,
+                    TotalCount = x.TotalCount,
+
+                    // پرداخت شده
+                    PaidAmount = x.PaidAmount,
+                    PaidCount = x.PaidCount,
+
+                    // پرداخت نشده
+                    UnPaidAmount = x.UnpaidAmount,
+                    UnPaidCount = x.UnpaidCount,
+
+                    InBranchAmount = x.InBranchAmount,
+                    InBranchCount = x.InBranchCount,
+
                     LoanType = x.LoanType,
                     BankFullName = x.Name
                 }
@@ -102,7 +146,5 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanReportQuery
 
             return result;
         }
-
     }
-
 }
