@@ -33,9 +33,6 @@ namespace MajlesMefa.Back.Entities.DataEntryTypesEntities
 
         public virtual SenatorBudgetEntity SenatorBudget { get; set; }
 
-
-        //شناسه یکتای تسهیلات
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TrackingCode { get; set; }
     }
 

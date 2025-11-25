@@ -110,7 +110,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
                     InBranchAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Shobe).Sum(x => x.Amount)
                 });
 
-            var result = await result1.Select(x => new DataEntryDto()
+            var result = await result1.OrderBy(x=>x.BankName).Select(x => new DataEntryDto()
             {
                 MyData = new GetLoanBankReportQueryResponse()
                 {

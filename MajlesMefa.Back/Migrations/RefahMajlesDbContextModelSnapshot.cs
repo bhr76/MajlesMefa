@@ -73,7 +73,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("ToUserId");
 
-                    b.ToTable("ActionReferences");
+                    b.ToTable("ActionReferences", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.BankEntity", b =>
@@ -99,7 +99,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("Created");
 
-                    b.ToTable("Banks");
+                    b.ToTable("Banks", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.BussinessRoleEntity", b =>
@@ -113,7 +113,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BussinessRoles");
+                    b.ToTable("BussinessRoles", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.CategoryEntity", b =>
@@ -157,7 +157,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.CityEntity", b =>
@@ -188,7 +188,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("ParentCityId");
 
-                    b.ToTable("Cities");
+                    b.ToTable("Cities", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryEntity", b =>
@@ -240,7 +240,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("SenatorId");
 
-                    b.ToTable("DataEntries");
+                    b.ToTable("DataEntries", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.DastoorJalasatComissionEntity", b =>
@@ -257,7 +257,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("DastoorJalasatComissions");
+                    b.ToTable("DastoorJalasatComissions", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.EzhaaratResaneeeEntity", b =>
@@ -275,7 +275,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("EzhaaratResaneeees");
+                    b.ToTable("EzhaaratResaneeees", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.KhadamatEntity", b =>
@@ -292,7 +292,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("Khadamat");
+                    b.ToTable("Khadamat", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.LayeheEntity", b =>
@@ -335,7 +335,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("Layehes");
+                    b.ToTable("Layehes", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.LoanEntity", b =>
@@ -405,7 +405,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Loans");
+                    b.ToTable("Loans", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.MokatebeEntity", b =>
@@ -453,7 +453,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("Mokatebes");
+                    b.ToTable("Mokatebes", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.MolaghatEntity", b =>
@@ -491,7 +491,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("Molaghats");
+                    b.ToTable("Molaghats", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.NotghEntity", b =>
@@ -531,7 +531,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("Notghs");
+                    b.ToTable("Notghs", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.PeygiriEntity", b =>
@@ -575,7 +575,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("PeygiriKonandeId");
 
-                    b.ToTable("Peygiries");
+                    b.ToTable("Peygiries", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.SovalEntity", b =>
@@ -610,7 +610,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("Sovals");
+                    b.ToTable("Sovals", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.TahghighTafahosEntity", b =>
@@ -646,7 +646,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("Commission");
 
-                    b.ToTable("TahghighTafahoses");
+                    b.ToTable("TahghighTafahoses", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.TarhEntity", b =>
@@ -735,7 +735,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("Tarhs");
+                    b.ToTable("Tarhs", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.TazakorEntity", b =>
@@ -781,7 +781,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("Tazakors");
+                    b.ToTable("Tazakors", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.TazakorKatbiEntity", b =>
@@ -812,7 +812,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("TazakorKatbis");
+                    b.ToTable("TazakorKatbis", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.DataEntryTypesEntities.TazakorShafahiEntity", b =>
@@ -843,7 +843,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasKey("DataEntryId");
 
-                    b.ToTable("TazakorShafahis");
+                    b.ToTable("TazakorShafahis", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.KeywordEntity", b =>
@@ -880,7 +880,7 @@ namespace MajlesMefa.Back.Migrations
                     b.HasIndex("Name", "DataEntryId")
                         .IsUnique();
 
-                    b.ToTable("Keywords");
+                    b.ToTable("Keywords", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.OrganizationEntity", b =>
@@ -911,7 +911,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Organizations");
+                    b.ToTable("Organizations", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.PageEntity", b =>
@@ -959,7 +959,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("Created");
 
-                    b.ToTable("Pages");
+                    b.ToTable("Pages", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.PageRoleEntity", b =>
@@ -980,7 +980,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("PageRoles");
+                    b.ToTable("PageRoles", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.SenatorBudgetEntity", b =>
@@ -1024,7 +1024,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SenatorBudgets");
+                    b.ToTable("SenatorBudgets", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.SenatorProfileEntity", b =>
@@ -1131,7 +1131,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("HozeCityId");
 
-                    b.ToTable("SenatorProfiles");
+                    b.ToTable("SenatorProfiles", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.TahghighTafahosSenatorEntity", b =>
@@ -1152,7 +1152,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("TahghighTafahosId");
 
-                    b.ToTable("TahghighTafahosSenators");
+                    b.ToTable("TahghighTafahosSenators", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.UserEntity", b =>
@@ -1204,7 +1204,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.UserRoleEntity", b =>
@@ -1225,7 +1225,7 @@ namespace MajlesMefa.Back.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.ActionReferenceEntity", b =>

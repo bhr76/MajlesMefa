@@ -120,7 +120,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanReportQuery
                                InBranchCount = t.InBranchCount
                            });
 
-            var result = await result1.Select(x => new DataEntryDto()
+            var result = await result1.OrderBy(x=>x.Name).Select(x => new DataEntryDto()
             {
                 MyData = new GetLoanReportQueryResponse()
                 {

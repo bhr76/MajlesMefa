@@ -65,12 +65,12 @@
         var url_peygiri = '@Url.Action(nameof(PeygiriController.Index), PeygiriController.CONTROLLER,new{dataEntryType=DataEntryTypeEnum.Loan})';
         var url_actionTo = '@Url.Action(nameof(ActionReferenceController.ActionTo), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#';
         //<button class="k-button" data-link="${url_details}/?loanId=#:id#">جزییات</button>
-        var btns = ` <a class="k-button mt-1" href="${url_peygiri}&dataEntryId=#:id#""></span> پیگیری ها</a>
+        var btns = ` <a class="k-button mt-1" target="_blank" href="${url_peygiri}&dataEntryId=#:id#""></span> پیگیری ها</a>
                                                                                                                                        #if ('${userRole}' != "Senator" && '${userRole}' != "Organization") {# <button class="k-button mt-1" data-link="${url_refrenceTo}"> ارجاع به </button> #}#
                                                                                                                         #if ('${userRole}' != "Senator") {# <button class="k-button mt-1" data-link="${url_actionTo}"> اقدام </button> #}#
-                                                             <a class="k-button mt-1" href="${url_actionReference}"></span> ارجاعات</a>
-                                                                      <a class="k-button mt-1" href="${url_action}"></span> اقدامات</a>
-                                                                     #if('${url_edit}' != ''){#<a class="k-button mt-1" href="${url_edit}?loanId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>#}#
+                                                                     <a class="k-button mt-1" target="_blank" href="${url_actionReference}"></span> ارجاعات</a>
+                                                                              <a class="k-button mt-1" target="_blank" href="${url_action}"></span> اقدامات</a>
+                                                                             #if('${url_edit}' != ''){#<a class="k-button mt-1" target="_blank" href="${url_edit}?loanId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>#}#
                         `;
 
     </script>

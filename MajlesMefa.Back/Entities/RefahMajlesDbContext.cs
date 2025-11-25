@@ -12,6 +12,7 @@ using System.Reflection.Emit;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace MajlesMefa.Back.Entities
 {
@@ -39,8 +40,10 @@ namespace MajlesMefa.Back.Entities
             {
                 entity.Property(e => e.TrackingCode)
                     .UseIdentityColumn(seed: 1000, increment: 1)
-                    .ValueGeneratedOnAdd();
+                    .ValueGeneratedOnAdd()
+                    .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
 
+                    
                 // ایجاد ایندکس برای جستجوی سریع‌تر
                 entity.HasIndex(e => e.TrackingCode)
                     .IsUnique();
