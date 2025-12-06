@@ -119,6 +119,8 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
                     {
                         throw new InvalidOperationException("فرد مورد درخواست در حال حاضر وامی بدون تعیین وضعیت در سیستم دارد.‌");
                     }
+
+
                     var yearlyLoans = _context.Loans.Include(l => l.DataEntry)
                         .Where(x => x.DataEntry.SenatorId == loan.DataEntry.SenatorId
                                 && x.VaziatPasokh != ResponseStatusEnum.Manfi
@@ -130,19 +132,49 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
                     //}
                     //phase 2
 
-                    var havemaxGharzolhasaneInYearRequestConfig = long.TryParse(_configuration["maxGharzolhasaneInYearRequest"], out long maxGharzolhasaneInYearRequest);
-                    if (!havemaxGharzolhasaneInYearRequestConfig) { maxGharzolhasaneInYearRequest = 3000000000; } // سه میلیارد تومن در سال
-                    if (yearlyLoans.Where(l=>l.LoanType==LoanTypeEnum.Gharzolhasane).Sum(x => x.Amount) >= maxGharzolhasaneInYearRequest)
+
+                    if (loan.LoanType == LoanTypeEnum.Gharzolhasane)
                     {
-                        throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات قرض الحسنه به پایان رسیده‌است.");
+                        var havemaxGharzolhasaneInYearRequestConfig = long.TryParse(_configuration["maxGharzolhasaneInYearRequest"], out long maxGharzolhasaneInYearRequest);
+                        if (!havemaxGharzolhasaneInYearRequestConfig) { maxGharzolhasaneInYearRequest = 2000000000; }
+
+                        var gharzolHasaneThisYear = yearlyLoans.Where(l => l.LoanType == LoanTypeEnum.Gharzolhasane).Sum(x => x.Amount);
+                        var remainingCredit = maxGharzolhasaneInYearRequest - gharzolHasaneThisYear;
+
+                        if (gharzolHasaneThisYear + loan.Amount > maxGharzolhasaneInYearRequest)
+                        {
+                            var message = $"سقف مجاز سالیانه شما جهت معرفی تسهیلات قرض الحسنه به پایان رسیده‌است.\n" +
+                                         $"• سقف مجاز سالیانه: {maxGharzolhasaneInYearRequest:N0} تومان\n" +
+                                         $"• مبلغ استفاده شده: {gharzolHasaneThisYear:N0} تومان\n" +
+                                         $"• مانده اعتبار: {remainingCredit:N0} تومان\n" +
+                                         $"• مبلغ درخواستی: {loan.Amount:N0} تومان";
+
+                            throw new InvalidOperationException(message);
+                        }
                     }
 
-                    var havemaxmaxMorabeheInYearRequestConfig = long.TryParse(_configuration["maxMorabeheInYearRequest"], out long maxMorabeheInYearRequest);
-                    if (!havemaxmaxMorabeheInYearRequestConfig) { maxMorabeheInYearRequest = 3000000000; } // سه میلیارد تومن در سال
-                    if (yearlyLoans.Where(l => l.LoanType == LoanTypeEnum.Morabehe).Sum(x => x.Amount) >= maxMorabeheInYearRequest)
+                    if (loan.LoanType == LoanTypeEnum.Morabehe)
                     {
-                        throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات مرابحه به پایان رسیده‌است.");
+                        var havemaxmaxMorabeheInYearRequestConfig = long.TryParse(_configuration["maxMorabeheInYearRequest"], out long maxMorabeheInYearRequest);
+                        if (!havemaxmaxMorabeheInYearRequestConfig) { maxMorabeheInYearRequest = 3000000000; }
+
+                        var morabeheThisYear = yearlyLoans.Where(l => l.LoanType == LoanTypeEnum.Morabehe).Sum(x => x.Amount);
+                        var remainingCredit = maxMorabeheInYearRequest - morabeheThisYear;
+
+                        if (morabeheThisYear + loan.Amount > maxMorabeheInYearRequest)
+                        {
+                            var message = $"سقف مجاز سالیانه شما جهت معرفی تسهیلات مرابحه به پایان رسیده‌است.\n" +
+                                         $"• سقف مجاز سالیانه: {maxMorabeheInYearRequest:N0} تومان\n" +
+                                         $"• مبلغ استفاده شده: {morabeheThisYear:N0} تومان\n" +
+                                         $"• مانده اعتبار: {remainingCredit:N0} تومان\n" +
+                                         $"• مبلغ درخواستی: {loan.Amount:N0} تومان";
+
+                            throw new InvalidOperationException(message);
+                        }
                     }
+
+
+
                     loan.NationalNo = PersianToEnglish.ConvertPersianToEnglishNumber(loan.NationalNo);
                     loan.MobileNo = PersianToEnglish.ConvertPersianToEnglishNumber(loan.MobileNo);
                     _context.Loans.Add(loan);

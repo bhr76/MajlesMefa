@@ -42,6 +42,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanSenatorReportQuery
                     q.ActionReferences.FirstOrDefault().FromUser.OrganizationId != null);
             }
             #endregion
+
             if (request.DataEntryId.HasValue)
             {
                 query = query.Where(x => x.Id == request.DataEntryId);
@@ -51,14 +52,31 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanSenatorReportQuery
             {
                 query = query.Where(x => x.SenatorId == cuser.BussinessUserId);
             }
+
             if (cuser.Roles.Any(e => e == RoleTypeEnum.Organization))
             {
                 query = query.Where(q => (q.ActionReferences.Any(ar =>
                     ar.ToUserId == cuser.BussinessUserId)));
             }
 
-            var tempTable12 = _context.Loans
-                .Where(l => l.VaziatPasokh == request.ResponseStatus)
+            // شروع کوئری اصلی برای Loans
+            var loansQuery = _context.Loans.AsQueryable();
+
+            // فیلتر وضعیت‌های پاسخ (چندگانه)
+            if (request.ResponseStatuses != null && request.ResponseStatuses.Any())
+            {
+                loansQuery = loansQuery.Where(l => request.ResponseStatuses.Contains(l.VaziatPasokh));
+            }
+           
+
+            // فیلتر نوع تسهیلات
+            if (request.LoanType.HasValue && request.LoanType.Value!=0)
+            {
+                loansQuery = loansQuery.Where(l => l.LoanType == request.LoanType.Value);
+            }
+
+
+            var tempTable12 = loansQuery
                 .Join(_context.DataEntries,
                       l => l.DataEntryId,
                       sp => sp.Id,
@@ -69,14 +87,23 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanSenatorReportQuery
                       (x, p) => new
                       {
                           Loan = x.Loan,
-                          Name = p.Name
+                          Name = p.Name,
+                          FullName = p.Name 
                       });
 
+            // فیلتر نام نماینده
+            if (!string.IsNullOrWhiteSpace(request.SenatorName))
+            {
+                tempTable12 = tempTable12.Where(x =>
+                    x.Name.Contains(request.SenatorName) ||
+                    x.FullName.Contains(request.SenatorName));
+            }
+
             var result1 = tempTable12
-                .GroupBy(x => new { x.Name, x.Loan.LoanType })
+                .GroupBy(x => new { x.FullName, x.Loan.LoanType })
                 .Select(g => new
                 {
-                    Name = g.Key.Name,
+                    Name = g.Key.FullName,
                     LoanType = g.Key.LoanType,
                     Cnt = g.Count(),
                     Amount = g.Sum(x => x.Loan.Amount)
@@ -86,16 +113,16 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanSenatorReportQuery
             {
                 MyData = new GetLoanSenatorReportQueryResponse()
                 {
-                    Amount=x.Amount,
+                    Amount = x.Amount,
                     count = x.Cnt,
                     LoanType = x.LoanType,
                     SenatorFullName = x.Name
                 }
-            }).ToTableResultAsync(request.Filter);
+            })
+            
+            .ToTableResultAsync(request.Filter);
 
             return result;
         }
-
     }
-
 }

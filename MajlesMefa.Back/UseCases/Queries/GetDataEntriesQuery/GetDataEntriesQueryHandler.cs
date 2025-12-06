@@ -184,10 +184,11 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                     PasokhState = x.Loan.VaziatPasokh,
                     TrackingCode = x.Loan.TrackingCode,
                     ActionRefrenceDate = x.ActionReferences
-                    .Where(a => a.ToUser != null && a.ToUser.Name != null && a.ToUser.Name.StartsWith("بانک"))
+                    .Where(a => a.ToUser != null && a.ToUser.Name != null && 
+                    a.ToUser.UserRoles.Any(x => x.Role.RoleType == RoleTypeEnum.Organization))
                     .Select(a => a.Created.ToPersianDate("yyyy/MM/dd"))
                     .FirstOrDefault() ?? "-",
-                    SuggestedBankName = x.ActionReferences.Where(a=>a.ToUser.Name.StartsWith("بانک")).FirstOrDefault().ToUser.Name,
+                    SuggestedBankName = x.ActionReferences.Where(a=> a.ToUser.UserRoles.Any(x => x.Role.RoleType == RoleTypeEnum.Organization)).FirstOrDefault().ToUser.Name,
                 }
             }).ToTableResultAsync(filter);
 

@@ -131,7 +131,7 @@
             { field: "myData.actionRefrenceDate", title: "تاریخ ارجا به شعبه", media: "(min-width: 200px)", width: "105px" },
             { field: "myData.amount", title: "مبلغ تسهیلات(تومان)", media: "(min-width: 200px)", width: "105px" },
             { field: "myData.loanTypeDesc", title: "نوع تسهیلات", media: "(min-width: 400px)", width: "105px" },
-            /*{ field: "description", title: "توضیحات", media: "(min-width: 400px)", width: "105px" },*/
+            { field: "description", title: "توضیحات", media: "(min-width: 400px)", width: "105px" },
             { field: "myData.pasokhStateDesc", title: "وضعیت", media: "(min-width: 400px)", width: "105px" },
             { field: "myData.accessActionRefrence.accessRefrence", hidden: true },
             { field: "myData.accessActionRefrence.accessAction", hidden: true },

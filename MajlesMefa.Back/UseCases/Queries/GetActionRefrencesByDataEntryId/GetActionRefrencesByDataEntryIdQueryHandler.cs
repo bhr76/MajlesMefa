@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.EntityFrameworkCore;
 
 namespace MajlesMefa.Back.UseCases.Queries.GetActionRefrencesByDataEntryId
 {
@@ -39,6 +40,14 @@ namespace MajlesMefa.Back.UseCases.Queries.GetActionRefrencesByDataEntryId
             {
                 rslt = rslt.Where(x => x.ActRefType != ActRefTypeEnum.Refer);
             }
+            var dataEntry = _unitOfWork.DataEntryRepository.NoTracking
+                .Include(x => x.Loan)
+                .Where(o => o.Id == request.DataEntryId).FirstOrDefault();
+            var minCreatedDate = await rslt.MinAsync(x => (DateTime?)x.Created, cancellationToken);
+            var canNotDelete = dataEntry.Loan.VaziatPasokh == ResponseStatusEnum.Mosbat ||
+                dataEntry.Loan.VaziatPasokh == ResponseStatusEnum.Shobe;
+            //دست شعبه باشه یا تایید شده باشه قابل حذف ارجاع نیست
+            //در صورت رد توسط بانک قابل حذف است
             var response = await rslt.Select(s => new ActionRefrenceDto()
             {
                 Action = s.ActRefType,
@@ -58,6 +67,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetActionRefrencesByDataEntryId
                 RefParentCityName = s.ActRefType == ActRefTypeEnum.Refer ? s.ToUser.City.Parent.Name : null,
                 RefParentOrgName = s.ActRefType == ActRefTypeEnum.Refer ? s.ToUser.Organization.Parent.Name : null,
                 RefUserName = s.ActRefType == ActRefTypeEnum.Refer ? s.ToUser.Name : null,
+                IsReadOnly = s.Created == minCreatedDate || canNotDelete
             }).ToTableResultAsync(request.Filter);
             return response;
         }

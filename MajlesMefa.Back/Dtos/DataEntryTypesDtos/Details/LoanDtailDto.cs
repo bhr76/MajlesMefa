@@ -55,6 +55,7 @@ namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details
 
         [Display(Name = "مبلغ تسهیلات درخواستی(تومان)")]
         [Required(ErrorMessage = "پرکردن این فیلد اجباری است")]
+        [RegularExpression(@"^[0-9]{1,3}(,[0-9]{3})*$|^[0-9]+$", ErrorMessage = "فرمت مبلغ صحیح نیست. لطفاً عدد یا عدد با جداکننده کامای هزارگان وارد کنید")]
         [MaxLength(15, ErrorMessage = "مبلغ بیش از حد مجاز است")]
         public string Amount { get; set; }
         //public string AmountStr => Amount.ToString().ShowCurrencyFormat();

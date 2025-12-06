@@ -16,6 +16,10 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanSenatorReportQuery
         public Guid? UserId { get; set; }
         public Guid? DataEntryId { get; set; }
         public Guid? CurrentUserId { get; set; }
+        public List<ResponseStatusEnum> ResponseStatuses { get; set; }
+        public string SenatorName { get; set; }
+        public LoanTypeEnum? LoanType { get; set; }
+
         public ResponseStatusEnum ResponseStatus { get; set; }
         public TableRequestModel Filter {get;set;} = new TableRequestModel()
         {

@@ -29,5 +29,6 @@ namespace MajlesMefa.Back.Dtos
         public string RefTypeDesc { get; set; }
         public string ActionDesc { get; set; }
         public string Description { get; set; }
+        public bool IsReadOnly { get; set; } = false;
     }
 }

@@ -1,5 +1,4 @@
-﻿﻿
-@using MajlesMefa.Back.Enums;
+﻿@using MajlesMefa.Back.Enums;
 @using MajlesMefa.Back.Services.Abstractioin;
 @using MajlesMefa.UI.Views.Report;
 @model Guid?
@@ -11,12 +10,23 @@
 
 <div class="home-page">
     <div class="m-portlet">
-
         <div class="m-portlet__body">
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <label for="responseStatusFilter">وضعیت پاسخ:</label>
-                    <input id="responseStatusFilter" />
+                    <label for="senatorNameFilter">نام نماینده:</label>
+                    <input id="senatorNameFilter" class="form-control" placeholder="جستجوی نام نماینده..." />
+                </div>
+
+                <div class="col-md-3">
+                    <label>وضعیت پاسخ:</label>
+                    <div id="responseStatusFilter" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                        <!-- Checkboxes will be dynamically added here -->
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="loanTypeFilter">نوع تسهیلات:</label>
+                    <input id="loanTypeFilter" />
                 </div>
 
                 <div class="col-md-3 mt-4">
@@ -38,176 +48,234 @@
         var url_get_loan_report = '@Url.Action(nameof(LoanReportController.GetLoanSenatorReport), LoanReportController.CONTROLLER)';
         var url_response_status_dropdown = '@Url.Action(nameof(LoanReportController.GetResponseStatusForDropDown), LoanReportController.CONTROLLER)';
 
-
         $(document).ready(function () {
-            // Initialize response status dropdown
-            $("#responseStatusFilter").kendoDropDownList({
-                dataTextField: "name",
-                dataValueField: "id",
-                dataSource: {
-                    transport: {
-                        read: {
-                            url: url_response_status_dropdown,
-                            type: "GET",
-                            dataType: "json"
-                        }
-                    }
-                },
-                optionLabel: "همه وضعیت‌ها"
+            var gridInitialized = false;
+
+            // Initialize loan type dropdown
+            $("#loanTypeFilter").kendoDropDownList({
+                dataSource: [
+                    { text: "همه", value: 0 },
+                    { text: "قرض الحسنه", value: 1 },
+                    { text: "مرابحه", value: 2 }
+                ],
+                dataTextField: "text",
+                dataValueField: "value",
+                value: 0
             });
 
-            // Initialize grid
-            var grid = $("#loan-report-grid").kendoGrid({
-                dataSource: {
-                    transport: {
-                        read: {
-                            url: url_get_loan_report,
-                            type: "POST",
-                            contentType: "application/json",
-                            data: function () {
-                                var responseStatus = $("#responseStatusFilter").data("kendoDropDownList").value();
+            // Load and initialize response status checkboxes
+            $.ajax({
+                url: url_response_status_dropdown,
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var container = $("#responseStatusFilter");
+                    container.empty();
 
-                                var requestModel = {
-                                    Filter: {
-                                        skip: this.skip,
-                                        take: this.pageSize,
-                                        page: this.page,
-                                        pageSize: this.pageSize,
-                                        sort: this.sort
-                                    },
-                                    ResponseStatus: responseStatus ? parseInt(responseStatus) : 0 // Default to Inprogress
-                                };
+                    // Add "Select All" checkbox
+                    var selectAllHtml = '<div class="form-check mb-2">' +
+                        '<input class="form-check-input response-status-all" type="checkbox" id="status_all" checked>' +
+                        '<label class="form-check-label" for="status_all" style="font-weight: bold;">انتخاب همه</label>' +
+                        '</div><hr style="margin: 5px 0;">';
+                    container.append(selectAllHtml);
 
-                                return requestModel;
+                    // Add individual checkboxes
+                    $.each(data, function (index, item) {
+                        var isRejected = item.name.includes("رد درخواست");
+                        var isChecked = !isRejected ? 'checked' : '';
+
+                        var checkboxHtml = '<div class="form-check">' +
+                            '<input class="form-check-input response-status-checkbox" type="checkbox" value="' + item.id + '" id="status_' + item.id + '" ' + isChecked + '>' +
+                            '<label class="form-check-label" for="status_' + item.id + '">' + item.name + '</label>' +
+                            '</div>';
+                        container.append(checkboxHtml);
+                    });
+
+                    // Handle "Select All" checkbox
+                    $(".response-status-all").change(function () {
+                        var isChecked = $(this).is(':checked');
+                        $(".response-status-checkbox").prop('checked', isChecked);
+                    });
+
+                    // Handle individual checkboxes
+                    $(document).on('change', '.response-status-checkbox', function () {
+                        var allChecked = $('.response-status-checkbox:checked').length === $('.response-status-checkbox').length;
+                        $('.response-status-all').prop('checked', allChecked);
+                    });
+
+                    // Initialize grid AFTER checkboxes are loaded
+                    if (!gridInitialized) {
+                        initializeGrid();
+                        gridInitialized = true;
+                    }
+                }
+            });
+
+            function initializeGrid() {
+                var grid = $("#loan-report-grid").kendoGrid({
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: url_get_loan_report,
+                                type: "POST",
+                                contentType: "application/json",
+                                data: function () {
+                                    // Get selected response statuses
+                                    var selectedStatuses = [];
+                                    $(".response-status-checkbox:checked").each(function () {
+                                        selectedStatuses.push(parseInt($(this).val()));
+                                    });
+
+                                    var senatorName = $("#senatorNameFilter").val();
+                                    var loanType = $("#loanTypeFilter").data("kendoDropDownList").value();
+
+                                    var requestModel = {
+                                        Filter: {
+                                            skip: this.skip,
+                                            take: this.pageSize,
+                                            page: this.page,
+                                            pageSize: this.pageSize,
+                                            sort: this.sort
+                                        },
+                                        ResponseStatuses: selectedStatuses.length > 0 ? selectedStatuses : null,
+                                        SenatorName: senatorName || null,
+                                        LoanType: loanType ? parseInt(loanType) : null
+                                    };
+
+                                    return requestModel;
+                                }
+                            },
+                            parameterMap: function (data, operation) {
+                                if (operation === "read") {
+                                    return kendo.stringify(data);
+                                }
+                                return data;
                             }
                         },
-                        parameterMap: function (data, operation) {
-                            if (operation === "read") {
-                                return kendo.stringify(data);
-                            }
-                            return data;
-                        }
-                    },
-                    schema: {
-                        data: "data",
-                        total: "total",
-                        model: {
-                            id: "id",
-                            fields: {
-                                "myData.senatorFullName": { type: "string" },
-                                "myData.loanType": { type: "number" },
-                                "myData.amount": { type: "number" },
-                                "myData.count": { type: "number" }
-                            }
-                        }
-                    },
-                    pageSize: 20,
-                    serverPaging: true,
-                    serverFiltering: false, // We handle filtering manually
-                    serverSorting: true
-                },
-                height: 550,
-                sortable: true,
-                pageable: {
-                    refresh: true,
-                    pageSizes: [10, 20, 50, 100],
-                    buttonCount: 5
-                },
-                excel: {
-                    fileName: "گزارش_تسهیلات_نمایندگان.xlsx",
-                    filterable: true,
-                    allPages: true
-                },
-                excelExport: function (e) {
-                    var sheet = e.workbook.sheets[0];
-
-                    // اضافه کردن عنوان به فایل اکسل
-                    sheet.title = "گزارش تسهیلات نمایندگان";
-
-                    // تنظیم جهت راست به چپ برای شیت
-                    sheet.rtl = true;
-
-                    // فرمت کردن ستون‌ها
-                    for (var rowIndex = 1; rowIndex < sheet.rows.length; rowIndex++) {
-                        var row = sheet.rows[rowIndex];
-                        for (var cellIndex = 0; cellIndex < row.cells.length; cellIndex++) {
-                            var cell = row.cells[cellIndex];
-
-                            // فرمت اعداد برای ستون مبلغ
-                            if (cellIndex === 2 && rowIndex > 0) { // ستون مبلغ
-                                if (cell.value) {
-                                    cell.format = "#,##0";
+                        schema: {
+                            data: "data",
+                            total: "total",
+                            model: {
+                                id: "id",
+                                fields: {
+                                    "myData.senatorFullName": { type: "string" },
+                                    "myData.loanType": { type: "number" },
+                                    "myData.amount": { type: "number" },
+                                    "myData.count": { type: "number" }
                                 }
                             }
+                        },
+                        pageSize: 20,
+                        serverPaging: true,
+                        serverFiltering: false,
+                        serverSorting: true
+                    },
+                    height: 550,
+                    sortable: true,
+                    pageable: {
+                        refresh: true,
+                        pageSizes: [10, 20, 50, 100],
+                        buttonCount: 5
+                    },
+                    excel: {
+                        fileName: "گزارش_تسهیلات_نمایندگان.xlsx",
+                        filterable: true,
+                        allPages: true
+                    },
+                    excelExport: function (e) {
+                        var sheet = e.workbook.sheets[0];
+                        sheet.title = "گزارش تسهیلات نمایندگان";
+                        sheet.rtl = true;
 
-                            // فرمت اعداد برای ستون تعداد
-                            if (cellIndex === 3 && rowIndex > 0) { // ستون تعداد
-                                if (cell.value) {
-                                    cell.format = "#,##0";
+                        for (var rowIndex = 1; rowIndex < sheet.rows.length; rowIndex++) {
+                            var row = sheet.rows[rowIndex];
+                            for (var cellIndex = 0; cellIndex < row.cells.length; cellIndex++) {
+                                var cell = row.cells[cellIndex];
+
+                                if (cellIndex === 2 && rowIndex > 0) {
+                                    if (cell.value) {
+                                        cell.format = "#,##0";
+                                    }
+                                }
+
+                                if (cellIndex === 3 && rowIndex > 0) {
+                                    if (cell.value) {
+                                        cell.format = "#,##0";
+                                    }
                                 }
                             }
                         }
-                    }
-                },
-                toolbar: ["excel"],
-                columns: [
-                    {
-                        field: "myData.senatorFullName",
-                        title: "نام نماینده",
-                        width: "200px",
-                        template: function (dataItem) {
-                            return dataItem.myData.senatorFullName;
-                        }
                     },
-                    {
-                        field: "myData.loanType",
-                        title: "نوع تسهیلات",
-                        width: "150px",
-                        template: function (dataItem) {
-                            var loanTypeText = "";
-                            switch (dataItem.myData.loanType) {
-                                case 1: loanTypeText = "قرض الحسنه"; break;
-                                case 2: loanTypeText = "مرابحه"; break;
-                                default: loanTypeText = "نامشخص";
+                    toolbar: ["excel"],
+                    columns: [
+                        {
+                            field: "myData.senatorFullName",
+                            title: "نام نماینده",
+                            width: "200px",
+                            template: function (dataItem) {
+                                return dataItem.myData.senatorFullName;
                             }
-                            return loanTypeText;
+                        },
+                        {
+                            field: "myData.loanType",
+                            title: "نوع تسهیلات",
+                            width: "150px",
+                            template: function (dataItem) {
+                                var loanTypeText = "";
+                                switch (dataItem.myData.loanType) {
+                                    case 1: loanTypeText = "قرض الحسنه"; break;
+                                    case 2: loanTypeText = "مرابحه"; break;
+                                    default: loanTypeText = "نامشخص";
+                                }
+                                return loanTypeText;
+                            }
+                        },
+                        {
+                            field: "myData.amount",
+                            title: "مبلغ کل (تومان)",
+                            width: "150px",
+                            template: function (dataItem) {
+                                return dataItem.myData.amount ? kendo.toString(dataItem.myData.amount, "n0") : "0";
+                            }
+                        },
+                        {
+                            field: "myData.count",
+                            title: "تعداد",
+                            width: "100px",
+                            template: function (dataItem) {
+                                return dataItem.myData.count ? kendo.toString(dataItem.myData.count, "n0") : "0";
+                            }
                         }
-                    },
-                    {
-                        field: "myData.amount",
-                        title: "مبلغ کل (تومان)",
-                        width: "150px",
-                        template: function (dataItem) {
-                            return dataItem.myData.amount ? kendo.toString(dataItem.myData.amount, "n0") : "0";
-                        }
-                    },
-                    {
-                        field: "myData.count",
-                        title: "تعداد",
-                        width: "100px",
-                        template: function (dataItem) {
-                            return dataItem.myData.count ? kendo.toString(dataItem.myData.count, "n0") : "0";
-                        }
-                    }
-                ]
-            }).data("kendoGrid");
+                    ]
+                }).data("kendoGrid");
 
-            // Filter button click event - simply refresh the grid
-            $("#filterBtn").click(function () {
-                grid.dataSource.read();
-            });
+                // Filter button click event
+                $("#filterBtn").click(function () {
+                    grid.dataSource.read();
+                });
 
-            // Reset button click event
-            $("#resetBtn").click(function () {
-                $("#responseStatusFilter").data("kendoDropDownList").value("");
+                // Reset button click event
+                $("#resetBtn").click(function () {
+                    $("#senatorNameFilter").val("");
+                    $("#loanTypeFilter").data("kendoDropDownList").value(0);
 
-                grid.dataSource.read();
-            });
+                    $(".response-status-checkbox").each(function () {
+                        var label = $("label[for='" + $(this).attr('id') + "']").text();
+                        var isRejected = label.includes("رد") || label.includes("رد درخواست");
+                        $(this).prop('checked', !isRejected);
+                    });
 
-            // Export to Excel button click event
-            $("#exportBtn").click(function () {
-                grid.saveAsExcel();
-            });
+                    var allChecked = $('.response-status-checkbox:checked').length === $('.response-status-checkbox').length;
+                    $('.response-status-all').prop('checked', allChecked);
+
+                    grid.dataSource.read();
+                });
+
+                // Export to Excel button click event
+                $("#exportBtn").click(function () {
+                    grid.saveAsExcel();
+                });
+            }
         });
     </script>
 }

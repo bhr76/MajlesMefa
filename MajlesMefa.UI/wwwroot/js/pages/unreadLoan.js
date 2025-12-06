@@ -148,7 +148,7 @@
             { field: "myData.amount", title: "مبلغ تسهیلات(تومان)", media: "(min-width: 200px)", sortable: false, filterable: false, width: "105px" },
             { field: "myData.loanTypeDesc", title: "نوع تسهیلات", sortable: false, media: "(min-width: 400px)", filterable: false, width: "105px" },
             //{ field: "myData.suggestedBankName", title: "بانک پیشنهادی", sortable: false, media: "(min-width: 400px)", filterable: false, width: "105px" },
-            /*{ field: "description", title: "توضیحات", media: "(min-width: 400px)", filterable: false, width: "105px" },*/
+            { field: "description", title: "توضیحات", media: "(min-width: 400px)", filterable: false, width: "105px" },
             { field: "myData.pasokhStateDesc", title: "وضعیت", media: "(min-width: 400px)", filterable: false, width: "105px" },
             { field: "myData.accessActionRefrence.accessRefrence", hidden: true },
             { field: "myData.accessActionRefrence.accessAction", hidden: true },

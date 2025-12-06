@@ -90,7 +90,7 @@ namespace MajlesMefa.UI.Views.Report
         [RequestLimit(NoOfRequest = 30, Seconds = 5)]
         [Auth]
         [HttpPost]
-        public async Task<IActionResult> GetLoanSenatorReport([FromBody] LoanReportRequestModel requestModel)
+        public async Task<IActionResult> GetLoanSenatorReport([FromBody] LoanSenatorReportRequestModel requestModel)
         {
             try
             {
@@ -107,7 +107,9 @@ namespace MajlesMefa.UI.Views.Report
                     DataEntryType = DataEntryTypeEnum.Loan,
                     Filter = filter,
                     CurrentUserId = currentUser.BussinessUserId,
-                    ResponseStatus = requestModel?.ResponseStatus ?? ResponseStatusEnum.Inprogress,
+                    ResponseStatuses = requestModel?.ResponseStatuses ?? new List<ResponseStatusEnum> { ResponseStatusEnum.Inprogress },
+                    SenatorName = requestModel?.SenatorName,
+                    LoanType = requestModel?.LoanType
                 };
 
                 var result = await Mediator.Send(query);
@@ -175,6 +177,19 @@ namespace MajlesMefa.UI.Views.Report
     {
         public TableRequestModel Filter { get; set; }
         public ResponseStatusEnum? ResponseStatus { get; set; }
+        public string BankName { get; set; }
+        public LoanTypeEnum? LoanType { get; set; }
+    }
+
+    public class LoanSenatorReportRequestModel
+    {
+        public TableRequestModel Filter { get; set; }
+
+
+        public List<ResponseStatusEnum> ResponseStatuses { get; set; }
+
+        public string SenatorName { get; set; }
+
         public string BankName { get; set; }
         public LoanTypeEnum? LoanType { get; set; }
     }

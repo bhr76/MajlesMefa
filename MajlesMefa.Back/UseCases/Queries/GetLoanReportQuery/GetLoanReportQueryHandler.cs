@@ -97,7 +97,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanReportQuery
 
             var result1 = (from t in tempTable1100
                            join u in _context.Users on t.CurrentUserId equals u.Id
-                           where u.Name.Contains("بان")
+                           where u.Name.Contains("بان") || u.Name.Contains("صندوق")
                            select new
                            {
                                Name = u.Name,

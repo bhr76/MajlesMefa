@@ -375,10 +375,20 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
 
 
             var cuser = _currentUserService.GetCurrentUser();
+            var dataEntryIds = await _context.ActionReferences
+                .AsNoTracking()
+                .Where(a => a.FromUserId == request.ShoraUserId && a.ActRefType == ActRefTypeEnum.Refer)
+                .GroupBy(a => a.DataEntryId)
+                .Select(g => g.Key)
+                .ToListAsync();
+
+            // سپس با Include کامل بگیرید
             var queryShora = _context.ActionReferences
                 .AsNoTracking()
-                .Include(a=>a.DataEntry)
-                .Where(a => a.FromUserId == request.ShoraUserId);
+                .Include(a => a.DataEntry)
+                .Where(a => dataEntryIds.Contains(a.DataEntryId)
+                        && a.FromUserId == request.ShoraUserId
+                        && a.ActRefType == ActRefTypeEnum.Refer);
             var query = _context.DataEntries
                 .AsNoTracking()
                 .Include(x=>x.Loan)
@@ -400,124 +410,132 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
                 queryShora = queryShora.Where(x => x.DataEntry.SenatorId == cuser.BussinessUserId);
             }
 
-            
-            var countOfRefrenceShora = queryShora
-                .Count();
-            //Mohasebe data kolli
-            // تعداد کل وام‌ها
-            var countOfAllLoans = query.Count();
-
-
-            // تعداد وام‌های تایید شده
-            var countOfApprovedLoan = query
-                .Where(de =>
-                    de.Loan.VaziatPasokh == ResponseStatusEnum.Mosbat )
-                .Count();
-
-            // تعداد وام‌های رد شده
-            var countOfDeniedLoan = query
-                .Where(de =>
-                    de.Loan.VaziatPasokh == ResponseStatusEnum.Manfi)
-                .Count();
-
-            // تعداد وام‌های در حال بررسی
-            var countOfInProgressLoan = query
-                .Where(de =>
-                    de.Loan.VaziatPasokh == ResponseStatusEnum.Inprogress)
-                .Count();
-
-            // تعداد وام‌های در حال بررسی
-            var countOfInBranchRequest = query
-                .Where(de =>
-                    de.Loan.VaziatPasokh == ResponseStatusEnum.Shobe)
-                .Count();
-
-
-
-
-
-            if (request.Status != null)
+            try
             {
-                query = query.Where(x => x.Loan.VaziatPasokh == request.Status);
-            }
+                var countOfRefrenceShora = queryShora
+               .Count();
+                //Mohasebe data kolli
+                // تعداد کل وام‌ها
+                var countOfAllLoans = query.Count();
 
-            var dataList = await query
-                 .Select(de => new
-                 {
-                     CreatedDate = de.Created, // تاریخ اصلی
-                     Amount = de.Loan.Amount
-                 })
-                 .ToListAsync();
 
-            // گروه‌بندی و محاسبات
-            var dashboardData = dataList
-                .Select(x => new
+                // تعداد وام‌های تایید شده
+                var countOfApprovedLoan = query
+                    .Where(de =>
+                        de.Loan.VaziatPasokh == ResponseStatusEnum.Mosbat)
+                    .Count();
+
+                // تعداد وام‌های رد شده
+                var countOfDeniedLoan = query
+                    .Where(de =>
+                        de.Loan.VaziatPasokh == ResponseStatusEnum.Manfi)
+                    .Count();
+
+                // تعداد وام‌های در حال بررسی
+                var countOfInProgressLoan = query
+                    .Where(de =>
+                        de.Loan.VaziatPasokh == ResponseStatusEnum.Inprogress)
+                    .Count();
+
+                // تعداد وام‌های در حال بررسی
+                var countOfInBranchRequest = query
+                    .Where(de =>
+                        de.Loan.VaziatPasokh == ResponseStatusEnum.Shobe)
+                    .Count();
+
+
+
+
+
+                if (request.Status != null)
                 {
-                    PersianDate = PersianDateTime.Parse(x.CreatedDate.ToPersianDate(),"/"), // تبدیل به تاریخ شمسی
-                    Amount = x.Amount
-                })
-                .GroupBy(x => new { x.PersianDate.Year, x.PersianDate.Month })
-                .Select(g => new
-                {
-                    Year = g.Key.Year,
-                    Month = g.Key.Month,
-                    TotalRequests = g.Count(),
-                    TotalAmount = g.Sum(x => x.Amount),
-                    AverageAmount = g.Average(x => x.Amount)
-                })
-                .OrderByDescending(x => x.Year)
-                .ThenByDescending(x => x.Month)
-                .ToList();
-
-            // محاسبه تاریخ شمسی فعلی
-            var currentPersianDate = PersianDateTime.Now;
-            var currentYear = currentPersianDate.Year;
-            var currentMonth = currentPersianDate.Month;
-
-            var dashboardFinalData = new List<DashboardLoanItemDto>();
-
-            // تولید ۱۲ ماه اخیر به ترتیب معکوس (جدیدترین اول)
-            for (int i = 0; i < 12; i++)
-            {
-                // محاسبه سال و ماه برای هر دوره
-                var targetMonth = currentMonth - i;
-                var targetYear = currentYear;
-
-                if (targetMonth <= 0)
-                {
-                    targetMonth += 12;
-                    targetYear--;
+                    query = query.Where(x => x.Loan.VaziatPasokh == request.Status);
                 }
 
-                // پیدا کردن داده مربوط به این ماه و سال
-                var monthData = dashboardData.FirstOrDefault(x =>
-                    x.Year == targetYear && x.Month == targetMonth);
+                var dataList = await query
+                     .Select(de => new
+                     {
+                         CreatedDate = de.Created, // تاریخ اصلی
+                         Amount = de.Loan.Amount
+                     })
+                     .ToListAsync();
 
-                // نام ماه بر اساس index (ماه شمسی از ۱ شروع می‌شود)
-                var monthName = months[targetMonth - 1];
+                // گروه‌بندی و محاسبات
+                var dashboardData = dataList
+                    .Select(x => new
+                    {
+                        PersianDate = PersianDateTime.Parse(x.CreatedDate.ToPersianDate(), "/"), // تبدیل به تاریخ شمسی
+                        Amount = x.Amount
+                    })
+                    .GroupBy(x => new { x.PersianDate.Year, x.PersianDate.Month })
+                    .Select(g => new
+                    {
+                        Year = g.Key.Year,
+                        Month = g.Key.Month,
+                        TotalRequests = g.Count(),
+                        TotalAmount = g.Sum(x => x.Amount),
+                        AverageAmount = g.Average(x => x.Amount)
+                    })
+                    .OrderByDescending(x => x.Year)
+                    .ThenByDescending(x => x.Month)
+                    .ToList();
 
-                dashboardFinalData.Add(new DashboardLoanItemDto
+                // محاسبه تاریخ شمسی فعلی
+                var currentPersianDate = PersianDateTime.Now;
+                var currentYear = currentPersianDate.Year;
+                var currentMonth = currentPersianDate.Month;
+
+                var dashboardFinalData = new List<DashboardLoanItemDto>();
+
+                // تولید ۱۲ ماه اخیر به ترتیب معکوس (جدیدترین اول)
+                for (int i = 0; i < 12; i++)
                 {
-                    ItemName = monthName,
-                    Count = monthData?.TotalRequests ?? 0,
-                    ItemType = DataEntryTypeEnum.Loan,
-                    TotalAmount = monthData?.TotalAmount ?? 0,
-                });
+                    // محاسبه سال و ماه برای هر دوره
+                    var targetMonth = currentMonth - i;
+                    var targetYear = currentYear;
+
+                    if (targetMonth <= 0)
+                    {
+                        targetMonth += 12;
+                        targetYear--;
+                    }
+
+                    // پیدا کردن داده مربوط به این ماه و سال
+                    var monthData = dashboardData.FirstOrDefault(x =>
+                        x.Year == targetYear && x.Month == targetMonth);
+
+                    // نام ماه بر اساس index (ماه شمسی از ۱ شروع می‌شود)
+                    var monthName = months[targetMonth - 1];
+
+                    dashboardFinalData.Add(new DashboardLoanItemDto
+                    {
+                        ItemName = monthName,
+                        Count = monthData?.TotalRequests ?? 0,
+                        ItemType = DataEntryTypeEnum.Loan,
+                        TotalAmount = monthData?.TotalAmount ?? 0,
+                    });
+                }
+
+                // معکوس کردن لیست تا قدیمی‌ترین ماه اول باشد
+                dashboardFinalData.Reverse();
+
+
+                DashboardLoanDto dto = new();
+                dto.CountAllLoan = countOfAllLoans;
+                dto.CountOfApprovedLoan = countOfApprovedLoan;
+                dto.CountOfDeniedLoan = countOfDeniedLoan;
+                dto.CountOfInProgressLoan = countOfInProgressLoan;
+                dto.CountOfInBranchLoan = countOfInBranchRequest;
+                dto.DashboardChartData = dashboardFinalData;
+                dto.CountShoraRefrences = countOfRefrenceShora;
+                return dto;
             }
+            catch (Exception ex)
+            {
 
-            // معکوس کردن لیست تا قدیمی‌ترین ماه اول باشد
-            dashboardFinalData.Reverse();
+                throw;
+            }
            
-
-            DashboardLoanDto dto = new();
-            dto.CountAllLoan = countOfAllLoans;
-            dto.CountOfApprovedLoan = countOfApprovedLoan;
-            dto.CountOfDeniedLoan = countOfDeniedLoan;
-            dto.CountOfInProgressLoan = countOfInProgressLoan;
-            dto.CountOfInBranchLoan = countOfInBranchRequest;
-            dto.DashboardChartData = dashboardFinalData;
-            dto.CountShoraRefrences = countOfRefrenceShora;
-            return dto;
         }
     }
 }
