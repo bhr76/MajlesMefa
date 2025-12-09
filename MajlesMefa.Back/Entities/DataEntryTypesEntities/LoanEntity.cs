@@ -34,6 +34,8 @@ namespace MajlesMefa.Back.Entities.DataEntryTypesEntities
         public virtual SenatorBudgetEntity SenatorBudget { get; set; }
 
         public int TrackingCode { get; set; }
+        public Guid? LastModifiedUserId { get; set; }= Guid.Empty;
+        public DateTime? LastModifiedDate { get; set; } = null;
     }
 
     public class LoanConfig : IEntityTypeConfiguration<LoanEntity>

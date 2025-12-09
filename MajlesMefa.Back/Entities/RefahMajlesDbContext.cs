@@ -43,7 +43,9 @@ namespace MajlesMefa.Back.Entities
                     .ValueGeneratedOnAdd()
                     .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
 
-                    
+                entity
+            .ToTable("Loans", tb => tb.HasTrigger("TR_DataEntry_Update_Log_Detailed"));
+
                 // ایجاد ایندکس برای جستجوی سریع‌تر
                 entity.HasIndex(e => e.TrackingCode)
                     .IsUnique();

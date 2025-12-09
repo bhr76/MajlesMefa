@@ -1,7 +1,10 @@
 ﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.Back.Services.Abstractioin;
 @using MajlesMefa.UI.Views.ActionReference;
 @{
     ViewData["Title"] = "لیست اقدامات " + ViewBag.DataEntryTitle;
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
 }
 @model Guid
 <div class="home-page">
@@ -15,6 +18,23 @@
 @section scripts{
     <script asp-append-version="true">
         var url_get = '@Url.Action(nameof(ActionReferenceController.GetActionReference), ActionReferenceController.CONTROLLER)' + '?dataEntryId=@Model&actRefType=2';
+
+        var url_delete = '';
+        {
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower()) {
+                url_delete = '@Url.Action(nameof(ActionReferenceController.DeleteRefrence), ActionReferenceController.CONTROLLER)';
+            }
+        };
+
+        // تمپلیت دکمه حذف با چک کردن isReadOnly
+        var btns = function (dataItem) {
+
+            if (url_delete != '') {
+                return '<button class="k-button mt-1" data-confirmation="آیا مطمئن هستید؟" data-href="' + url_delete + '/?refrenceId=' + dataItem.id + '"> حذف </button>';
+            }
+
+            return '';
+        };
 
     </script>
 

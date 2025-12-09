@@ -63,6 +63,8 @@ namespace MajlesMefa.UI.Views.Loan
             return View(senatorId);
         }
 
+       
+
         [RequestLimit(NoOfRequest = 30, Seconds = 5)]
         [Auth]
         public async Task<IActionResult> GetLoans(string models, Guid? senatorId)

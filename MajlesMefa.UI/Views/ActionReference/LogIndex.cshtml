@@ -1,0 +1,33 @@
+﻿@using MajlesMefa.Back.Enums;
+@using MajlesMefa.Back.Services.Abstractioin;
+@using MajlesMefa.UI.Views.ActionReference;
+@{
+    ViewData["Title"] = "لیست تاریخچه " + ViewBag.DataEntryTitle;
+    var user = Context.RequestServices.GetService<ICurrentUserService>();
+    var role = user.GetCurrentUser().Roles.FirstOrDefault();
+}
+@model Guid
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="k-rtl">
+            <div id="report-grid"></div>
+        </div>
+
+    </div>
+</div>
+@section scripts{
+    <script asp-append-version="true">
+        var url_get = '@Url.Action(nameof(ActionReferenceController.GetActionReference), ActionReferenceController.CONTROLLER)' + '?dataEntryId=@Model&actRefType=7';
+
+      
+
+        // تمپلیت دکمه حذف با چک کردن isReadOnly
+        var btns = function (dataItem) {
+            return '';
+        };
+
+    </script>
+
+    <script src="~/js/pages/logs.js" asp-append-version="true"></script>
+}
+

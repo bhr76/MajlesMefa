@@ -69,25 +69,25 @@
             record = (this.dataSource.page() - 1) * this.dataSource.pageSize();
         },
         columns: [
-            { title: "ردیف", template: "#: ++record #", width: 50, attributes: { class: "text-center" }, media: "(min-width: 200px)" },
+            { title: "ردیف", template: "#: ++record #", width: 50, attributes: { class: "text-center" }, media: "(min-width: 50px)" },
             { field: "id", hidden: true, menu: false },
-            { field: "dataEntryType", hidden: true, menu: false },
-            { field: "actionerName", title: "نام اقدام کننده", media: "(min-width: 200px)", width: 100 },
+            //{ field: "dataEntryType", hidden: true, menu: false },
+            //{ field: "actionerName", title: "نام اقدام کننده", media: "(min-width: 200px)", width: 100 },
             { field: "description", title: "توضیح", media: "(min-width: 200px)", width: 100 },
-            { field: "actionDesc", title: "نوع اقدام", media: "(min-width: 200px)", width: 100 },
-            { field: "actionerParentOrgName", title: "سازمان اقدام کننده", media: "(min-width: 200px)", width: 200 },
-            { field: "actionerOrgName", title: "شرکت اقدام کننده", media: "(min-width: 200px)", width: 150 },
-            { field: "created", title: "تاریخ", media: "(min-width: 200px)", width: 150 },
-            {
-                title: "عملیات",
-                width: 270,
-                attributes: {
-                    "class": "text-center",
-                    style: "text-align: center"
-                }
-                , template: btns
+            //{ field: "actionDesc", title: "نوع اقدام", media: "(min-width: 200px)", width: 100 },
+            //{ field: "actionerParentOrgName", title: "سازمان اقدام کننده", media: "(min-width: 200px)", width: 200 },
+            //{ field: "actionerOrgName", title: "شرکت اقدام کننده", media: "(min-width: 200px)", width: 150 },
+            //{ field: "created", title: "تاریخ", media: "(min-width: 200px)", width: 150 },
+            //{
+            //    title: "عملیات",
+            //    width: 270,
+            //    attributes: {
+            //        "class": "text-center",
+            //        style: "text-align: center"
+            //    }
+            //    , template: btns
 
-            }
+            //}
 
         ]
     }).data("kendoGrid");

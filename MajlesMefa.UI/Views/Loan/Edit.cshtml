@@ -13,6 +13,10 @@
 <div class="m-portlet">
     <div class="m-portlet__body">
         <form asp-controller=@LoanController.CONTROLLER asp-action="Edit" id="editLoanForm" method="post">
+            @if (isSenator)
+            {
+                <h5 class="text-warning">لطفا توجه فرمایید که : کد ملی و موبایل متقاضی قابل ویرایش نیست.</h5>
+            }
             <div class="row">
                 <div asp-validation-summary="ModelOnly"></div>
                 <input asp-for="@Model.LoanData.Id" hidden />
@@ -68,7 +72,7 @@
                 }
                 else
                 {
-                    <p>کد ملی و موبایل متقاضی قابل ویرایش نیست.</p>
+                    
                     <div class="form-group mt-3 col-md-4">
                         <label asp-for="@Model.SenatorId"></label>
                         <input readonly asp-for="@Model.SenatorId" id="SenatorId" class="form-control" />

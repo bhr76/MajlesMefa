@@ -27,6 +27,7 @@
         var url_get_loan = '';
         var url_create = '';
         var url_edit = '';
+        var url_log = '';
         var fromReportPage = false;
         var url_delete = '';
         {
@@ -47,7 +48,7 @@
                 url_edit = '@Url.Action(nameof(LoanController.Edit), LoanController.CONTROLLER)';
                 url_delete = '@Url.Action(nameof(LoanController.Delete), LoanController.CONTROLLER)';
             }
-        }
+        };
         url_create ='';
         {
             if(@RoleTypeEnum.Senator.Equals(role).ToString().ToLower()){
@@ -55,23 +56,57 @@
 
                 url_edit = '@Url.Action(nameof(LoanController.Edit), LoanController.CONTROLLER)';
             }
-        }
+        };
+
+        url_log = '';
+        {
+            if (@RoleTypeEnum.Admin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryAdmin.Equals(role).ToString().ToLower() || @RoleTypeEnum.MinistryMember.Equals(role).ToString().ToLower()) {
+                url_log = '@Url.Action(nameof(ActionReferenceController.LogIndex), ActionReferenceController.CONTROLLER)' ;
+            }
+
+        };
         
         
         var url_details = '@Url.Action(nameof(LoanController.Details), LoanController.CONTROLLER)';
         var url_actionReference = '@Url.Action(nameof(ActionReferenceController.Index), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#&dataEntryType=#:dataEntryType#';
         var url_action = '@Url.Action(nameof(ActionReferenceController.ActionIndex), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#&dataEntryType=#:dataEntryType#';
+
         var url_refrenceTo = '@Url.Action(nameof(ActionReferenceController.RefrenceTo), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#';
         var url_peygiri = '@Url.Action(nameof(PeygiriController.Index), PeygiriController.CONTROLLER,new{dataEntryType=DataEntryTypeEnum.Loan})';
         var url_actionTo = '@Url.Action(nameof(ActionReferenceController.ActionTo), ActionReferenceController.CONTROLLER)' + '?dataEntryId=#:id#';
         //<button class="k-button" data-link="${url_details}/?loanId=#:id#">جزییات</button>
-        var btns = ` <a class="k-button mt-1" target="_blank" href="${url_peygiri}&dataEntryId=#:id#""></span> پیگیری ها</a>
-                                                                                                                                       #if ('${userRole}' != "Senator" && '${userRole}' != "Organization") {# <button class="k-button mt-1" data-link="${url_refrenceTo}"> ارجاع به </button> #}#
-                                                                                                                        #if ('${userRole}' != "Senator") {# <button class="k-button mt-1" data-link="${url_actionTo}"> اقدام </button> #}#
-                                                                     <a class="k-button mt-1" target="_blank" href="${url_actionReference}"></span> ارجاعات</a>
-                                                                              <a class="k-button mt-1" target="_blank" href="${url_action}"></span> اقدامات</a>
-                                                                             #if('${url_edit}' != ''){#<a class="k-button mt-1" target="_blank" href="${url_edit}?loanId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>#}#
-                        `;
+        var btns = `
+            <a class="k-button mt-1" target="_blank" href="${url_peygiri}&dataEntryId=#:id#">پیگیری ها</a>
+
+            #if ('${userRole}' != "Senator" && '${userRole}' != "Organization") {#
+                <button class="k-button mt-1" data-link="${url_refrenceTo}">ارجاع به</button>
+            #}#
+
+            #if ('${userRole}' != "Senator") {#
+                <button class="k-button mt-1" data-link="${url_actionTo}">اقدام</button>
+            #}#
+                          
+
+            <a class="k-button mt-1" target="_blank" href="${url_actionReference}">ارجاعات</a>
+            <a class="k-button mt-1" target="_blank" href="${url_action}">اقدامات</a>
+
+                                                   #if('${url_log}' != ''){#
+                                        <a class="k-button mt-1" target="_blank" href="${url_log}?dataEntryId=#:id#&dataEntryType=#:dataEntryType#">
+                            تاریخچه تغییرات
+                        </a>
+                    #}#
+       
+                          
+
+            #if('${url_edit}' != ''){#
+                <a class="k-button mt-1" target="_blank" href="${url_edit}?loanId=#:id#">
+                    <span class="k-icon k-i-edit"></span> ویرایش
+                </a>
+            #}#
+
+                   
+
+                `;
 
     </script>
     <script src="~/js/pages/loan.js" asp-append-version="true"></script>

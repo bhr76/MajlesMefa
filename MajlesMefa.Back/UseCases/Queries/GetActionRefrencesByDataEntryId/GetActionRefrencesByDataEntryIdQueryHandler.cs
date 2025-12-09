@@ -31,14 +31,20 @@ namespace MajlesMefa.Back.UseCases.Queries.GetActionRefrencesByDataEntryId
                 .NoTracking
                 .Where(o => o.DataEntryId == request.DataEntryId
                 && o.ActRefType != ActRefTypeEnum.Create
-                && o.ActRefType != ActRefTypeEnum.Edit);
+                );
             if (request.ActRefType == ActRefTypeEnum.Refer)
             {
                 rslt = rslt.Where(x => x.ActRefType == ActRefTypeEnum.Refer);
             }
+            else if (request.ActRefType == ActRefTypeEnum.Edit)
+            {
+                rslt = rslt.Where(x => x.ActRefType == ActRefTypeEnum.Edit);
+            }
             else
             {
-                rslt = rslt.Where(x => x.ActRefType != ActRefTypeEnum.Refer);
+                rslt = rslt.Where(x => x.ActRefType != ActRefTypeEnum.Refer &&
+                    x.ActRefType != ActRefTypeEnum.Edit
+                );
             }
             var dataEntry = _unitOfWork.DataEntryRepository.NoTracking
                 .Include(x => x.Loan)

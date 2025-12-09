@@ -77,6 +77,23 @@ namespace MajlesMefa.UI.Views.ActionReference
         }
 
         [RequestLimit(NoOfRequest = 15, Seconds = 10)]
+        public async Task<IActionResult> LogIndex(Guid dataEntryId, DataEntryTypeEnum dataEntryType)
+        {
+
+            var query = new GetDataEntriesQuery
+            {
+                DataEntryId = dataEntryId,
+                DataEntryType = dataEntryType
+            };
+            var list = await Mediator.Send(query);
+            var rslt = list.Items.SingleOrDefault();
+
+            ViewBag.DataEntryTitle = rslt.Title;
+            ViewBag.DataEntryId = dataEntryId;
+            return View(dataEntryId);
+        }
+
+        [RequestLimit(NoOfRequest = 15, Seconds = 10)]
         public async Task<IActionResult> GetActionReference(string models, Guid dataEntryId, ActRefTypeEnum actRefType)
         {
             var Filter = JsonConvert.DeserializeObject<TableRequestModel>(models);

@@ -113,14 +113,7 @@ namespace MajlesMefa.Back.UseCases.Commmands.UpdateDataEntryCommand
             data.DataEntry.Moavenats = request.Moavenats != null ? string.Join(",", request.Moavenats) : null;
             data.DataEntry.CategoryId = request.CategoryId;
 
-            var actRef = new ActionReferenceEntity()
-            {
-                FromUserId = cuser.BussinessUserId,
-                ToUserId = cuser.BussinessUserId,
-                ActRefType = ActRefTypeEnum.Edit,
-                DataEntry = data.DataEntry
-            };
-            _context.ActionReferences.Add(actRef);
+            
 
 
             if (preType != newType)
@@ -243,48 +236,59 @@ namespace MajlesMefa.Back.UseCases.Commmands.UpdateDataEntryCommand
                     case DataEntryTypeEnum.Loan:
                         //
                         var requestLoanData = request.DataEntryData as LoanDtailDto;
-                        var isRefrencedToBank =  _context.ActionReferences
-                            .Include(a => a.ToUser)
-                            .Where(a => a.ToUser.OrganizationId != null && a.DataEntryId == data.DataEntryId)
-                            .Count() > 0;
-                        if (isRefrencedToBank &&
-                            !cuser.Roles.Any(e => e == RoleTypeEnum.Organization)
-                            )
-                        {
-                            throw new InvalidOperationException("تسهیلات انتخابی به بانک ارجاع شده است و قابل ویرایش نمی باشد");
-                        }
-                       
-                        //عدم اجازه ویرایش مجدد برای کابرای غیر بانک
-                        if(data.DataEntry.Loan.VaziatPasokh != ResponseStatusEnum.Inprogress
-                             &&
-                            !cuser.Roles.Any(e => e == RoleTypeEnum.Organization)
-                            )
-                        {
-                            throw new InvalidOperationException("تسهیلات انتخابی قابل ویرایش مجدد نمی باشد.");
-                        }
-                       
-                        //بررسی ویرایش برای کاربر بانک
-                        if ( cuser.Roles.Any(e => e == RoleTypeEnum.Organization))
-                        {
-                            if(
-                                data.DataEntry.Loan.VaziatPasokh == ResponseStatusEnum.Mosbat
-                                ||
-                                data.DataEntry.Loan.VaziatPasokh == ResponseStatusEnum.Manfi
-                                )
-                            {
-                                throw new InvalidOperationException("تسهیلات انتخابی قابل ویرایش مجدد نمی باشد.");
+                        var currentLoanStatus = data.DataEntry.Loan.VaziatPasokh;
+                        var isAdmin = cuser.Roles.Any(r => r == RoleTypeEnum.Admin);
+                        var isOrganization = cuser.Roles.Any(r => r == RoleTypeEnum.Organization);
 
+
+                        //  ادمین فقط نمی‌تواند درخواست رد شده را ویرایش کند
+                        if (isAdmin)
+                        {
+                            if (currentLoanStatus == ResponseStatusEnum.Manfi)
+                            {
+                                throw new InvalidOperationException("تسهیلات رد شده قابل ویرایش نمی‌باشد.");
                             }
-                            if(
-                                data.DataEntry.Loan.VaziatPasokh == ResponseStatusEnum.Shobe
-                                &&
+                            // ادمین از بقیه شرط‌ها معاف است
+                            
+                        }
+
+                        //  بررسی ارجاع به بانک (برای غیر بانک و غیر ادمین)
+                        if (!isOrganization && !isAdmin)
+                        {
+                            var isReferencedToBank = await _context.ActionReferences
+                                .AnyAsync(a =>
+                                    a.ToUser.OrganizationId != null &&
+                                    a.DataEntryId == data.DataEntryId
+                                );
+
+                            if (isReferencedToBank)
+                            {
+                                throw new InvalidOperationException("تسهیلات انتخابی به بانک ارجاع شده است و قابل ویرایش نمی‌باشد.");
+                            }
+
+                            //  عدم اجازه ویرایش مجدد برای کاربران غیر بانک
+                            if (currentLoanStatus != ResponseStatusEnum.Inprogress)
+                            {
+                                throw new InvalidOperationException("تسهیلات انتخابی قابل ویرایش مجدد نمی‌باشد.");
+                            }
+                        }
+
+                        // بررسی ویرایش برای کاربر بانک
+                        if (isOrganization)
+                        {
+                            // بانک نمی‌تواند درخواست‌های تایید یا رد شده را ویرایش کند
+                            if (currentLoanStatus == ResponseStatusEnum.Mosbat ||
+                                currentLoanStatus == ResponseStatusEnum.Manfi)
+                            {
+                                throw new InvalidOperationException("تسهیلات انتخابی قابل ویرایش مجدد نمی‌باشد.");
+                            }
+
+                            // بانک نمی‌تواند وضعیت شعبه را به در حال بررسی برگرداند
+                            if (currentLoanStatus == ResponseStatusEnum.Shobe &&
                                 requestLoanData.PasokhState == ResponseStatusEnum.Inprogress)
                             {
-                                throw new InvalidOperationException("وضعیت تسهیلات انتخابی قابل بازگشت به قبل نمی باشد.");
+                                throw new InvalidOperationException("وضعیت تسهیلات انتخابی قابل بازگشت به قبل نمی‌باشد.");
                             }
-
-
-
                         }
 
 
@@ -320,8 +324,23 @@ namespace MajlesMefa.Back.UseCases.Commmands.UpdateDataEntryCommand
                             }
                         }
 
+
+                        var actRef = new ActionReferenceEntity()
+                        {
+                            FromUserId = cuser.BussinessUserId,
+                            ToUserId = cuser.BussinessUserId,
+                            ActRefType = ActRefTypeEnum.Edit,
+                            DataEntry = data.DataEntry,
+                            Description = $" درخواست از وضعیت {data.DataEntry.Loan.VaziatPasokh.GetPersianName()} به وضعیت {requestLoanData.PasokhState.GetPersianName()} توسط کاربر {cuser.Name} تغییر یافت."
+                        };
+                        _context.ActionReferences.Add(actRef);
+
+
                         data.DataEntry.Loan = _mapper.Map(requestLoanData, data.DataEntry.Loan);
                         data.DataEntry.Loan.VaziatPasokh = requestLoanData.PasokhState;
+
+                        data.DataEntry.Loan.LastModifiedDate = DateTime.Now;
+                        data.DataEntry.Loan.LastModifiedUserId = cuser.BussinessUserId;
 
 
                         break;
