@@ -5,19 +5,18 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MajlesMefa.Back.Entities.DataEntryTypesEntities
 {
-    public class LoanEntity: BaseDataEntryTypeEntity
+    public class LoanEntity : BaseDataEntryTypeEntity
     {
         [ForeignKey(nameof(User))]
         public Guid? UserId { get; set; }
         public virtual UserEntity User { get; set; }
 
         public Guid? RelatedBankId { get; set; }
-
         public virtual BankEntity RelatedBank { get; set; }
 
         public LoanTypeEnum LoanType { get; set; }
 
-        public ResponseStatusEnum VaziatPasokh { get;set; }
+        public ResponseStatusEnum VaziatPasokh { get; set; }
 
         public string PasokhNo { get; set; }
         public DateTime PasokhDate { get; set; }
@@ -26,15 +25,25 @@ namespace MajlesMefa.Back.Entities.DataEntryTypesEntities
         public string MobileNo { get; set; }
         public string NationalNo { get; set; }
         public long Amount { get; set; }
-     
 
+
+        [ForeignKey(nameof(Province))]
+        public Guid? ProvinceId { get; set; }
+        public virtual CityEntity Province { get; set; }
+
+
+        [ForeignKey(nameof(City))]
+        public Guid? CityId { get; set; }
+        public virtual CityEntity City { get; set; }
+
+
+        public string Address { get; set; }
 
         public Guid? SenatorBudgetId { get; set; }
-
         public virtual SenatorBudgetEntity SenatorBudget { get; set; }
 
         public int TrackingCode { get; set; }
-        public Guid? LastModifiedUserId { get; set; }= Guid.Empty;
+        public Guid? LastModifiedUserId { get; set; } = Guid.Empty;
         public DateTime? LastModifiedDate { get; set; } = null;
     }
 
@@ -43,40 +52,62 @@ namespace MajlesMefa.Back.Entities.DataEntryTypesEntities
         public void Configure(EntityTypeBuilder<LoanEntity> builder)
         {
             builder.AddRelationDataEntryConfig(x => x.Loan);
-         
+
             builder.HasOne(c => c.User)
                 .WithMany(x => x.Loans)
                 .HasForeignKey(x => x.UserId)
-               .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.RelatedBank)
-               .WithMany(x => x.LoanRelatedBanks)
-               .HasForeignKey(x => x.RelatedBankId)
-               .OnDelete(DeleteBehavior.Restrict);
+                .WithMany(x => x.LoanRelatedBanks)
+                .HasForeignKey(x => x.RelatedBankId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.SenatorBudget) 
+            builder.HasOne(x => x.SenatorBudget)
                 .WithMany(x => x.LoanRelatedBanks)
                 .HasForeignKey(x => x.SenatorBudgetId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            builder.HasOne(x => x.Province)
+                .WithMany()
+                .HasForeignKey(x => x.ProvinceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            builder.HasOne(x => x.City)
+                .WithMany()
+                .HasForeignKey(x => x.CityId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(c => c.FullName)
                 .IsRequired()
                 .HasMaxLength(512);
+
             builder.Property(c => c.MobileNo)
                 .IsRequired()
                 .HasMaxLength(32);
+
             builder.Property(c => c.NationalNo)
                 .IsRequired()
                 .HasMaxLength(11);
-            builder.Property(c => c.FullName)
-                .IsRequired()
-                .HasMaxLength(512);
+
             builder.Property(x => x.PasokhDate)
                 .HasColumnType("datetime2");
+
             builder.Property(c => c.PasokhNo)
                 .HasMaxLength(32);
-           
 
+
+            builder.Property(c => c.Address)
+                .HasMaxLength(500);
+
+
+            builder.HasIndex(x => x.ProvinceId)
+                .HasDatabaseName("IX_Loan_ProvinceId");
+
+            builder.HasIndex(x => x.CityId)
+                .HasDatabaseName("IX_Loan_CityId");
         }
     }
 }

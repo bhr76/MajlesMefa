@@ -8,21 +8,23 @@ using MajlesMefa.Back.Services.Abstractioin;
 using MajlesMefa.Back.UseCases.Commmands.CreateActionReferenceCommand;
 using MajlesMefa.Back.UseCases.Commmands.DeleteDataEntryCommand;
 using MajlesMefa.Back.UseCases.Queries.GetBanksQuery;
+using MajlesMefa.Back.UseCases.Queries.GetCityDropDown;
 using MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery;
+using MajlesMefa.Back.UseCases.Queries.GetFlatLoanDataEntriesQuery;
 using MajlesMefa.Back.UseCases.Queries.GetUsersDropDownQuery;
 using MajlesMefa.Back.Utilities.Db.DynamicQuery.AbolFramework;
 using MajlesMefa.Back.Utilities.Db.DynamicQuery.AbolFramework.Models;
 using MajlesMefa.Back.Utilities.Limit;
 using MajlesMefa.Back.Utilities.Message;
+using MajlesMefa.Core.ApplicationService.Services.SOAPlus;
+using MajlesMefa.Core.ApplicationService.Services.SOAPlus.SoaPlusModels;
 using MajlesMefa.UI.Models;
 using MajlesMefa.UI.Views.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
-using System.Diagnostics;
 using System.ComponentModel.DataAnnotations;
-using MajlesMefa.Core.ApplicationService.Services.SOAPlus;
-using MajlesMefa.Core.ApplicationService.Services.SOAPlus.SoaPlusModels;
+using System.Diagnostics;
 
 namespace MajlesMefa.UI.Views.Loan
 {
@@ -70,10 +72,9 @@ namespace MajlesMefa.UI.Views.Loan
         public async Task<IActionResult> GetLoans(string models, Guid? senatorId)
         {
             var Filter = JsonConvert.DeserializeObject<TableRequestModel>(models);
-            var query = new GetDataEntriesQuery();
+            var query = new GetFlatLoanDataEntriesQuery();
             query.Filter = Filter;
-            query.SenatorIdId = senatorId;
-            query.DataEntryType = DataEntryTypeEnum.Loan;
+            query.SenatorId = senatorId;
             var list = await Mediator.Send(query);
             var rslt = DataSourceResult.GetFromTable(list);
 
@@ -112,7 +113,10 @@ namespace MajlesMefa.UI.Views.Loan
                     LoanType = loanDto.LoanType,
                     LoanTypeInt = (int)loanDto.LoanType,
                     PasokhState = loanDto.PasokhState,
-                    PasokhStateInt = (int)loanDto.PasokhState
+                    PasokhStateInt = (int)loanDto.PasokhState,
+                    CityId = loanDto.CityId,
+                    ProvinceId = loanDto.ProvinceId,
+                    Address = loanDto.Address
                 }
 
             };
@@ -373,15 +377,51 @@ namespace MajlesMefa.UI.Views.Loan
         {
             var cuser = _currentUserService.GetCurrentUser();
             var Filter = JsonConvert.DeserializeObject<TableRequestModel>(models);
-            var query = new GetDataEntriesQuery();
+            var query = new GetFlatLoanDataEntriesQuery();
             query.Filter = Filter;
-            query.SenatorIdId = senatorId;
-            query.DataEntryType = DataEntryTypeEnum.Loan;
+            query.SenatorId = senatorId;
             query.CurrentUserId = cuser.BussinessUserId;
             var list = await Mediator.Send(query);
             var rslt = DataSourceResult.GetFromTable(list);
 
             return Json(rslt);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetProvincesForDropDown()
+        {
+            try
+            {
+                var query = new GetCityDropDownQuery(parentId: null);
+                var result = await Mediator.Send(query);
+
+                return Json(new { data = result });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetCitiesByProvinceForDropDown(Guid provinceId)
+        {
+            try
+            {
+                if (provinceId == Guid.Empty)
+                {
+                    return Json(new { data = new List<GetCityDropDownDto>() });
+                }
+
+                var query = new GetCityDropDownQuery(parentId: provinceId);
+                var result = await Mediator.Send(query);
+
+                return Json(new { data = result });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
         }
 
     }

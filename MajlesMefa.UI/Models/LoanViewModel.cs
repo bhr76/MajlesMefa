@@ -1,15 +1,8 @@
-﻿using AutoMapper;
-using MediatR;
-using MajlesMefa.Back.Dtos.DataEntryTypesDtos;
-using MajlesMefa.Back.Enums;
-using MajlesMefa.Back.Utilities.Mapping;
+﻿using MajlesMefa.Back.Enums;
 using System.ComponentModel.DataAnnotations;
-using MajlesMefa.Back.Utilities.Date;
 using MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand;
 using MajlesMefa.Back.UseCases.Commmands.UpdateDataEntryCommand;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MajlesMefa.Back.Migrations;
-using MajlesMefa.Back.Dtos;
 using MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details;
 
 namespace MajlesMefa.UI.Models
@@ -36,6 +29,10 @@ namespace MajlesMefa.UI.Models
         public long RemainBudget { get; set; }
 
 
+        public Guid? ProvinceId { get; set; }
+        public Guid? CityId { get; set; }
+        public string? Address { get; set; }
+
         public LoanDtailDto LoanData { get; set; }
 
         [ Display(Name = "کاربر جهت ارجاع")]
@@ -54,6 +51,7 @@ namespace MajlesMefa.UI.Models
                 Description = Description,
                 DataEntryType = DataEntryTypeEnum.Loan,
                 SenatorId = SenatorId,
+                
             };
         }
 

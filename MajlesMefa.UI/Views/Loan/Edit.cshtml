@@ -56,6 +56,26 @@
                         <span asp-validation-for="@Model.LoanData.Amount" class="text-danger"></span>
                     </div>
 
+                    <!-- ✅ فیلدهای آدرس برای غیر نماینده (فقط نمایش) -->
+                    <div class="col-12 mt-4">
+                        <h5>آدرس محل سکونت</h5>
+                    </div>
+
+                    <div class="form-group mt-3 col-md-4">
+                        <label class="control-label">استان</label>
+                        <input readonly id="ProvinceReadonly" class="form-control" />
+                    </div>
+
+                    <div class="form-group mt-3 col-md-4">
+                        <label class="control-label">شهر</label>
+                        <input readonly id="CityReadonly" class="form-control" />
+                    </div>
+
+                    <div class="form-group mt-3 col-md-12">
+                        <label asp-for="@Model.LoanData.Address" class="control-label">آدرس کامل</label>
+                        <textarea readonly asp-for="@Model.LoanData.Address" class="form-control" rows="3"></textarea>
+                    </div>
+
                     <div class="form-group mt-3 col-md-12">
                         <label asp-for="@Model.Description"></label>
                         <textarea readonly asp-for="@Model.Description" id="Description" class="form-control" rows="4"></textarea>
@@ -72,7 +92,7 @@
                 }
                 else
                 {
-                    
+
                     <div class="form-group mt-3 col-md-4">
                         <label asp-for="@Model.SenatorId"></label>
                         <input readonly asp-for="@Model.SenatorId" id="SenatorId" class="form-control" />
@@ -107,6 +127,33 @@
                         <span asp-validation-for="@Model.LoanData.Amount" class="text-danger"></span>
                     </div>
 
+                    <!-- ✅ فیلدهای آدرس برای نماینده (قابل ویرایش) -->
+                    <div class="col-12 mt-4">
+                        <h5>آدرس محل سکونت</h5>
+                    </div>
+
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.ProvinceId" class="control-label">استان</label>
+                        <select asp-for="@Model.LoanData.ProvinceId" id="ProvinceId" class="form-control">
+                            <option value="">انتخاب کنید...</option>
+                        </select>
+                        <span asp-validation-for="@Model.LoanData.ProvinceId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3 col-md-4">
+                        <label asp-for="@Model.LoanData.CityId" class="control-label">شهر</label>
+                        <select asp-for="@Model.LoanData.CityId" id="CityId" class="form-control" disabled>
+                            <option value="">ابتدا استان را انتخاب کنید...</option>
+                        </select>
+                        <span asp-validation-for="@Model.LoanData.CityId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3 col-md-12">
+                        <label asp-for="@Model.LoanData.Address" class="control-label">آدرس کامل</label>
+                        <textarea asp-for="@Model.LoanData.Address" id="Address" class="form-control" rows="3" placeholder="آدرس دقیق محل سکونت خود را وارد کنید..."></textarea>
+                        <span asp-validation-for="@Model.LoanData.Address" class="text-danger"></span>
+                    </div>
+
                     <div class="form-group mt-3 col-md-12">
                         <label asp-for="@Model.Description"></label>
                         <textarea asp-for="@Model.Description" id="Description" class="form-control" rows="4"></textarea>
@@ -125,7 +172,7 @@
     </div>
 </div>
 
-@section scripts{
+@section scripts {
     <script>
         $(document).ready(function () {
 
@@ -214,6 +261,171 @@
                     }
                 }
             });
+
+            // ✅ فقط برای نماینده: تنظیم دراپ‌داون‌های استان و شهر
+            @if (isSenator)
+            {
+                    <text>
+                    // ============ Province DropDown ============
+                    var provinceDropDown = $("#ProvinceId").kendoDropDownList({
+                        dataTextField: "name",
+                        dataValueField: "id",
+                        optionLabel: "انتخاب کنید...",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    dataType: "json",
+                                    contentType: 'application/json; charset=utf-8',
+                                    type: 'POST',
+                                    url: '@Url.Action("GetProvincesForDropDown", LoanController.CONTROLLER)',
+                                }
+                            },
+                            schema: {
+                                parse: function(response) {
+                                    return response.data;
+                                }
+                            }
+                        },
+                        change: function(e) {
+                            var selectedValue = this.value();
+
+                            if (selectedValue) {
+                                var cityDropDown = $("#CityId").data("kendoDropDownList");
+                                cityDropDown.enable(true);
+                                loadCities(selectedValue);
+                            } else {
+                                var cityDropDown = $("#CityId").data("kendoDropDownList");
+                                cityDropDown.enable(false);
+                                cityDropDown.value("");
+                                cityDropDown.setDataSource([]);
+                            }
+                        }
+                    }).data("kendoDropDownList");
+
+                    // ============ City DropDown ============
+                    var cityDropDown = $("#CityId").kendoDropDownList({
+                        dataTextField: "name",
+                        dataValueField: "id",
+                        optionLabel: "ابتدا استان را انتخاب کنید...",
+                        enable: false,
+                        dataSource: {
+                            data: []
+                        }
+                    }).data("kendoDropDownList");
+
+                    // ============ تابع بارگذاری شهرها ============
+                    function loadCities(provinceId) {
+                        if (!provinceId) return;
+
+                        var cityDropDown = $("#CityId").data("kendoDropDownList");
+                        cityDropDown.text("در حال بارگذاری...");
+                        cityDropDown.enable(false);
+
+                        $.ajax({
+                            url: '@Url.Action("GetCitiesByProvinceForDropDown", LoanController.CONTROLLER)',
+                            type: 'POST',
+                            data: { provinceId: provinceId },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.data && response.data.length > 0) {
+                                    cityDropDown.setDataSource(new kendo.data.DataSource({
+                                        data: response.data
+                                    }));
+
+                                    cityDropDown.enable(true);
+                                    cityDropDown.value("");
+
+                                    // تنظیم شهر در حالت Edit
+                                    @if (Model.LoanData?.CityId != null)
+                                    {
+                                            <text>
+                                            var cityId = '@Model.LoanData.CityId';
+                                            setTimeout(function() {
+                                                cityDropDown.value(cityId);
+                                            }, 100);
+                                            </text>
+                                    }
+                                } else {
+                                    cityDropDown.setDataSource([]);
+                                    cityDropDown.enable(false);
+                                    toastr.warning('شهری برای این استان یافت نشد');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error loading cities:', error);
+                                cityDropDown.setDataSource([]);
+                                cityDropDown.enable(false);
+                                toastr.error('خطا در بارگذاری لیست شهرها');
+                            }
+                        });
+                    }
+
+                    // ============ Format Amount ============
+                    $('#Amount').on('keyup', function () {
+                        var input = $(this);
+                        var value = input.val().replace(/,/g, '');
+
+                        if (!/^\d*$/.test(value)) {
+                            value = value.replace(/\D/g, '');
+                        }
+
+                        var formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        input.val(formattedValue);
+                    });
+
+                    // ============ تنظیم مقادیر Edit ============
+                    @if (Model.LoanData?.ProvinceId != null)
+                    {
+                            <text>
+                            provinceDropDown.dataSource.one("requestEnd", function() {
+                                provinceDropDown.value('@Model.LoanData.ProvinceId');
+                                loadCities('@Model.LoanData.ProvinceId');
+                            });
+                            </text>
+                    }
+                    </text>
+            }
+            else
+            {
+                    <text>
+                    // ✅ برای غیر نماینده: نمایش نام استان و شهر
+                    @if (Model.LoanData?.ProvinceId != null)
+                    {
+                            <text>
+                            // بارگذاری نام استان
+                            $.ajax({
+                                url: '@Url.Action("GetProvincesForDropDown", LoanController.CONTROLLER)',
+                                type: 'POST',
+                                dataType: 'json',
+                                success: function(response) {
+                                    if (response.data) {
+                                        var province = response.data.find(p => p.id === '@Model.LoanData.ProvinceId');
+                                        if (province) {
+                                            $('#ProvinceReadonly').val(province.name);
+                                        }
+                                    }
+                                }
+                            });
+
+                            // بارگذاری نام شهر
+                            $.ajax({
+                                url: '@Url.Action("GetCitiesByProvinceForDropDown", LoanController.CONTROLLER)',
+                                type: 'POST',
+                                data: { provinceId: '@Model.LoanData.ProvinceId' },
+                                dataType: 'json',
+                                success: function(response) {
+                                    if (response.data) {
+                                        var city = response.data.find(c => c.id === '@Model.LoanData.CityId');
+                                        if (city) {
+                                            $('#CityReadonly').val(city.name);
+                                        }
+                                    }
+                                }
+                            });
+                            </text>
+                    }
+                    </text>
+            }
 
         });
 

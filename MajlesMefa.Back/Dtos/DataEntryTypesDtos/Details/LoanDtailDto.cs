@@ -1,17 +1,12 @@
 ﻿using AutoMapper;
-using DataAnnotationsExtensions;
-using Duende.IdentityServer.Models;
 using MajlesMefa.Back.Dtos.DataEntryTypesDtos.Grid;
 using MajlesMefa.Back.Entities.DataEntryTypesEntities;
 using MajlesMefa.Back.Enums;
 using MajlesMefa.Back.Enums.Molaghat;
 using MajlesMefa.Back.Enums.Soval;
-using MajlesMefa.Back.Utilities.Convertor;
 using MajlesMefa.Back.Utilities.Date;
-using MajlesMefa.Back.Utilities.EnumHelper;
 using MajlesMefa.Back.Utilities.Mapping;
 using System.ComponentModel.DataAnnotations;
-using static MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details.LoanDtailDto;
 
 namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details
 {
@@ -85,6 +80,18 @@ namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details
         public int? TrackingCode { get; set; }
 
         public GetAccessActionRefrenceResultDto AccessActionRefrence { get; set; }
+
+
+
+        [Display(Name = "استان")]
+        public Guid? ProvinceId { get; set; }
+
+        [Display(Name = "شهر")]
+        public Guid? CityId { get; set; }
+
+        [Display(Name = "آدرس کامل")]
+        [MaxLength(500, ErrorMessage = "آدرس نباید بیشتر از 500 کاراکتر باشد")]
+        public string Address { get; set; }
 
 
 

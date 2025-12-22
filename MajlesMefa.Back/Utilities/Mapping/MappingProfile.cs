@@ -10,6 +10,7 @@ namespace MajlesMefa.Back.Utilities.Mapping
 {
     public class MappingProfile : Profile
     {
+        public MappingProfile() : this(null) { }
         public MappingProfile(Assembly assembly)
         {
             if (assembly == null)

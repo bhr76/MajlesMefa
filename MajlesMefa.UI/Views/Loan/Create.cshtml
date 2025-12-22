@@ -11,18 +11,23 @@
 <div class="m-portlet">
     <div class="m-portlet__body">
         <form asp-controller=@LoanController.CONTROLLER asp-action="Create" id="createLoanForm" method="post">
-           
-                <h5 class="text-warning">لطفا توجه فرمایید که : کد ملی و موبایل متقاضی قابل ویرایش نیست و می بایست متعلق به یک شخص باشد.</h5>
-            
+
+            <h5 class="text-warning">لطفا توجه فرمایید که : کد ملی و موبایل متقاضی قابل ویرایش نیست و می بایست متعلق به یک شخص باشد.</h5>
+
             <div class="row">
                 <div asp-validation-summary="ModelOnly"></div>
 
-                
+                <!-- اطلاعات شخصی -->
+                <div class="col-12 mt-4">
+                    <h5>اطلاعات شخصی</h5>
+                </div>
+
                 <div class="form-group mt-3 col-md-4">
                     <label asp-for="@Model.LoanData.FullName" class="control-label"></label>
                     <input asp-for="@Model.LoanData.FullName" maxlength="256" id="FullName" class="form-control" />
                     <span asp-validation-for="@Model.LoanData.FullName" class="text-danger"></span>
                 </div>
+
                 <div class="form-group mt-3 col-md-4">
                     <label asp-for="@Model.LoanData.NationalNo" class="control-label"></label>
                     <input asp-for="@Model.LoanData.NationalNo" maxlength="10" id="NationalNo" class="form-control" />
@@ -31,8 +36,13 @@
 
                 <div class="form-group mt-3 col-md-4">
                     <label asp-for="@Model.LoanData.MobileNo" class="control-label"></label>
-                    <input asp-for="@Model.LoanData.MobileNo" id="MobileNo" class="form-control" />
+                    <input asp-for="@Model.LoanData.MobileNo" maxlength="11" id="MobileNo" class="form-control" />
                     <span asp-validation-for="@Model.LoanData.MobileNo" class="text-danger"></span>
+                </div>
+
+                <!-- اطلاعات تسهیلات -->
+                <div class="col-12 mt-4">
+                    <h5>اطلاعات تسهیلات</h5>
                 </div>
 
                 <div class="form-group mt-3 col-md-4">
@@ -47,19 +57,37 @@
                     <span asp-validation-for="@Model.LoanData.Amount" class="text-danger"></span>
                 </div>
 
-                @*<div class="form-group mt-3 col-md-4">
-                    <label asp-for="@Model.LoanData.SuggestedBankId"></label>
-                    <input asp-for="@Model.LoanData.SuggestedBankId" id="SuggestedBankId" class="form-control" />
-                    <span asp-validation-for="@Model.LoanData.SuggestedBankId" class="text-danger"></span>
-                </div>*@
+                <!-- آدرس محل سکونت -->
+                <div class="col-12 mt-4">
+                    <h5>آدرس محل سکونت</h5>
+                </div>
 
-              @*   <div class="form-group mt-3 col-md-4">
-                    <label asp-for="@Model.LoanData.UserId" class="control-label">بانک</label>
-                    <select asp-for="@Model.LoanData.UserId" id="UserId" class="form-control" asp-items="@Model.Users">
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.LoanData.ProvinceId" class="control-label">استان</label>
+                    <select asp-for="@Model.LoanData.ProvinceId" id="ProvinceId" class="form-control">
                         <option value="">انتخاب کنید...</option>
                     </select>
-                    <span asp-validation-for="@Model.LoanData.UserId" class="text-danger"></span>
-                </div> *@
+                    <span asp-validation-for="@Model.LoanData.ProvinceId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-4">
+                    <label asp-for="@Model.LoanData.CityId" class="control-label">شهر</label>
+                    <select asp-for="@Model.LoanData.CityId" id="CityId" class="form-control" disabled>
+                        <option value="">ابتدا استان را انتخاب کنید...</option>
+                    </select>
+                    <span asp-validation-for="@Model.LoanData.CityId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3 col-md-12">
+                    <label asp-for="@Model.LoanData.Address" class="control-label">آدرس کامل</label>
+                    <textarea asp-for="@Model.LoanData.Address" id="Address" class="form-control" rows="3" placeholder="آدرس دقیق محل سکونت خود را وارد کنید..."></textarea>
+                    <span asp-validation-for="@Model.LoanData.Address" class="text-danger"></span>
+                </div>
+
+                <!-- توضیحات -->
+                <div class="col-12 mt-4">
+                    <h5>توضیحات</h5>
+                </div>
 
                 <div class="form-group mt-3 col-md-12">
                     <label asp-for="@Model.Description"></label>
@@ -67,20 +95,8 @@
                     <span asp-validation-for="@Model.Description" class="text-danger"></span>
                 </div>
 
-                               
-                @*<div class="col-12 mt-4">
-                    <h5>ارجاع</h5>
-                </div>
-                <div class="form-group col-md-4">
-                    <label asp-for="UserId" class="control-label"></label>
-                    <select asp-for="UserId" asp-items="Model.UserSelectList" title="لطفا انتخاب کنید..."
-                            class="form-control selectpicker show-tick " data-live-search="true"></select>
-                    <span class="help-block">
-                        <span asp-validation-for="UserId" class="text-danger"></span>
-                    </span>
-                </div>*@
-
             </div>
+
             <div class="row">
                 <div class="submit-btn col-md-3 m-auto">
                     <input id="submitBtn" type="submit" value="ثبت" />
@@ -90,11 +106,12 @@
         </form>
     </div>
 </div>
-@section scripts{
+
+@section scripts {
     <script>
         $(document).ready(function () {
 
-
+            // ============ Loan Type DropDown ============
             $("#LoanType").kendoDropDownList({
                 dataTextField: "name",
                 dataValueField: "id",
@@ -111,108 +128,156 @@
                 }
             });
 
-            //$("#SuggestedBankId").kendoDropDownList({
-            //    dataTextField: "name",
-            //    dataValueField: "id",
-            //    filter: "contains",
-            //    optionLabel: "یک آیتم انتخاب کنید...",
-            //    dataSource: {
-            //        transport: {
-            //            read: {
-            //                dataType: "json",
-            //                contentType: 'application/json; charset=utf-8',
-            //                url: '@Url.Action("GetBanksForDropDown", LoanController.CONTROLLER)',
-            //            },
-            //            parameterMap: function (options) {
-            //                return `models=${kendo.stringify(options)}`;
-            //            }
-            //        },
-            //        schema: {
-            //            data: "data",
-            //            total: "totalRecords",
-            //            page: "page",
-            //            pageSize: "pageSize"
-            //        },
-            //        serverFiltering: true
-            //    }
-            //});
+            // ============ Province DropDownList ============
+            var provinceDropDown = $("#ProvinceId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "انتخاب کنید...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            contentType: 'application/json; charset=utf-8',
+                            type: 'POST',
+                            url: '@Url.Action("GetProvincesForDropDown", LoanController.CONTROLLER)',
+                        }
+                    },
+                    schema: {
+                        parse: function(response) {
+                            console.log("Province Response:", response);
+                            return response.data;
+                        }
+                    }
+                },
+                dataBound: function(e) {
+                    console.log("Provinces loaded:", this.dataSource.data());
+                },
+                change: function(e) {
+                    var selectedValue = this.value();
+                    console.log("Selected Province:", selectedValue);
 
+                    if (selectedValue) {
+                        var cityDropDown = $("#CityId").data("kendoDropDownList");
+                        cityDropDown.enable(true);
+                        loadCities(selectedValue);
+                    } else {
+                        var cityDropDown = $("#CityId").data("kendoDropDownList");
+                        cityDropDown.enable(false);
+                        cityDropDown.value("");
+                        cityDropDown.setDataSource([]);
+                    }
+                }
+            }).data("kendoDropDownList");
 
-            //$("#SenatorId").kendoDropDownList({
-            //    dataTextField: "name",
-            //    dataValueField: "id",
-            //    filter: "contains",
-            //    template: "<span>#:data.name# -  #:data.hozeCityName#</span>",
-            //    optionLabel: "یک آیتم انتخاب کنید...",
-            //    dataSource: {
-            //        transport: {
-            //            read: {
-            //                dataType: "json",
-            //                contentType: 'application/json; charset=utf-8',
-            //                url: '@Url.Action("GetSenatorsForDropDown", SenatorController.CONTROLLER)',
-            //            },
-            //            parameterMap: function (options) {
-            //                return `models=${kendo.stringify(options)}`;
-            //            }
-            //        },
-            //        schema: {
-            //            data: "data",
-            //            total: "totalRecords",
-            //            page: "page",
-            //            pageSize: "pageSize"
-            //        },
-            //        serverFiltering: true,
-            //        filter: function (item) {
-            //            if (this.filterSource && this.filterSource.filter && this.filterSource.filter.filters.length > 0) {
-            //                var filter = this.filterSource.filter.filters[0];
-            //                var searchText = filter.value.toLowerCase();
+            // ============ City DropDownList ============
+            var cityDropDown = $("#CityId").kendoDropDownList({
+                dataTextField: "name",
+                dataValueField: "id",
+                optionLabel: "ابتدا استان را انتخاب کنید...",
+                enable: false,
+                dataSource: {
+                    data: []
+                }
+            }).data("kendoDropDownList");
 
-            //                // Search in both name and hozeCityName fields
-            //                return item.name.toLowerCase().indexOf(searchText) >= 0 ||
-            //                    item.hozeCityName.toLowerCase().indexOf(searchText) >= 0;
-            //            }
-            //            return true;
-            //        }
-            //    },
-            //    filtering: function (e) {
-            //        // Get the filter value
-            //        var filterValue = e.filter ? e.filter.value : "";
+            // ============ تابع بارگذاری شهرها ============
+            function loadCities(provinceId) {
+                if (!provinceId) return;
 
-            //        // If server filtering is enabled, we need to modify the filter
-            //        if (this.dataSource.options.serverFiltering) {
-            //            // Prevent the default filtering
-            //            e.preventDefault();
+                var cityDropDown = $("#CityId").data("kendoDropDownList");
+                cityDropDown.text("در حال بارگذاری...");
+                cityDropDown.enable(false);
 
-            //            // Create a filter with "or" logic for both fields
-            //            var filter = {
-            //                logic: "or",
-            //                filters: [
-            //                    { field: "name", operator: "contains", value: filterValue },
-            //                    { field: "hozeCityName", operator: "contains", value: filterValue }
-            //                ]
-            //            };
+                $.ajax({
+                    url: '@Url.Action("GetCitiesByProvinceForDropDown", LoanController.CONTROLLER)',
+                    type: 'POST',
+                    data: { provinceId: provinceId },
+                    dataType: 'json',
+                    success: function(response) {
+                        console.log("Cities Response:", response);
 
-            //            // Apply the custom filter
-            //            this.dataSource.filter(filter);
-            //        }
-            //    }
-            //});
+                        if (response.data && response.data.length > 0) {
+                            cityDropDown.setDataSource(new kendo.data.DataSource({
+                                data: response.data
+                            }));
+
+                            cityDropDown.enable(true);
+                            cityDropDown.value("");
+
+                            // اگر در حالت Edit هستیم
+                            @if (Model.LoanData?.CityId != null)
+                            {
+                                    <text>
+                                    var cityId = '@Model.LoanData.CityId';
+                                    cityDropDown.value(cityId);
+                                    </text>
+                            }
+                        } else {
+                            cityDropDown.setDataSource([]);
+                            cityDropDown.enable(false);
+                            toastr.warning('شهری برای این استان یافت نشد');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error loading cities:', error);
+                        cityDropDown.setDataSource([]);
+                        cityDropDown.enable(false);
+                        toastr.error('خطا در بارگذاری لیست شهرها');
+                    }
+                });
+            }
+
+            // ============ Format Amount ============
+            $('#Amount').on('keyup', function () {
+                var input = $(this);
+                var value = input.val().replace(/,/g, '');
+
+                if (!/^\d*$/.test(value)) {
+                    value = value.replace(/\D/g, '');
+                }
+
+                var formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                input.val(formattedValue);
+            });
+
+            // ============ Submit Form ============
+            $("#submitBtn").click(function (e) {
+                e.preventDefault();
+
+                // اعتبارسنجی
+                var validator = $("#createLoanForm").kendoValidator({
+                    rules: {
+                        provinceRequired: function(input) {
+                            if (input.is("#ProvinceId")) {
+                                var value = $("#ProvinceId").data("kendoDropDownList").value();
+                                return value !== "" && value !== null;
+                            }
+                            return true;
+                        },
+                        cityRequired: function(input) {
+                            if (input.is("#CityId")) {
+                                var value = $("#CityId").data("kendoDropDownList").value();
+                                return value !== "" && value !== null;
+                            }
+                            return true;
+                        }
+                    },
+                    messages: {
+                        provinceRequired: "لطفا استان را انتخاب کنید",
+                        cityRequired: "لطفا شهر را انتخاب کنید"
+                    }
+                }).data('kendoValidator');
+
+                if (validator.validate()) {
+                    console.log("Form is valid, submitting...");
+                    $("#createLoanForm").submit();
+                } else {
+                    toastr.error('لطفا تمام فیلدهای الزامی را پر کنید');
+                }
+            });
 
           
-        });
 
-        $("#submitBtn").click(function () {
-            var validator = $("#createLoanForm").kendoValidator().data('kendoValidator');
-            validator.validate();
         });
-
-        $('#Amount').keyup(function () {
-            debugger;
-            var input = $(this);
-            var value = input.val().replace(/,/g, '');
-            var formatedvalue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");;
-            input.val(formatedvalue);
-        });
-
     </script>
 }

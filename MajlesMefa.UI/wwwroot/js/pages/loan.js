@@ -25,6 +25,7 @@
         serverFiltering: true,
         serverSorting: true
     });
+
     var grid = $("#report-grid-loan").kendoGrid({
         dataSource: dataSource,
         autoBind: true,
@@ -57,32 +58,11 @@
                 }
             }
         },
-        toolbar: fromReportPage ? [
+        toolbar: fromReportPage ? [] : [
             {
-                template:
-                    `<div class="d-flex w-auto" style="margin-right: 20px;margin-top:6px;">
-                        <div class="">
-                            <div class="input-group">
-                                <input style="height: 40px;margin-top:0px;" type="text" class="form-control" id='FieldFilter' placeholder="جستجو...">
-                                
-                            </div>
-                        </div>
-            </div>`
-
-            },
-        ] : [
-            {
-                template:
-                    `<div class="d-flex w-auto">
-                        #if('${url_create}' != ''){#<div style="margin-right: 10px;margin-left:10px;margin-top:7px;"><a class="k-button" href="${url_create}" >ایجاد تسهیلات</a></div>#}# 
-                        <div class="">
-                            <div class="input-group">
-                                <input style="height: 40px;margin-top:0px;" type="text" class="form-control" id='FieldFilter' placeholder="جستجو...">
-                                
-                            </div>
-                        </div>
-            </div>`
-
+                template: `<div class="d-flex w-auto">
+                    #if('${url_create}' != ''){#<div style="margin-right: 10px;margin-left:10px;margin-top:7px;"><a class="k-button" href="${url_create}" >ایجاد تسهیلات</a></div>#}#
+                </div>`
             },
             'excel'
         ],
@@ -100,13 +80,6 @@
                 for (var ci = 0; ci < sheet.rows[i].cells.length; ci++) {
                     sheet.rows[i].cells[ci].hAlign = "right";
                 }
-                var collength = sheet.rows[i].cells.length;
-                if (i != 0 && e.data[i - 1].myData && e.data[i - 1].myData.peygiries && e.data[i - 1].myData.peygiries.length > 0) {
-                    var outer = e.data[i - 1].myData.peygiries.map(function (item) {
-                        return item.peygiriNumber + " - تاریخ : " + item.peygiriDateStr;
-                    }).join(" , ");
-                    sheet.rows[i].cells[collength - 2].value = outer;
-                }
             }
         },
         reorderable: true,
@@ -118,25 +91,197 @@
             record = (this.dataSource.page() - 1) * this.dataSource.pageSize();
         },
         columns: [
-            { title: "ردیف", template: "#: ++record #", width: 50, attributes: { class: "text-center" }, media: "(min-width: 200px)" },
-            { field: "id", hidden: true },
-            { field: "trackingCode", title: "شناسه یکتا", media: "(min-width: 200px)", width: "105px" },
-            { field: "senatorName", title: "نام نماینده", media: "(min-width: 200px)", width: "105px" },
-            { field: "senatorCity", title: "استان نماینده", media: "(min-width: 200px)", width: "105px" },
-            { field: "senatorHozeEntekhabi", title: "حوزه انتخابی ", media: "(min-width: 200px)", width: "105px" },
-            { field: "loanOwnerFullName", title: "نام متقاضی", media: "(min-width: 400px)", width: "105px" },
-            { field: "loanOwnerMobile", title: "موبایل متقاضی", media: "(min-width: 400px)", width: "105px" },
-            { field: "loanOwnerNationalCode", title: "کدملی متقاضی", media: "(min-width: 400px)", width: "105px" },
-            { field: "persianCreatedDate", title: "تاریخ درخواست", media: "(min-width: 200px)", width: "105px" },
-            { field: "myData.actionRefrenceDate", title: "تاریخ ارجا به شعبه", media: "(min-width: 200px)", width: "105px" },
-            { field: "myData.amount", title: "مبلغ تسهیلات(تومان)", media: "(min-width: 200px)", width: "105px" },
-            { field: "myData.loanTypeDesc", title: "نوع تسهیلات", media: "(min-width: 400px)", width: "105px" },
-            { field: "description", title: "توضیحات", media: "(min-width: 400px)", width: "105px" },
-            { field: "myData.pasokhStateDesc", title: "وضعیت", media: "(min-width: 400px)", width: "105px" },
-            { field: "myData.accessActionRefrence.accessRefrence", hidden: true },
-            { field: "myData.accessActionRefrence.accessAction", hidden: true },
-            { field: "myData.pasokhStateInt", title: "وضعیت", hidden: true, width: "105px" },
-            { field: "myData.suggestedBankName", title: "بانک عامل", media: "(min-width: 200px)", width: "105px" },
+            {
+                title: "ردیف",
+                template: "#: ++record #",
+                width: 50,
+                attributes: { class: "text-center" },
+                media: "(min-width: 200px)",
+                filterable: false,
+                sortable: false
+            },
+            {
+                field: "id",
+                hidden: true
+            },
+            {
+                field: "trackingCode",
+                title: "شناسه یکتا",
+                media: "(min-width: 200px)",
+                width: "105px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "senatorName",
+                title: "نام نماینده",
+                media: "(min-width: 200px)",
+                width: "120px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "senatorCity",
+                title: "استان نماینده",
+                media: "(min-width: 200px)",
+                width: "120px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "senatorHozeEntekhabi",
+                title: "حوزه انتخابی",
+                media: "(min-width: 200px)",
+                width: "120px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "loanOwnerFullName",
+                title: "نام متقاضی",
+                media: "(min-width: 400px)",
+                width: "120px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "loanOwnerMobile",
+                title: "موبایل متقاضی",
+                media: "(min-width: 400px)",
+                width: "120px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "loanOwnerNationalCode",
+                title: "کدملی متقاضی",
+                media: "(min-width: 400px)",
+                width: "120px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "persianCreatedDate",
+                title: "تاریخ درخواست",
+                media: "(min-width: 200px)",
+                width: "120px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "actionRefrenceDate",
+                title: "تاریخ ارجا به شعبه",
+                media: "(min-width: 200px)",
+                width: "130px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "amount",
+                title: "مبلغ تسهیلات(تومان)",
+                media: "(min-width: 200px)",
+                width: "150px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "loanTypeDesc",
+                title: "نوع تسهیلات",
+                media: "(min-width: 400px)",
+                width: "120px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "description",
+                title: "توضیحات",
+                media: "(min-width: 400px)",
+                width: "150px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "pasokhStateDesc",
+                title: "وضعیت",
+                media: "(min-width: 400px)",
+                width: "120px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
+            {
+                field: "canAccessActionRefrence",
+                hidden: true
+            },
+            {
+                field: "pasokhState",
+                title: "وضعیت",
+                hidden: true,
+                width: "105px"
+            },
+            {
+                field: "suggestedBankName",
+                title: "بانک عامل",
+                media: "(min-width: 200px)",
+                width: "120px",
+                filterable: {
+                    cell: {
+                        operator: "contains",
+                        showOperators: false
+                    }
+                }
+            },
             {
                 title: "عملیات",
                 width: fromReportPage ? 120 : 270,
@@ -152,6 +297,7 @@
             }
         ]
     }).data("kendoGrid");
+
     grid.table.on("click", ".checkbox", selectRow);
 
     function onDataBound(e) {
@@ -159,64 +305,15 @@
         var data = grid.dataSource.data();
 
         $.each(data, function (i, row) {
-            if (row.myData.pasokhStateInt == 1) {
+            if (row.pasokhState == 1) {
                 var element = $('tr[data-uid="' + row.uid + '"] ');
                 $(element).addClass("bg-green");
-            } else if (row.myData.pasokhStateInt == 2) {
+            } else if (row.pasokhState == 2) {
                 var element = $('tr[data-uid="' + row.uid + '"] ');
                 $(element).addClass("bg-error");
             }
         });
     }
-
-    $("#FieldFilter").keyup(function () {
-        var value = $("#FieldFilter").val().trim();
-        grid = $("#report-grid-loan").data("kendoGrid");
-        if (value) {
-            grid.dataSource.filter({
-                logic: "or",
-                filters: [
-                    {
-                        field: "loanOwnerNationalCode",
-                        operator: "contains",
-                        value: value
-                    },
-                    {
-                        field: "loanOwnerFullName",
-                        operator: "contains",
-                        value: value
-                    },
-                    {
-                        field: "trackingCode",
-                        operator: "contains",
-                        value: value
-                    },
-                    {
-                        field: "loanOwnerMobile",
-                        operator: "contains",
-                        value: value
-                    },
-                    {
-                        field: "senatorName",
-                        operator: "contains",
-                        value: value
-                    },
-                    {
-                        field: "senatorCity",
-                        operator: "contains",
-                        value: value
-                    },
-                    {
-                        field: "senatorHozeEntekhabi",
-                        operator: "contains",
-                        value: value
-                    }
-                ]
-            });
-        } else {
-            grid.dataSource.filter({});
-        }
-    });
 
 });
 

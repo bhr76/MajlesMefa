@@ -189,6 +189,9 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery
                     .Select(a => a.Created.ToPersianDate("yyyy/MM/dd"))
                     .FirstOrDefault() ?? "-",
                     SuggestedBankName = x.ActionReferences.Where(a=> a.ToUser.UserRoles.Any(x => x.Role.RoleType == RoleTypeEnum.Organization)).FirstOrDefault().ToUser.Name,
+                    Address = x.Loan.Address,
+                    CityId = x.Loan.CityId,
+                    ProvinceId = x.Loan.ProvinceId
                 }
             }).ToTableResultAsync(filter);
 

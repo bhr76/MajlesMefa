@@ -79,7 +79,7 @@ builder.Services.AddAntiforgery(opts =>
     opts.Cookie.IsEssential = true;
     opts.SuppressXFrameOptionsHeader = true;
 });
-builder.Services.AddMaper(typeof(DataEntryEntity).Assembly);
+builder.Services.AddMapper(typeof(DataEntryEntity).Assembly);
 builder.Services.AddCustomIdentity<OptionService>(builder.Configuration, "AuthDb");
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IRedisRepository, RedisRepository>();
@@ -96,9 +96,7 @@ builder.Services.AddScoped<SoaPlusHttpClientRequestDelegatingHandler>();
 builder.Services.AddScoped<ISoaPlusAuthorizationService, SoaPlusAuthorizationService>();
 
 var app = builder.Build();
-await app.Services.AddBaseUserSeed();
-await app.Services.AddCitiesSeed();
-await app.Services.AddPagesWithRoleAccessAsync(typeof(HomeController).Assembly);
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -149,5 +147,11 @@ app.UseSession();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+await app.Services.AddBaseUserSeed();
+await app.Services.AddCitiesSeed();
+await app.Services.AddPagesWithRoleAccessAsync(typeof(HomeController).Assembly);
+
+
 
 app.Run();
