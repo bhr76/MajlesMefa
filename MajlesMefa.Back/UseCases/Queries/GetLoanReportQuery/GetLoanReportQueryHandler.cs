@@ -26,26 +26,18 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanReportQuery
         {
             var cuser = _currentUserService.GetCurrentUser();
 
+            // The report should use the same filtering as dashboard
             var query = _context.DataEntries
                 .AsNoTracking()
                 .Include(x => x.ActionReferences).ThenInclude(x => x.FromUser)
                 .Include(x => x.ActionReferences).ThenInclude(x => x.ToUser)
-                .Where(x => x.DataEntryType == request.DataEntryType);
+                .Include(x => x.Loan)
+                .Where(x => x.DataEntryType == DataEntryTypeEnum.Loan);
 
-            #region permission
-            if (cuser.Roles.Any(u => u == RoleTypeEnum.MinistryMember))
+            // Apply same permission filters as dashboard
+            if (cuser.Roles.Any(e => e == RoleTypeEnum.Organization))
             {
-                if (request.DataEntryType != DataEntryTypeEnum.DastoorJalasatComission)
-                    query = query.Where(q => (q.ActionReferences.Any(ar =>
-                    ar.FromUserId == cuser.BussinessUserId ||
-                    ar.ToUserId == cuser.BussinessUserId)) ||
-                    q.ActionReferences.FirstOrDefault().FromUser.OrganizationId != null);
-            }
-            #endregion
-
-            if (request.DataEntryId.HasValue)
-            {
-                query = query.Where(x => x.Id == request.DataEntryId);
+                query = query.Where(q => q.ActionReferences.Any(ar => ar.ToUserId == cuser.BussinessUserId));
             }
 
             if (cuser.Roles.Any(e => e == RoleTypeEnum.Senator))

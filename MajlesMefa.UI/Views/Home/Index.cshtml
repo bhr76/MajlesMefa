@@ -6,7 +6,7 @@
     var cuser = Context.RequestServices.GetService<ICurrentUserService>().GetCurrentUser();
     ViewData["Title"] = "خانه";
 }
-@model DashboardLoanDto
+
 
 <div class="dashboard-container">
     <div class="row mb-4">
@@ -33,7 +33,7 @@
                     
                     <!-- آمار خلاصه -->
                     <div class="row mt-4">
-                        <div class="col-md-2 col-sm-6">
+                        <div class="col-md-2 col-sm-6 mb-3">
                             <div class="stat-card">
                                 <div class="stat-icon text-primary">
                                     <i class="fas fa-file-invoice-dollar fa-2x"></i>
@@ -44,7 +44,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2 col-sm-6">
+                        <div class="col-md-2 col-sm-6 mb-3">
                             <div class="stat-card">
                                 <div class="stat-icon text-primary">
                                     <i class="fas fa-long-arrow-alt-up fa-2x"></i>
@@ -55,7 +55,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2 col-sm-6">
+                        <div class="col-md-2 col-sm-6 mb-3">
                             <div class="stat-card">
                                 <div class="stat-icon text-success">
                                     <i class="fas fa-check-circle fa-2x"></i>
@@ -66,7 +66,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2 col-sm-6">
+                        <div class="col-md-2 col-sm-6 mb-3">
                             <div class="stat-card">
                                 <div class="stat-icon text-warning">
                                     <i class="fas fa-clock fa-2x"></i>
@@ -77,14 +77,25 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2 col-sm-6">
+                        <div class="col-md-2 col-sm-6 mb-3">
                             <div class="stat-card">
                                 <div class="stat-icon text-danger">
                                     <i class="fas fa-times-circle fa-2x"></i>
                                 </div>
                                 <div class="stat-content">
                                     <h4 class="stat-value">@ViewBag.RejectedLoans</h4>
-                                    <p class="stat-label">تسهیلات رد شده</p>
+                                    <p class="stat-label">کل تسهیلات رد شده</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-6 mb-3">
+                            <div class="stat-card">
+                                <div class="stat-icon text-danger">
+                                    <i class="fas fa-ban fa-2x"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h4 class="stat-value">@ViewBag.RejectedLoanbyShobe</h4>
+                                    <p class="stat-label">تسهیلات رد شده توسط شعبه</p>
                                 </div>
                             </div>
                         </div>
@@ -117,6 +128,7 @@
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             transition: transform 0.3s ease;
+            height: 100%;
         }
         
         .stat-card:hover {

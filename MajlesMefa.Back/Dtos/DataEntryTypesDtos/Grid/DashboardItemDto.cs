@@ -12,6 +12,7 @@ namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Grid
         public int CountOfInBranchLoan { get; set; }
         public long AmountOfApprovedLoan { get; set; }
         public long AmountOfInprogressLoan { get; set; }
+        public int CountOfRejectedByBranch { get; set; }
         public List<DashboardLoanItemDto> DashboardChartData { get; set; }
     }
     public class DashboardLoanItemDto

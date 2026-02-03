@@ -79,34 +79,44 @@ namespace MajlesMefa.Back.Utilities.Db.DynamicQuery.AbolFramework
 
         private static async Task<TableModel<T>> ToTableResultAsync<T>(this IQueryable<T> queryable, int take, int skip, IEnumerable<SortModel> sort, FilterModel filter, IEnumerable<AggregatorModel> aggregates)
         {
-            queryable = Filter(queryable, filter);
-
-            // Calculate the total number of records (needed for paging)
-            var total = queryable == null ? 0 : await queryable.CountAsync();
-
-            // Calculate the aggregates
-            var aggregate = Aggregate(queryable, aggregates);
-
-            // Sort the data
-            queryable = Sort(queryable, sort);
-
-            // Finally page the data
-            if (take > 0)
+            try
             {
-                queryable = Page(queryable, take, skip);
-            }else if (take == -1)
-            {
-                queryable = Page(queryable, total, skip);
+                queryable = Filter(queryable, filter);
+
+                // Calculate the total number of records (needed for paging)
+                var total = queryable == null ? 0 : await queryable.CountAsync();
+
+                // Calculate the aggregates
+                var aggregate = Aggregate(queryable, aggregates);
+
+                // Sort the data
+                queryable = Sort(queryable, sort);
+
+                // Finally page the data
+                if (take > 0)
+                {
+                    queryable = Page(queryable, take, skip);
+                }
+                else if (take == -1)
+                {
+                    queryable = Page(queryable, total, skip);
+                }
+
+                var items = await queryable.ToListAsync();
+
+                return new TableModel<T>
+                {
+                    Items = items,
+                    Count = total,
+                    Aggregates = aggregate
+                };
             }
-
-            var items = await queryable.ToListAsync();
-
-            return new TableModel<T>
+            catch (Exception ex)
             {
-                Items = items,
-                Count = total,
-                Aggregates = aggregate
-            };
+
+                throw ex;
+            }
+           
         }
 
 

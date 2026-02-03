@@ -353,27 +353,6 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
             string[] months = { "فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند" };
             var senatorId = request.SenatorId;
 
-
-            // دریافت داده‌ها از دیتابیس
-            //var query = await _context.Loans
-            //.Include(de => de.DataEntry)
-            //.ThenInclude(de => de.ActionReferences)
-            //.Where(de =>
-            //    // اگر کاربر Organization است، فقط ActionReferences مربوط به این کاربر را بیاور
-            //    (userRole.Contains(RoleTypeEnum.Organization)
-            //        ? de.DataEntry.ActionReferences.Any(ar => ar.ToUserId == userId)
-            //        : true) &&
-            //    (senatorId == Guid.Empty || de.DataEntry.SenatorId == senatorId)
-            //)
-            //.Where(l => l.VaziatPasokh == request.Status)
-            //.Select(de => new
-            //{
-            //    CreatedDate = de.DataEntry.Created, // تاریخ اصلی
-            //    Amount = de.Amount
-            //})
-            //.ToListAsync();
-
-
             var cuser = _currentUserService.GetCurrentUser();
             var dataEntryIds = await _context.ActionReferences
                 .AsNoTracking()
@@ -443,8 +422,26 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
                         de.Loan.VaziatPasokh == ResponseStatusEnum.Shobe)
                     .Count();
 
+                // محاسبه تعداد تسهیلات رد شده توسط شعبه (از گزارش بانک‌ها)
+                // این تعداد باید برابر با مجموع UnPaidCount از همه بانک‌ها باشد
+                var tempTableForRejected = query
+                      .Select(l => new
+                      {
+                          Loan = l.Loan,
+                          CurrentUserId = l.ActionReferences.Where(a => a.ActRefType == ActRefTypeEnum.Refer)
+                              .OrderByDescending(a => a.Created)
+                              .Select(a => a.ToUserId)
+                              .FirstOrDefault()
+                      });
 
-
+                var rejectedByBranchCount = await tempTableForRejected
+                    .Join(_context.Users, 
+                        t => t.CurrentUserId, 
+                        u => u.Id, 
+                        (t, u) => new { t.Loan, BankName = u.Name })
+                    .Where(x => (x.BankName.Contains("بان") || x.BankName.Contains("صندوق")) 
+                                && (x.Loan.VaziatPasokh == ResponseStatusEnum.Manfi || x.Loan.VaziatPasokh == null))
+                    .CountAsync();
 
 
                 if (request.Status != null)
@@ -526,6 +523,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetDashboardQuery
                 dto.CountOfDeniedLoan = countOfDeniedLoan;
                 dto.CountOfInProgressLoan = countOfInProgressLoan;
                 dto.CountOfInBranchLoan = countOfInBranchRequest;
+                dto.CountOfRejectedByBranch = rejectedByBranchCount; // NEW: تعداد تسهیلات رد شده توسط شعبه
                 dto.DashboardChartData = dashboardFinalData;
                 dto.CountShoraRefrences = countOfRefrenceShora;
                 return dto;

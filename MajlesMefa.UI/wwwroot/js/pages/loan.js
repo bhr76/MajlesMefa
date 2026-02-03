@@ -1,5 +1,57 @@
 ﻿$(document).ready(function () {
 
+
+    $("#PasokhStateDropDown").kendoDropDownList({
+        dataSource: [
+            { text: "در دست اقدام", value: 0 },
+            { text: "پرداخت شده", value: 1 },
+            { text: "رد درخواست", value: 2 },
+            { text: "در دست شعبه", value: 3 }
+        ],
+        dataTextField: "text",
+        dataValueField: "value",
+        valuePrimitive: true,
+        optionLabel: "همه"
+    });
+
+    $("#LoanTypeDropDown").kendoDropDownList({
+        dataSource: [
+            { text: "مرابحه", value: 2 },
+            { text: "قرض الحسنه", value: 1 }
+        ],
+        dataTextField: "text",
+        dataValueField: "value",
+        valuePrimitive: true,
+        optionLabel: "همه"
+    });
+
+    $("#LoanTypeDropDown").on("change", function (e) {
+        var filters = dataSource._filter?.filters ?? [];
+        if (e.target.value) {
+            filters = filters.filter(x => x.field != "loanType");
+            filters.push({ field: "loanType", value: e.target.value, operator: "eq" });
+            dataSource.filter(filters).read();
+        }
+        else {
+            dataSource.filter(filters.filter(x => x.field != "loanType")).read();
+        }
+       
+    });
+
+    $("#PasokhStateDropDown").on("change", function (e) {
+        var filters = dataSource._filter?.filters ?? [];
+        if (e.target.value) {
+            filters = filters.filter(x => x.field != "pasokhState");
+            filters.push({ field: "pasokhState", value: e.target.value, operator: "eq" });
+            dataSource.filter(filters).read();
+        } else {
+            dataSource.filter(filters.filter(x => x.field !="pasokhState")).read();
+        }
+       
+    });
+
+
+
     window.record = 0;
     const dataSource = new kendo.data.DataSource({
         transport: {
@@ -229,12 +281,8 @@
                 title: "نوع تسهیلات",
                 media: "(min-width: 400px)",
                 width: "120px",
-                filterable: {
-                    cell: {
-                        operator: "contains",
-                        showOperators: false
-                    }
-                }
+                filterable: false,
+                sortable:false
             },
             {
                 field: "description",
@@ -253,12 +301,8 @@
                 title: "وضعیت",
                 media: "(min-width: 400px)",
                 width: "120px",
-                filterable: {
-                    cell: {
-                        operator: "contains",
-                        showOperators: false
-                    }
-                }
+                filterable: false,
+                sortable: false
             },
             {
                 field: "canAccessActionRefrence",
@@ -322,3 +366,4 @@ function reportTypeChanged(e) {
     grid.data('kendoGrid').dataSource.read();
     grid.data('kendoGrid').refresh();
 }
+

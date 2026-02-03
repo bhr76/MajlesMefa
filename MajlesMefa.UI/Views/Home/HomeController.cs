@@ -88,6 +88,7 @@ namespace MajlesMefa.UI.Views.Home
             ViewBag.BranchLoans = loanInfo.CountOfInBranchLoan;
             ViewBag.RejectedLoans = loanInfo.CountOfDeniedLoan;
             ViewBag.TotalShoraRefrence = loanInfo.CountShoraRefrences;
+            ViewBag.RejectedLoanbyShobe = loanInfo.CountOfRejectedByBranch;
 
             return View();
         }

@@ -35,16 +35,22 @@ namespace MajlesMefa.Back.Repositories.Implementation
             }
            
 
-            var lastActionId = await _context.ActionReferences
+            
+            var isAdmin = roles.Any(x => x.HasFlag(RoleTypeEnum.Admin));
+            if (!isAdmin)
+            {
+                var lastActionId = await _context.ActionReferences
                 .Where(x => x.DataEntryId == entity.DataEntryId)
                 .OrderByDescending(x => x.Created)
                 .Select(x => x.Id)
                 .FirstOrDefaultAsync();
+                if (lastActionId != id)
+                {
+                    throw new InvalidOperationException("تنها امکان تغییر آخرین اقدام وجود دارد، برای تغییر ابتدا باید اقدامات بعدی حذف شود");
+                }
 
-            if (lastActionId != id)
-            {
-                throw new InvalidOperationException("تنها امکان تغییر آخرین اقدام وجود دارد، برای تغییر ابتدا باید اقدامات بعدی حذف شود");
             }
+           
 
             return entity;
         }
