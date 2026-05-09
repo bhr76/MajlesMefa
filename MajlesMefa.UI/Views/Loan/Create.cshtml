@@ -207,10 +207,10 @@
                             // اگر در حالت Edit هستیم
                             @if (Model.LoanData?.CityId != null)
                             {
-                                    <text>
-                                    var cityId = '@Model.LoanData.CityId';
-                                    cityDropDown.value(cityId);
-                                    </text>
+                                        <text>
+                                        var cityId = '@Model.LoanData.CityId';
+                                        cityDropDown.value(cityId);
+                                        </text>
                             }
                         } else {
                             cityDropDown.setDataSource([]);
@@ -241,8 +241,15 @@
             });
 
             // ============ Submit Form ============
+            var isSubmitting = false; // Flag to track submission state
+
             $("#submitBtn").click(function (e) {
                 e.preventDefault();
+
+                // Prevent double submission
+                if (isSubmitting) {
+                    return false;
+                }
 
                 // اعتبارسنجی
                 var validator = $("#createLoanForm").kendoValidator({
@@ -270,13 +277,33 @@
 
                 if (validator.validate()) {
                     console.log("Form is valid, submitting...");
+
+                    // Disable submit button and change text
+                    isSubmitting = true;
+                    var $submitBtn = $("#submitBtn");
+                    var originalValue = $submitBtn.val();
+
+                    $submitBtn.prop('disabled', true)
+                              .val('در حال ارسال...')
+                              .css('cursor', 'not-allowed');
+
+                    // Submit the form
                     $("#createLoanForm").submit();
+
+                    // Optional: Re-enable after timeout (safety measure if submission fails)
+                    setTimeout(function() {
+                        if (isSubmitting) {
+                            $submitBtn.prop('disabled', false)
+                                      .val(originalValue)
+                                      .css('cursor', 'pointer');
+                            isSubmitting = false;
+                        }
+                    }, 5000); // 5 seconds timeout
+
                 } else {
                     toastr.error('لطفا تمام فیلدهای الزامی را پر کنید');
                 }
             });
-
-          
 
         });
     </script>
