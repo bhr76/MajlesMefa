@@ -91,6 +91,7 @@ namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details
 
         [Display(Name = "آدرس کامل")]
         [MaxLength(500, ErrorMessage = "آدرس نباید بیشتر از 500 کاراکتر باشد")]
+        [Required(ErrorMessage = "پرکردن این فیلد اجباری است")]
         public string Address { get; set; }
 
 

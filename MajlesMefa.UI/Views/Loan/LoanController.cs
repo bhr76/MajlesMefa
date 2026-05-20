@@ -202,6 +202,13 @@ namespace MajlesMefa.UI.Views.Loan
         [HttpPost]
         public async Task<IActionResult> CreateAsync(LoanVm request, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrEmpty(request.LoanData.Address) 
+                || request.LoanData.ProvinceId == Guid.Empty ||
+                request.LoanData.CityId == Guid.Empty)
+            {
+                return BadRequest("آدرس را وارد کنید");
+
+            }
             request.LoanData.Amount = request.LoanData.Amount.Replace(",", string.Empty);
             var haveMaxGharzolHasaneConfig = long.TryParse(_configuration["maxGharzolHasanePerRequest"], out long gharzolHasaneMaxPerRequest);
             var haveMaxMorabeheConfig = long.TryParse(_configuration["maxMorabehePerRequest"], out long morabeheMaxPerRequest);

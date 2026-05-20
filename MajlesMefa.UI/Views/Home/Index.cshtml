@@ -7,6 +7,39 @@
     ViewData["Title"] = "خانه";
 }
 
+<!-- Modal for image display -->
+<div class="modal fade" id="welcomeImageModal" tabindex="-1" role="dialog" aria-labelledby="welcomeImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="welcomeImageModalLabel">وزارت اقتصاد و امور دارایی</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="بستن">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body font-size-15 p-3">
+                <div class="document-container">
+                    <h2>نمایندگان محترم مجلس شورای اسلامی</h2>
+
+                    <p>
+                        به استحضار می‌رساند سامانه تسهیلات خرد از تاریخ <span class="highlight">۱۴۰۵/۳/۱</span> جهت ثبت درخواست‌های موکلین محترم حوزه انتخابیه به میزان <span class="highlight">۵ میلیارد تومان</span> (سه میلیارد تومان مرابحه و دو میلیارد تومان قرض‌الحسنه) در دسترس می‌باشد. سامانه با رویکرد بیشترین سرعت عمل معرفی به شعبه برنامه‌ریزی گردیده است. به محض ثبت‌نام توسط آن مقام محترم در بانک کارسازی می‌گردد.
+                    </p>
+
+                    <p>
+                        ضمناً درخواست‌های هر نماینده محترم به یک بانک عامل مشخص ارجاع می‌گردد و تغییر بانک امکان نیز پذیر نمی‌باشد.
+                    </p>
+
+                    <p>
+                        درصورت بروز ابهامات احتمالی با شماره <span class="highlight">78437261</span> آقای پوررضا (بانک رفاه کارگران درخصوص موارد فنی) و آقای عبادی با شماره <span class="highlight">۳۹۹۰۲۲۲۳</span> (وزارت امور اقتصادی و دارایی درخصوص موارد اجرایی) تماس حاصل فرمائید.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">متن فوق را مطالعه کردم</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="dashboard-container">
     <div class="row mb-4">
@@ -171,6 +204,21 @@
 @section scripts {
     <script>
         $(document).ready(function () {
+
+             if (!localStorage.getItem('welcomeModalShown')) {
+                // Show modal
+                 $('#welcomeImageModal').modal({
+                    backdrop: 'static', // Prevent closing on outside click
+                    keyboard: false,    // Prevent closing with escape key
+                    show: true
+                });
+
+                // Mark as shown
+                localStorage.setItem('welcomeModalShown', 'true');
+            }
+
+           
+
             // تنظیمات مشترک برای چارت‌ها
             const commonChartOptions = {
                 legend: {

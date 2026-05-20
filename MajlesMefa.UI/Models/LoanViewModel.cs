@@ -25,13 +25,15 @@ namespace MajlesMefa.UI.Models
         [Display(Name = "استان نماینده")]
         public string SenatorCity { get; set; }
 
-        [Display(Name = "استان نماینده")]
+        [Display(Name = "باقیمانده بودجه")]
         public long RemainBudget { get; set; }
 
 
-        public Guid? ProvinceId { get; set; }
-        public Guid? CityId { get; set; }
-        public string? Address { get; set; }
+        public Guid ProvinceId { get; set; }
+        public Guid CityId { get; set; }
+
+        
+        public string Address { get; set; }
 
         public LoanDtailDto LoanData { get; set; }
 
