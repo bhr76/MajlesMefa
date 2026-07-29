@@ -29,10 +29,42 @@ namespace MajlesMefa.Back.UseCases.Queries.GetFlatLoanDataEntriesQuery
         }
 
         public async Task<TableModel<FlatDataEntryDto>> Handle(
-            GetFlatLoanDataEntriesQuery request,
-            CancellationToken cancellationToken)
+        GetFlatLoanDataEntriesQuery request,
+        CancellationToken cancellationToken)
         {
             var cuser = _currentUserService.GetCurrentUser();
+
+            if (request.Filter != null && request.Filter.Filter != null && request.Filter.Filter.Filters != null)
+            {
+                // ۱. پیدا کردن فیلتر سال
+                var yearFilter = request.Filter.Filter.Filters.FirstOrDefault(x =>
+                    string.Equals(x.Field, "year", StringComparison.OrdinalIgnoreCase));
+
+                if (yearFilter != null)
+                {
+                    // ۲. مقدار عددی سال را در request.Year ذخیره می‌کنیم
+                    if (int.TryParse(yearFilter.Value?.ToString(), out var parsedYear))
+                    {
+                        request.Year = parsedYear;
+                    }
+
+                    // ۳. حذف فیلتر سال با استفاده از متد Remove خود شیء فیلتر (در صورت پشتیبانی کلاس) 
+                    // یا بازسازی لیست فیلترها بدون فیلتر سال به روش کاملاً سازگار:
+                    var filteredList = request.Filter.Filter.Filters
+                        .Where(x => !string.Equals(x.Field, "year", StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+
+                    // اختصاص لیست فیلترهای تصفیه شده
+                    request.Filter.Filter.Filters = filteredList;
+
+                    // ۴. در صورتی که لیست فیلترها کاملاً خالی شد، جهت جلوگیری از ارجاع Null و خطای کلید در Dynamic LINQ، 
+                    // کل شیء Filter داخلی را null می‌کنیم تا کوئری بدون فیلتر اضافه اجرا شود.
+                    if (!request.Filter.Filter.Filters.Any())
+                    {
+                        request.Filter.Filter = null;
+                    }
+                }
+            }
 
             // Base Query با Include های لازم
             var query = _context.DataEntries
@@ -57,20 +89,17 @@ namespace MajlesMefa.Back.UseCases.Queries.GetFlatLoanDataEntriesQuery
             // Apply Permissions
             query = ApplyPermissions(query, cuser);
 
-            // Apply Filters
+            // Apply Filters (فیلتر سال در اینجا به صورت بازه میلادی اعمال می‌شود)
             query = ApplyFilters(query, request, cuser);
 
-            // متغیرهای local برای استفاده در LINQ query
             var cuserBusinessId = cuser.BussinessUserId;
             var isAdminRole = cuser.Roles.Any(x =>
                 x == RoleTypeEnum.MinistryAdmin ||
                 x == RoleTypeEnum.Admin ||
                 x == RoleTypeEnum.MinistryMember);
 
-            // Select و Map به FlatDataEntryDto
-            var result = await query.Select(x => new FlatDataEntryDto()
+            var baseQuery = query.Select(x => new FlatDataEntryDto()
             {
-                // ============ فیلدهای اصلی DataEntry ============
                 Id = x.Id,
                 Title = x.Title,
                 Description = x.Description,
@@ -81,7 +110,6 @@ namespace MajlesMefa.Back.UseCases.Queries.GetFlatLoanDataEntriesQuery
                 CreatorUserName = x.Creator.Name,
                 PersianCreatedDate = x.Created.ToPersianDate("yyyy/MM/dd"),
 
-                // ============ Category ============
                 CategoryId = x.Category.ParentId != null ? x.CategoryId : null,
                 CategoryName = x.Category.ParentId != null ? x.Category.Name : null,
                 CategoryParentId = x.Category.ParentId != null ? x.Category.ParentId : x.CategoryId,
@@ -89,20 +117,17 @@ namespace MajlesMefa.Back.UseCases.Queries.GetFlatLoanDataEntriesQuery
                     ? x.Category.Parent.Name
                     : x.Category.Name,
 
-                // ============ Senator Information (فلت شده) ============
                 SenatorName = x.Senator != null ? x.Senator.SenatorProfile.Name : null,
                 SenatorHozeEntekhabi = x.Senator != null ? x.Senator.SenatorProfile.HozeCity.Name : null,
                 SenatorHozeEntekhabiEnum = x.Senator != null ? x.Senator.SenatorProfile.HozeEntekhabi : null,
                 SenatorCity = x.Senator != null ? x.Senator.City.Name : null,
                 SenatorUserId = x.SenatorId,
 
-                // ============ Loan Owner Basic Info ============
                 LoanOwnerFullName = x.Loan.FullName,
                 LoanOwnerMobile = x.Loan.MobileNo,
                 LoanOwnerNationalCode = x.Loan.NationalNo,
                 TrackingCode = x.Loan.TrackingCode.ToString(),
 
-                // ============ Loan Details (قبلاً MyData.FullName بود، الان FullName) ============
                 FullName = x.Loan.FullName,
                 NationalNo = x.Loan.NationalNo,
                 MobileNo = x.Loan.MobileNo,
@@ -112,7 +137,6 @@ namespace MajlesMefa.Back.UseCases.Queries.GetFlatLoanDataEntriesQuery
                 PasokhState = x.Loan.VaziatPasokh,
                 TrackingCodeInt = x.Loan.TrackingCode,
 
-                // ============ Action Reference Information ============
                 ActionRefrenceDate = x.ActionReferences
                     .Where(a => a.ToUser != null &&
                                a.ToUser.Name != null &&
@@ -135,7 +159,6 @@ namespace MajlesMefa.Back.UseCases.Queries.GetFlatLoanDataEntriesQuery
                     .Select(a => a.ToUserId)
                     .FirstOrDefault(),
 
-                // ============ Access Rights (محاسبه inline) ============
                 CanAccessActionRefrence = isAdminRole ||
                     x.ActionReferences
                         .Where(a => a.ActRefType == ActRefTypeEnum.Refer)
@@ -144,10 +167,15 @@ namespace MajlesMefa.Back.UseCases.Queries.GetFlatLoanDataEntriesQuery
                         .FirstOrDefault() == cuserBusinessId,
 
                 AccessActionRefrenceMessage = null
+            });
 
-            }).ToTableResultAsync(request.Filter);
+            if (request.Filter != null)
+            {
+                DynamicQueryFilterNormalizer.NormalizeFilters(request.Filter, typeof(FlatDataEntryDto));
+            }
 
-            // ============ Post-processing ============
+            var result = await baseQuery.ToTableResultAsync(request.Filter);
+
             await ApplyPostProcessing(result.Items);
 
             return result;
@@ -259,6 +287,22 @@ namespace MajlesMefa.Back.UseCases.Queries.GetFlatLoanDataEntriesQuery
 
                 query = query.Where(x => x.Loan.VaziatPasokh == ResponseStatusEnum.Inprogress);
             }
+            if (request.Year.HasValue)
+            {
+                if (request.Year.Value == 1404)
+                {
+                    var fromDate = new DateTime(2025, 3, 21, 0, 0, 0, DateTimeKind.Utc);
+                    var toDate = new DateTime(2026, 3, 20, 23, 59, 59, DateTimeKind.Utc);
+                    query = query.Where(x => x.Created >= fromDate && x.Created <= toDate);
+                }
+                else if (request.Year.Value == 1405)
+                {
+                    var fromDate = new DateTime(2026, 3, 21, 0, 0, 0, DateTimeKind.Utc);
+                    var toDate = new DateTime(2027, 3, 20, 23, 59, 59, DateTimeKind.Utc);
+                    query = query.Where(x => x.Created >= fromDate && x.Created <= toDate);
+                }
+            }
+
 
             return query;
         }
@@ -308,28 +352,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetFlatLoanDataEntriesQuery
             }
         }
 
-        /// <summary>
-        /// دریافت عناوین Moavenats (برای استفاده تکی)
-        /// </summary>
-        private async Task<List<string>> GetMoavenatTitles(List<string> moavenatIds)
-        {
-            if (moavenatIds == null || !moavenatIds.Any())
-                return new List<string>();
-
-            var guidIds = moavenatIds
-                .Where(id => Guid.TryParse(id, out _))
-                .Select(id => Guid.Parse(id))
-                .ToList();
-
-            if (!guidIds.Any())
-                return new List<string>();
-
-            return await _context.Categories
-                .Where(x => guidIds.Contains(x.Id))
-                .Select(x => x.Name)
-                .ToListAsync();
-        }
-
+        
         #endregion
     }
 }

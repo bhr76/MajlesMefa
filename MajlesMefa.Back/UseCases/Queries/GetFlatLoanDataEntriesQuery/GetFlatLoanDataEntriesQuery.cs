@@ -23,7 +23,9 @@ namespace MajlesMefa.Back.UseCases.Queries.GetFlatLoanDataEntriesQuery
         public Guid? RelatedSenatorId { get; set; }
 
         public Guid? DataEntryId { get; set; }
-        public Guid? CurrentUserId { get; set; } 
+        public Guid? CurrentUserId { get; set; }
+
+        public int? Year { get; set; }
         public TableRequestModel Filter { get; set; } = new TableRequestModel()
         {
             Skip = 0,

@@ -7,6 +7,7 @@ using MajlesMefa.Back.Enums;
 using MajlesMefa.Back.Services.Abstractioin;
 using MajlesMefa.Back.UseCases.Commmands.CreateActionReferenceCommand;
 using MajlesMefa.Back.UseCases.Commmands.DeleteDataEntryCommand;
+using MajlesMefa.Back.UseCases.Commmands.LoanBatchCommand;
 using MajlesMefa.Back.UseCases.Queries.GetBanksQuery;
 using MajlesMefa.Back.UseCases.Queries.GetCityDropDown;
 using MajlesMefa.Back.UseCases.Queries.GetDataEntriesQuery;
@@ -75,10 +76,20 @@ namespace MajlesMefa.UI.Views.Loan
             var query = new GetFlatLoanDataEntriesQuery();
             query.Filter = Filter;
             query.SenatorId = senatorId;
-            var list = await Mediator.Send(query);
-            var rslt = DataSourceResult.GetFromTable(list);
+            try
+            {
+                var list = await Mediator.Send(query);
+                var rslt = DataSourceResult.GetFromTable(list);
 
-            return Json(rslt);
+                return Json(rslt);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
         }
 
         [RequestLimit(NoOfRequest = 10, Seconds = 5)]
@@ -579,6 +590,54 @@ namespace MajlesMefa.UI.Views.Loan
                 return Json(new { error = ex.Message });
             }
         }
+
+
+        private bool IsBatchAllowed()
+        {
+            var username = _currentUserService.GetCurrentUser().UserName;
+            return string.Equals(username, "b.refah", StringComparison.OrdinalIgnoreCase);
+        }
+
+
+        [HttpPost]
+        [RequestLimit(NoOfRequest = 30, Seconds = 5)]
+        [Auth]
+        public async Task<IActionResult> BatchChangeStatus([FromBody] BatchChangeStatusDto dto, CancellationToken cancellationToken)
+        {
+            if (!IsBatchAllowed())
+                return Forbid(); // یا Unauthorized
+
+            if (dto == null)
+                return BadRequest("درخواست نامعتبر است.");
+
+            var command = new BatchChangeStatusCommand(dto);
+            var result = await Mediator.Send(command, cancellationToken);
+
+            if (!result)
+                return BadRequest("عملیات تغییر وضعیت با شکست مواجه شد یا رکوردی یافت نشد.");
+
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        [RequestLimit(NoOfRequest = 30, Seconds = 5)]
+        [Auth]
+        public async Task<IActionResult> BatchRegisterAction([FromBody] BatchRegisterActionDto dto, CancellationToken cancellationToken)
+        {
+            if (!IsBatchAllowed())
+                return Forbid(); // یا Unauthorized
+            if (dto == null)
+                return BadRequest("درخواست نامعتبر است.");
+
+            var command = new BatchRegisterActionCommand(dto);
+            var result = await Mediator.Send(command, cancellationToken);
+
+            if (!result)
+                return BadRequest("عملیات ثبت اقدام گروهی با شکست مواجه شد یا رکوردی یافت نشد.");
+
+            return Json(new { success = true });
+        }
+
 
     }
 }

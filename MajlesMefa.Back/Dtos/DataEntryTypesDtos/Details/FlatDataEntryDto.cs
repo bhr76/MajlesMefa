@@ -53,5 +53,6 @@ namespace MajlesMefa.Back.Dtos
         // فیلدهای AccessActionRefrence
         public bool CanAccessActionRefrence { get; set; }
         public string AccessActionRefrenceMessage { get; set; }
+        public int Year { get; set; }
     }
 }
