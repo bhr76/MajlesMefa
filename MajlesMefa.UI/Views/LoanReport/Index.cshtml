@@ -1,5 +1,4 @@
-﻿﻿
-@using MajlesMefa.Back.Enums;
+﻿@using MajlesMefa.Back.Enums;
 @using MajlesMefa.Back.Services.Abstractioin;
 @using MajlesMefa.UI.Views.Report;
 @model Guid?
@@ -11,27 +10,32 @@
 
 <div class="home-page">
     <div class="m-portlet">
+        <div class="m-portlet__body">
 
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="yearFilter">سال</label>
+                    <select id="yearFilter" class="form-control">
+                        <option value="1404">1404</option>
+                        <option value="1405" selected>1405</option>
+                    </select>
+                </div>
+            </div>
 
             <div class="k-rtl">
                 <div id="loan-report-grid"></div>
             </div>
         </div>
     </div>
+</div>
 
-
-@section scripts{
+@section scripts {
     <script asp-append-version="true">
         var url_get_loan_report = '@Url.Action(nameof(LoanReportController.GetLoanReport), LoanReportController.CONTROLLER)';
         var url_response_status_dropdown = '@Url.Action(nameof(LoanReportController.GetResponseStatusForDropDown), LoanReportController.CONTROLLER)';
 
-
         $(document).ready(function () {
-            // Initialize response status dropdown
-          
 
-
-            // Initialize grid
             var grid = $("#loan-report-grid").kendoGrid({
                 dataSource: {
                     transport: {
@@ -40,6 +44,7 @@
                             type: "POST",
                             contentType: "application/json",
                             data: function () {
+                                var selectedYear = $("#yearFilter").val();
 
                                 var requestModel = {
                                     Filter: {
@@ -49,7 +54,7 @@
                                         pageSize: this.pageSize,
                                         sort: this.sort
                                     },
-
+                                    Year: selectedYear ? parseInt(selectedYear) : null
                                 };
 
                                 return requestModel;
@@ -83,7 +88,7 @@
                     },
                     pageSize: 20,
                     serverPaging: true,
-                    serverFiltering: false, // We handle filtering manually
+                    serverFiltering: false,
                     serverSorting: true
                 },
                 height: 550,
@@ -101,27 +106,21 @@
                 excelExport: function (e) {
                     var sheet = e.workbook.sheets[0];
 
-                    // اضافه کردن عنوان به فایل اکسل
                     sheet.title = "گزارش تسهیلات";
-
-                    // تنظیم جهت راست به چپ برای شیت
                     sheet.rtl = true;
 
-                    // فرمت کردن ستون‌ها
                     for (var rowIndex = 1; rowIndex < sheet.rows.length; rowIndex++) {
                         var row = sheet.rows[rowIndex];
                         for (var cellIndex = 0; cellIndex < row.cells.length; cellIndex++) {
                             var cell = row.cells[cellIndex];
 
-                            // فرمت اعداد برای ستون مبلغ
-                            if (cellIndex === 2 && rowIndex > 0) { // ستون مبلغ
+                            if (cellIndex === 2 && rowIndex > 0) {
                                 if (cell.value) {
                                     cell.format = "#,##0";
                                 }
                             }
 
-                            // فرمت اعداد برای ستون تعداد
-                            if (cellIndex === 3 && rowIndex > 0) { // ستون تعداد
+                            if (cellIndex === 3 && rowIndex > 0) {
                                 if (cell.value) {
                                     cell.format = "#,##0";
                                 }
@@ -200,8 +199,7 @@
                         template: function (dataItem) {
                             return dataItem.myData.unPaidCount ? kendo.toString(dataItem.myData.unPaidCount, "n0") : "0";
                         }
-                    }
-                    ,
+                    },
                     {
                         field: "myData.inBranchAmount",
                         title: "مبلغ کل تسهیلات ارسالی به شعبه (تومان)",
@@ -221,10 +219,10 @@
                 ]
             }).data("kendoGrid");
 
-            // Filter button click event - simply refresh the grid
-       
+            $("#yearFilter").change(function () {
+                grid.dataSource.page(1);
+            });
 
-            // Export to Excel button click event
             $("#exportBtn").click(function () {
                 grid.saveAsExcel();
             });

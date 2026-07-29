@@ -10,6 +10,7 @@
     var id = Model.HasValue ? Model : Guid.Empty;
     var user = Context.RequestServices.GetService<ICurrentUserService>();
     var role = user.GetCurrentUser().Roles.FirstOrDefault();
+    var username = user.GetCurrentUser().UserName;
 }
 
 <div class="home-page">
@@ -32,13 +33,16 @@
             </div>
         </div>
 
-
+       @*  <h6 class="text-red">سامانه در حال بروزرسانی است و امکان ثبت درخواست وجود ندارد.</h6> *@
+        <br/>
         <div class="k-rtl">
             <div id="report-grid-loan"></div>
         </div>
 
     </div>
 </div>
+
+
 
 @section scripts{
     <script asp-append-version="true">
@@ -74,6 +78,9 @@
                url_create = '@Url.Action(nameof(LoanController.Create), LoanController.CONTROLLER)';
 
                 url_edit = '@Url.Action(nameof(LoanController.Edit), LoanController.CONTROLLER)';
+            }
+           if ('@username' === "b.refah") {
+            url_create = '@Url.Action(nameof(LoanController.AdminLoan), LoanController.CONTROLLER)';
             }
         };
 

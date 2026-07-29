@@ -16,6 +16,7 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateActionReferenceCommand
         public ActRefTypeEnum Action { get; set; } 
         public RefTypeEnum RefType { get; set; }
 
+        public Guid? FromUserId { get; set; }
         public Guid? RefrenceUserId { get; set; }
 
         public Guid DataEntryId { get; set; }

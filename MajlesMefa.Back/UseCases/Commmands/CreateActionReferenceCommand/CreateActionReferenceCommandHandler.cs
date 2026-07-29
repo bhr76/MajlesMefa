@@ -38,8 +38,11 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateActionReferenceCommand
             {
                 request.RefrenceUserId = cid;
             }
+            if (!request.FromUserId.HasValue)
+            {
+                request.FromUserId = cid;
+            }
             var entity = _mapper.Map<ActionReferenceEntity>(request);
-            entity.FromUserId = cid;
             entity.CreatorUserId = cid;
             _unitOfWork.ActionReferenceRepository.Add(entity);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

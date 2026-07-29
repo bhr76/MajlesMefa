@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details
 {
-    public class LoanDtailDto : IMapping, IModifyDataEntryDto
+    public class LoanDtailByAdminDto : IMapping, IModifyDataEntryDto
     {
         public Guid Id { get; set; }
 
@@ -44,7 +44,7 @@ namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details
         public string NationalNo { get; set; }
 
         [Display(Name = "شماره موبایل متقاضی")]
-        [Required(ErrorMessage = "پرکردن این فیلد اجباری است")]
+        
         [MaxLength(11, ErrorMessage = "شماره موبایل را 11 رقمی وارد نمایید")]
         public string MobileNo { get; set; }
 
@@ -91,14 +91,14 @@ namespace MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details
 
         [Display(Name = "آدرس کامل")]
         [MaxLength(500, ErrorMessage = "آدرس نباید بیشتر از 500 کاراکتر باشد")]
-        [Required(ErrorMessage = "پرکردن این فیلد اجباری است")]
+        //[Required(ErrorMessage = "پرکردن این فیلد اجباری است")]
         public string Address { get; set; }
 
 
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<LoanDtailDto, LoanEntity>()
+            profile.CreateMap<LoanDtailByAdminDto, LoanEntity>()
                 .ForMember(x => x.DataEntryId, s => s.MapFrom(y => y.Id))
                 .ForMember(x => x.VaziatPasokh, s => s.MapFrom(y => (ResponseStatusEnum)y.PasokhStateInt));
         }

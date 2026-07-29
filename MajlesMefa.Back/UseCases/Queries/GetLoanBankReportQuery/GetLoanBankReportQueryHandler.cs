@@ -6,6 +6,7 @@ using MajlesMefa.Back.Utilities.Db.DynamicQuery.AbolFramework;
 using MajlesMefa.Back.Utilities.Db.DynamicQuery.AbolFramework.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Linq.Dynamic.Core;
 
 namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
@@ -15,7 +16,8 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
         private readonly RefahMajlesDbContext _context;
         private readonly ICurrentUserService _currentUserService;
 
-        public GetLoanBankReportQueryHandler(RefahMajlesDbContext context,
+        public GetLoanBankReportQueryHandler(
+            RefahMajlesDbContext context,
             ICurrentUserService currentUserService)
         {
             _context = context;
@@ -28,18 +30,21 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
 
             var query = _context.DataEntries
                 .AsNoTracking()
-                .Include(x => x.ActionReferences).ThenInclude(x => x.FromUser)
-                .Include(x => x.ActionReferences).ThenInclude(x => x.ToUser)
-                .Where(x => x.DataEntryType == request.DataEntryType);
+                .Where(x => x.DataEntryType == request.DataEntryType && x.Loan != null);
 
             #region permission
             if (cuser.Roles.Any(u => u == RoleTypeEnum.MinistryMember))
             {
                 if (request.DataEntryType != DataEntryTypeEnum.DastoorJalasatComission)
-                    query = query.Where(q => (q.ActionReferences.Any(ar =>
-                    ar.FromUserId == cuser.BussinessUserId ||
-                    ar.ToUserId == cuser.BussinessUserId)) ||
-                    q.ActionReferences.FirstOrDefault().FromUser.OrganizationId != null);
+                {
+                    query = query.Where(q =>
+                        q.ActionReferences.Any(ar =>
+                            ar.FromUserId == cuser.BussinessUserId ||
+                            ar.ToUserId == cuser.BussinessUserId) ||
+                        q.ActionReferences
+                            .Select(ar => ar.FromUser.OrganizationId)
+                            .FirstOrDefault() != null);
+                }
             }
             #endregion
 
@@ -55,38 +60,46 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
 
             if (cuser.Roles.Any(e => e == RoleTypeEnum.Organization))
             {
-                query = query.Where(q => (q.ActionReferences.Any(ar =>
-                    ar.ToUserId == cuser.BussinessUserId)));
+                query = query.Where(q => q.ActionReferences.Any(ar =>
+                    ar.ToUserId == cuser.BussinessUserId));
+            }
+
+            if (request.Year.HasValue)
+            {
+                var pc = new PersianCalendar();
+
+                var fromDate = pc.ToDateTime(request.Year.Value, 1, 1, 0, 0, 0, 0);
+                var toDate = pc.ToDateTime(request.Year.Value + 1, 1, 1, 0, 0, 0, 0);
+
+                query = query.Where(x => x.Created >= fromDate && x.Created < toDate);
             }
 
             var tempTable17 = query
-                // فیلتر VaziatPasokh حذف شد
                 .Select(l => new
                 {
                     Amount = l.Loan.Amount,
                     LoanType = l.Loan.LoanType,
-                    VaziatPasokh = l.Loan.VaziatPasokh, // اضافه شد
+                    VaziatPasokh = l.Loan.VaziatPasokh,
                     BankUserId = l.ActionReferences
-                     .Where(a => a.ActRefType == ActRefTypeEnum.Refer)
+                        .Where(a => a.ActRefType == ActRefTypeEnum.Refer)
                         .OrderByDescending(a => a.Created)
                         .Select(a => a.ToUserId)
-                        .FirstOrDefault(),
-                    DataEntryId = l.Loan.DataEntryId
+                        .FirstOrDefault()
                 });
 
             var tempTable19 = tempTable17
                 .Where(t => t.BankUserId == request.BankUserId)
-                .Join(_context.Users,
-                      t => t.BankUserId,
-                      u => u.Id,
-                      (t, u) => new
-                      {
-                          t.Amount,
-                          t.LoanType,
-                          t.VaziatPasokh, // اضافه شد
-                          t.BankUserId,
-                          BankName = u.Name
-                      });
+                .Join(_context.Users.AsNoTracking(),
+                    t => t.BankUserId,
+                    u => u.Id,
+                    (t, u) => new
+                    {
+                        t.Amount,
+                        t.LoanType,
+                        t.VaziatPasokh,
+                        t.BankUserId,
+                        BankName = u.Name
+                    });
 
             var result1 = tempTable19
                 .GroupBy(x => new { x.BankName, x.LoanType })
@@ -99,40 +112,38 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
                     TotalAmount = g.Sum(x => x.Amount),
 
                     PaidCount = g.Count(x => x.VaziatPasokh == ResponseStatusEnum.Mosbat),
-                    PaidAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Mosbat).Sum(x => x.Amount ),
+                    PaidAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Mosbat).Sum(x => x.Amount),
 
-                    UnpaidCount = g.Count(x => x.VaziatPasokh == ResponseStatusEnum.Manfi 
-                    || x.VaziatPasokh == null),
-                    UnpaidAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Manfi 
-                    || x.VaziatPasokh == null).Sum(x => x.Amount ),
+                    UnpaidCount = g.Count(x => x.VaziatPasokh == ResponseStatusEnum.Manfi || x.VaziatPasokh == null),
+                    UnpaidAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Manfi || x.VaziatPasokh == null).Sum(x => x.Amount),
 
                     InBranchCount = g.Count(x => x.VaziatPasokh == ResponseStatusEnum.Shobe),
                     InBranchAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Shobe).Sum(x => x.Amount)
                 });
 
-            var result = await result1.OrderBy(x=>x.BankName).Select(x => new DataEntryDto()
-            {
-                MyData = new GetLoanBankReportQueryResponse()
+            var result = await result1
+                .OrderBy(x => x.BankName)
+                .Select(x => new DataEntryDto()
                 {
-                    // کل
-                    TotalAmount = x.TotalAmount,
-                    TotalCount = x.TotalCount,
+                    MyData = new GetLoanBankReportQueryResponse()
+                    {
+                        TotalAmount = x.TotalAmount,
+                        TotalCount = x.TotalCount,
 
-                    // پرداخت شده
-                    PaidAmount = x.PaidAmount,
-                    PaidCount = x.PaidCount,
+                        PaidAmount = x.PaidAmount,
+                        PaidCount = x.PaidCount,
 
-                    // پرداخت نشده
-                    UnPaidAmount = x.UnpaidAmount,
-                    UnPaidCount = x.UnpaidCount,
+                        UnPaidAmount = x.UnpaidAmount,
+                        UnPaidCount = x.UnpaidCount,
 
-                    InBranchAmount= x.InBranchAmount,
-                    InBranchCount = x.InBranchCount,
+                        InBranchAmount = x.InBranchAmount,
+                        InBranchCount = x.InBranchCount,
 
-                    LoanType = x.LoanType,
-                    BankFullName = x.BankName
-                }
-            }).ToTableResultAsync(request.Filter);
+                        LoanType = x.LoanType,
+                        BankFullName = x.BankName
+                    }
+                })
+                .ToTableResultAsync(request.Filter);
 
             return result;
         }

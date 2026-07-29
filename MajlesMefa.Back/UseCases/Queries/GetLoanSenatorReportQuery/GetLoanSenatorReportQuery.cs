@@ -21,6 +21,8 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanSenatorReportQuery
         public LoanTypeEnum? LoanType { get; set; }
 
         public ResponseStatusEnum ResponseStatus { get; set; }
+
+        public int? Year { get; set; }
         public TableRequestModel Filter {get;set;} = new TableRequestModel()
         {
             Skip = 0,

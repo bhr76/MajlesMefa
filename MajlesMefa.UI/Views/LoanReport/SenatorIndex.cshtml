@@ -24,12 +24,21 @@
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label for="loanTypeFilter">نوع تسهیلات:</label>
                     <input id="loanTypeFilter" />
                 </div>
 
-                <div class="col-md-3 mt-4">
+                <div class="col-md-2">
+                    <label for="yearFilter">سال:</label>
+                    <select id="yearFilter" class="form-control">
+                        <option value="">انتخاب سال</option>
+                        <option value="1404">1404</option>
+                        <option value="1405" selected>1405</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 mt-4">
                     <button id="filterBtn" class="k-button k-primary">اعمال فیلتر</button>
                     <button id="resetBtn" class="k-button">پاک کردن فیلتر</button>
                     <button id="exportBtn" class="k-button k-button-success">خروجی Excel</button>
@@ -43,7 +52,7 @@
     </div>
 </div>
 
-@section scripts{
+@section scripts {
     <script asp-append-version="true">
         var url_get_loan_report = '@Url.Action(nameof(LoanReportController.GetLoanSenatorReport), LoanReportController.CONTROLLER)';
         var url_response_status_dropdown = '@Url.Action(nameof(LoanReportController.GetResponseStatusForDropDown), LoanReportController.CONTROLLER)';
@@ -51,7 +60,6 @@
         $(document).ready(function () {
             var gridInitialized = false;
 
-            // Initialize loan type dropdown
             $("#loanTypeFilter").kendoDropDownList({
                 dataSource: [
                     { text: "همه", value: 0 },
@@ -63,7 +71,6 @@
                 value: 0
             });
 
-            // Load and initialize response status checkboxes
             $.ajax({
                 url: url_response_status_dropdown,
                 type: "GET",
@@ -72,14 +79,12 @@
                     var container = $("#responseStatusFilter");
                     container.empty();
 
-                    // Add "Select All" checkbox
                     var selectAllHtml = '<div class="form-check mb-2">' +
                         '<input class="form-check-input response-status-all" type="checkbox" id="status_all" checked>' +
                         '<label class="form-check-label" for="status_all" style="font-weight: bold;">انتخاب همه</label>' +
                         '</div><hr style="margin: 5px 0;">';
                     container.append(selectAllHtml);
 
-                    // Add individual checkboxes
                     $.each(data, function (index, item) {
                         var isRejected = item.name.includes("رد درخواست");
                         var isChecked = !isRejected ? 'checked' : '';
@@ -91,19 +96,16 @@
                         container.append(checkboxHtml);
                     });
 
-                    // Handle "Select All" checkbox
                     $(".response-status-all").change(function () {
                         var isChecked = $(this).is(':checked');
                         $(".response-status-checkbox").prop('checked', isChecked);
                     });
 
-                    // Handle individual checkboxes
                     $(document).on('change', '.response-status-checkbox', function () {
                         var allChecked = $('.response-status-checkbox:checked').length === $('.response-status-checkbox').length;
                         $('.response-status-all').prop('checked', allChecked);
                     });
 
-                    // Initialize grid AFTER checkboxes are loaded
                     if (!gridInitialized) {
                         initializeGrid();
                         gridInitialized = true;
@@ -120,7 +122,6 @@
                                 type: "POST",
                                 contentType: "application/json",
                                 data: function () {
-                                    // Get selected response statuses
                                     var selectedStatuses = [];
                                     $(".response-status-checkbox:checked").each(function () {
                                         selectedStatuses.push(parseInt($(this).val()));
@@ -128,6 +129,7 @@
 
                                     var senatorName = $("#senatorNameFilter").val();
                                     var loanType = $("#loanTypeFilter").data("kendoDropDownList").value();
+                                    var selectedYear = $("#yearFilter").val();
 
                                     var requestModel = {
                                         Filter: {
@@ -139,7 +141,8 @@
                                         },
                                         ResponseStatuses: selectedStatuses.length > 0 ? selectedStatuses : null,
                                         SenatorName: senatorName || null,
-                                        LoanType: loanType ? parseInt(loanType) : null
+                                        LoanType: loanType && parseInt(loanType) > 0 ? parseInt(loanType) : null,
+                                        Year: selectedYear ? parseInt(selectedYear) : null
                                     };
 
                                     return requestModel;
@@ -249,15 +252,14 @@
                     ]
                 }).data("kendoGrid");
 
-                // Filter button click event
                 $("#filterBtn").click(function () {
-                    grid.dataSource.read();
+                    grid.dataSource.page(1);
                 });
 
-                // Reset button click event
                 $("#resetBtn").click(function () {
                     $("#senatorNameFilter").val("");
                     $("#loanTypeFilter").data("kendoDropDownList").value(0);
+                    $("#yearFilter").val("1405");
 
                     $(".response-status-checkbox").each(function () {
                         var label = $("label[for='" + $(this).attr('id') + "']").text();
@@ -268,10 +270,9 @@
                     var allChecked = $('.response-status-checkbox:checked').length === $('.response-status-checkbox').length;
                     $('.response-status-all').prop('checked', allChecked);
 
-                    grid.dataSource.read();
+                    grid.dataSource.page(1);
                 });
 
-                // Export to Excel button click event
                 $("#exportBtn").click(function () {
                     grid.saveAsExcel();
                 });

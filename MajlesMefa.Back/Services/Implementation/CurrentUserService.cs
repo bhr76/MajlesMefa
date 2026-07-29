@@ -34,6 +34,7 @@ namespace MajlesMefa.Back.Services.Implementation
                 _contextAccessor.HttpContext?.Request.Headers.First(o => o.Key == "X-Forwarded-For").Value.ToString() :
                 _contextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
 
+                rslt.UserName = _contextAccessor.HttpContext?.User?.FindFirst("UserName")?.Value;
                 rslt.Name = _contextAccessor.HttpContext?.User?.FindFirst("Fullname")?.Value;
                 rslt.BussinessUserId = Guid.Parse(_contextAccessor.HttpContext?.User?.FindFirst("BussinessUserId")?.Value);
                 rslt.Roles = _contextAccessor.HttpContext?.User?

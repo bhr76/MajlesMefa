@@ -128,6 +128,7 @@ namespace MajlesMefa.UI.Views.Loan
         [Auth]
         public async Task<IActionResult> Create()
         {
+     
             LoanVm vm = new LoanVm
             {
              UserSelectList = new SelectList(await Mediator.Send(new GetUsersDropDownQuery()), nameof(UserDropDownDto.Id), nameof(UserDropDownDto.Name)),
@@ -136,6 +137,27 @@ namespace MajlesMefa.UI.Views.Loan
             var usersQuery = new GetUsersDropDownQuery();
             //var users = await Mediator.Send(usersQuery);
             vm.LoanData = new LoanDtailDto();
+            //vm.Users = users.Select(u => new SelectListItem
+            //{
+            //    Value = u.Id.ToString(),
+            //    Text = u.Name,
+            //}).ToList();
+            return View(vm);
+        }
+
+
+        [RequestLimit(NoOfRequest = 15, Seconds = 10)]
+        [Auth]
+        public async Task<IActionResult> AdminLoan()
+        {
+            LoanByAdminViewModel vm = new LoanByAdminViewModel
+            {
+                UserSelectList = new SelectList(await Mediator.Send(new GetUsersDropDownQuery()), nameof(UserDropDownDto.Id), nameof(UserDropDownDto.Name)),
+            };
+
+            var usersQuery = new GetUsersDropDownQuery();
+            //var users = await Mediator.Send(usersQuery);
+            vm.LoanData = new LoanDtailByAdminDto();
             //vm.Users = users.Select(u => new SelectListItem
             //{
             //    Value = u.Id.ToString(),
@@ -194,6 +216,133 @@ namespace MajlesMefa.UI.Views.Loan
         public IActionResult GetVaziatPasokhForDropDown()
         {
             return Json(ResponseStatusEnumHelper.GetList());
+        }
+
+
+        [RequestLimit(NoOfRequest = 10, Seconds = 30)]
+        [Auth]
+        [HttpPost]
+        public async Task<IActionResult> CreateLoanByAdminAsync(LoanByAdminViewModel request, CancellationToken cancellationToken)
+        {
+          
+            //if (string.IsNullOrEmpty(request.LoanData.Address)
+            //    || request.LoanData.ProvinceId == Guid.Empty ||
+            //    request.LoanData.CityId == Guid.Empty)
+            //{
+            //    return BadRequest("آدرس را وارد کنید");
+
+            //}
+            if(string.IsNullOrEmpty(request.LoanData.MobileNo))
+            {
+                request.LoanData.MobileNo = "09351111111";
+            }
+            request.LoanData.Amount = request.LoanData.Amount.Replace(",", string.Empty);
+            var haveMaxGharzolHasaneConfig = long.TryParse(_configuration["maxGharzolHasanePerRequest"], out long gharzolHasaneMaxPerRequest);
+            var haveMaxMorabeheConfig = long.TryParse(_configuration["maxMorabehePerRequest"], out long morabeheMaxPerRequest);
+            if (!haveMaxGharzolHasaneConfig) { gharzolHasaneMaxPerRequest = 50000000; }
+            if (!haveMaxMorabeheConfig) { morabeheMaxPerRequest = 300000000; }
+            if (request.LoanData.LoanType == 0)
+            {
+                return BadRequest("نوع تسهیلات را مشخص کنید");
+
+            }
+            else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && long.Parse(request.LoanData.Amount) > gharzolHasaneMaxPerRequest)
+            {
+                return BadRequest($"سقف تسهیلات قرض الحسنه برای هر شخص {gharzolHasaneMaxPerRequest} تومان می‌باشد.");
+            }
+            else if (request.LoanData.LoanType == LoanTypeEnum.Morabehe && long.Parse(request.LoanData.Amount) > morabeheMaxPerRequest)
+            {
+                return BadRequest($"سقف تسهیلات مرابحه برای هر شخص {morabeheMaxPerRequest} تومان می‌باشد.");
+            }
+
+            //var haveshahkarByPassConfig = bool.TryParse(_configuration["shahkarByPass"], out bool shahkarByPass);
+            //if (!haveshahkarByPassConfig) { shahkarByPass = true; }
+            //if (!shahkarByPass)
+            //{
+            //    var shahkarInquiry = await _soaPlusService.ShahkarInquiry(new GetShahkarInquiryRequest
+            //        (0, request.LoanData.NationalNo, request.LoanData.MobileNo));
+            //    if (!shahkarInquiry.Done)
+            //    {
+            //        return BadRequest(shahkarInquiry.ErrorMessage);
+            //    }
+            //    if (shahkarInquiry.Result.Response != 200)
+            //    {
+            //        return BadRequest("شماره ملی و موبایل وارد شده متعلق به یک شخص نیست.");
+            //    }
+            //}
+
+
+           // var currentSenator = _currentUserService.GetCurrentUser();
+
+
+            
+            if (request.LoanData.RelatedBankId == Guid.Empty)
+            {
+                request.LoanData.RelatedBankId = null;
+            }
+            if (request.LoanData.SuggestedBankId == Guid.Empty)
+            {
+                request.LoanData.SuggestedBankId = null;
+            }
+            var command = request.ConvertToCommand();
+            LoanDtailByAdminDto loanInput = (LoanDtailByAdminDto)command.DataEntryData;
+            command.DataEntryData = loanInput;
+            request.LoanData.SenatorBudgetId = null;
+            request.LoanData.UserId = null;
+            command.IsAdmin = true;
+            try
+            {
+                Guid dataEntryId = await Mediator.Send(command, cancellationToken);
+                if (dataEntryId == Guid.Empty)
+                {
+                    return BadRequest("عملیات به خطا مواجه شده است.");
+                }
+                var shoraUserIdValue = _configuration["ShoraUserId"];
+                if (!Guid.TryParse(shoraUserIdValue, out var shoraUserId) || shoraUserId == Guid.Empty)
+                {
+                    _logger.LogError("Invalid or missing shoraUserIdValue configuration. Value: {ConfigValue}", shoraUserIdValue);
+                    return BadRequest("شناسه کاربر شورا (shoraUserIdValue) در تنظیمات به‌درستی تعریف نشده است.");
+                }
+
+                var adminUserIdValue = _configuration["ShoraUserId"];
+                if (!Guid.TryParse(adminUserIdValue, out var adminUserId) || adminUserId == Guid.Empty)
+                {
+                    _logger.LogError("Invalid or missing adminUserIdValue configuration. Value: {ConfigValue}", adminUserIdValue);
+                    return BadRequest("شناسه کاربر ادمین (adminUserIdValue) در تنظیمات به‌درستی تعریف نشده است.");
+                }
+
+                var referToShora = await Mediator.Send(new CreateActionReferenceCommand
+                {
+                    DataEntryId = dataEntryId,
+                    Description = "",
+                    Action = ActRefTypeEnum.Refer,
+                    SetVisibilityForSenator = false,
+                    RefrenceUserId = shoraUserId,
+                    RefType = RefTypeEnum.JahateEstehzar,
+                }, cancellationToken);
+                // from shora to bank refah
+                var referToBankRefah = await Mediator.Send(new CreateActionReferenceCommand
+                {
+                    DataEntryId = dataEntryId,
+                    Description = "",
+                    Action = ActRefTypeEnum.Refer,
+                    SetVisibilityForSenator = false,
+                    //RefrenceUserId = shoraUserId,
+                    FromUserId = shoraUserId,
+                    RefType = RefTypeEnum.JahateEstehzar,
+                }, cancellationToken);
+
+
+                return Json(new { redirectToUrl = Url.Action("Index", "Loan") });
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+
+
         }
 
 

@@ -6,6 +6,7 @@ using MajlesMefa.Back.Utilities.Db.DynamicQuery.AbolFramework;
 using MajlesMefa.Back.Utilities.Db.DynamicQuery.AbolFramework.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Linq.Dynamic.Core;
 
 namespace MajlesMefa.Back.UseCases.Queries.GetLoanSenatorReportQuery
@@ -28,18 +29,18 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanSenatorReportQuery
 
             var query = _context.DataEntries
                 .AsNoTracking()
-                .Include(x => x.ActionReferences).ThenInclude(x => x.FromUser)
-                .Include(x => x.ActionReferences).ThenInclude(x => x.ToUser)
                 .Where(x => x.DataEntryType == request.DataEntryType);
 
             #region permission
             if (cuser.Roles.Any(u => u == RoleTypeEnum.MinistryMember))
             {
                 if (request.DataEntryType != DataEntryTypeEnum.DastoorJalasatComission)
-                    query = query.Where(q => (q.ActionReferences.Any(ar =>
-                    ar.FromUserId == cuser.BussinessUserId ||
-                    ar.ToUserId == cuser.BussinessUserId)) ||
-                    q.ActionReferences.FirstOrDefault().FromUser.OrganizationId != null);
+                    query = query.Where(q =>
+                        q.ActionReferences.Any(ar =>
+                            ar.FromUserId == cuser.BussinessUserId ||
+                            ar.ToUserId == cuser.BussinessUserId) ||
+                        q.ActionReferences.Select(a => a.FromUser.OrganizationId)
+                            .FirstOrDefault() != null);
             }
             #endregion
 
@@ -55,74 +56,78 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanSenatorReportQuery
 
             if (cuser.Roles.Any(e => e == RoleTypeEnum.Organization))
             {
-                query = query.Where(q => (q.ActionReferences.Any(ar =>
-                    ar.ToUserId == cuser.BussinessUserId)));
+                query = query.Where(q => q.ActionReferences.Any(ar => ar.ToUserId == cuser.BussinessUserId));
             }
 
-            // شروع کوئری اصلی برای Loans
-            var loansQuery = _context.Loans.AsQueryable();
+            var loansQuery = _context.Loans
+                .AsNoTracking()
+                .AsQueryable();
 
-            // فیلتر وضعیت‌های پاسخ (چندگانه)
             if (request.ResponseStatuses != null && request.ResponseStatuses.Any())
             {
                 loansQuery = loansQuery.Where(l => request.ResponseStatuses.Contains(l.VaziatPasokh));
             }
-           
 
-            // فیلتر نوع تسهیلات
-            if (request.LoanType.HasValue && request.LoanType.Value!=0)
+            if (request.LoanType.HasValue && request.LoanType.Value != 0)
             {
                 loansQuery = loansQuery.Where(l => l.LoanType == request.LoanType.Value);
             }
 
+            var joinedQuery =
+                from l in loansQuery
+                join d in query on l.DataEntryId equals d.Id
+                join p in _context.SenatorProfiles on d.SenatorId equals p.UserId
+                select new
+                {
+                    LoanType = l.LoanType,
+                    Amount = l.Amount,
+                    Created = d.Created,
+                    Name = p.Name,
+                    FullName = p.Name
+                };
 
-            var tempTable12 = loansQuery
-                .Join(_context.DataEntries,
-                      l => l.DataEntryId,
-                      sp => sp.Id,
-                      (l, sp) => new { Loan = l, DataEntry = sp })
-                .Join(_context.SenatorProfiles,
-                      x => x.DataEntry.SenatorId,
-                      p => p.UserId,
-                      (x, p) => new
-                      {
-                          Loan = x.Loan,
-                          Name = p.Name,
-                          FullName = p.Name 
-                      });
+            if (request.Year.HasValue)
+            {
+                var pc = new PersianCalendar();
 
-            // فیلتر نام نماینده
+                var fromDate = pc.ToDateTime(request.Year.Value, 1, 1, 0, 0, 0, 0);
+                var toDate = pc.ToDateTime(request.Year.Value + 1, 1, 1, 0, 0, 0, 0);
+
+                joinedQuery = joinedQuery.Where(x => x.Created >= fromDate && x.Created < toDate);
+            }
+
             if (!string.IsNullOrWhiteSpace(request.SenatorName))
             {
-                tempTable12 = tempTable12.Where(x =>
+                joinedQuery = joinedQuery.Where(x =>
                     x.Name.Contains(request.SenatorName) ||
                     x.FullName.Contains(request.SenatorName));
             }
 
-            var result1 = tempTable12
-                .GroupBy(x => new { x.FullName, x.Loan.LoanType })
+            var result1 = joinedQuery
+                .GroupBy(x => new { x.FullName, x.LoanType })
                 .Select(g => new
                 {
                     Name = g.Key.FullName,
                     LoanType = g.Key.LoanType,
                     Cnt = g.Count(),
-                    Amount = g.Sum(x => x.Loan.Amount)
+                    Amount = g.Sum(x => x.Amount)
                 });
 
-            var result = await result1.Select(x => new DataEntryDto()
-            {
-                MyData = new GetLoanSenatorReportQueryResponse()
+            var result = await result1
+                .Select(x => new DataEntryDto()
                 {
-                    Amount = x.Amount,
-                    count = x.Cnt,
-                    LoanType = x.LoanType,
-                    SenatorFullName = x.Name
-                }
-            })
-            
-            .ToTableResultAsync(request.Filter);
+                    MyData = new GetLoanSenatorReportQueryResponse()
+                    {
+                        Amount = x.Amount,
+                        count = x.Cnt,
+                        LoanType = x.LoanType,
+                        SenatorFullName = x.Name
+                    }
+                })
+                .ToTableResultAsync(request.Filter);
 
             return result;
         }
+
     }
 }

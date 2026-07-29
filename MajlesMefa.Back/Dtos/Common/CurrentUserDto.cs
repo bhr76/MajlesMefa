@@ -18,6 +18,7 @@ namespace MajlesMefa.Back.Dtos.Common
         public string IpAddress { get; set; }
 
         public string Name { get; set; }
+        public string UserName { get; set; }
 
         public List<RoleTypeEnum> Roles { get; set; } = new List<RoleTypeEnum>();
 

@@ -19,6 +19,7 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanReportQuery
         public ResponseStatusEnum ResponseStatus { get; set; }
         public string BankNameFilter { get; set; }
         public LoanTypeEnum? LoanTypeFilter { get; set; }
+        public int? Year { get; set; }
         public TableRequestModel Filter { get; set; } = new TableRequestModel()
         {
             Skip = 0,

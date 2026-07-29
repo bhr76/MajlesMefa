@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using Newtonsoft.Json;
-using MajlesMefa.Back.Dtos.Common;
 using MajlesMefa.Back.Dtos.DataEntryTypesDtos;
 using MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details;
 using MajlesMefa.Back.Entities;
@@ -11,13 +8,6 @@ using MajlesMefa.Back.Entities.DataEntryTypesEntities;
 using MajlesMefa.Back.Enums;
 using MajlesMefa.Back.Repositories;
 using MajlesMefa.Back.Services.Abstractioin;
-using MajlesMefa.Back.Services.Implementation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using MajlesMefa.Back.Utilities.Convertor;
@@ -101,8 +91,18 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
                     _context.TazakorShafahis.Add(tazakorShafahi);
                     break;
                 case DataEntryTypeEnum.Loan:
-                    var loan = _mapper.Map<LoanEntity>(request.DataEntryData as LoanDtailDto);
-                    loan.DataEntry = dataEntity;
+                    var loan = new LoanEntity();
+                    if (request.IsAdmin)
+                    {
+                         loan = _mapper.Map<LoanEntity>(request.DataEntryData as LoanDtailByAdminDto);
+                        loan.DataEntry = dataEntity;
+                    }
+                    else
+                    {
+                         loan = _mapper.Map<LoanEntity>(request.DataEntryData as LoanDtailDto);
+                        loan.DataEntry = dataEntity;
+                    }
+                      
 
                     //persian year
                     var persianCalendar = new PersianCalendar();

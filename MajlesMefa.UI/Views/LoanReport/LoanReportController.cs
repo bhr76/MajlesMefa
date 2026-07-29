@@ -72,7 +72,7 @@ namespace MajlesMefa.UI.Views.Report
                     Filter = filter,
                     CurrentUserId = currentUser.BussinessUserId,
                     ResponseStatus = requestModel?.ResponseStatus ?? ResponseStatusEnum.Inprogress,
-
+                    Year = requestModel?.Year,
                 };
 
                 var result = await Mediator.Send(query);
@@ -83,7 +83,7 @@ namespace MajlesMefa.UI.Views.Report
             catch (Exception ex)
             {
                 // Log the exception
-                return BadRequest(new { error = "خطا در دریافت داده‌ها" });
+                return BadRequest(new { error = $"خطا در دریافت داده‌ها : {ex.InnerException.Message}" });
             }
         }
 
@@ -109,7 +109,8 @@ namespace MajlesMefa.UI.Views.Report
                     CurrentUserId = currentUser.BussinessUserId,
                     ResponseStatuses = requestModel?.ResponseStatuses ?? new List<ResponseStatusEnum> { ResponseStatusEnum.Inprogress },
                     SenatorName = requestModel?.SenatorName,
-                    LoanType = requestModel?.LoanType
+                    LoanType = requestModel?.LoanType,
+                    Year = requestModel?.Year,
                 };
 
                 var result = await Mediator.Send(query);
@@ -145,6 +146,7 @@ namespace MajlesMefa.UI.Views.Report
                     Filter = filter,
                     BankUserId = currentUser.BussinessUserId,
                     ResponseStatus = requestModel?.ResponseStatus ?? ResponseStatusEnum.Inprogress,
+                    Year = requestModel?.Year
                 };
 
                 var result = await Mediator.Send(query);
@@ -179,6 +181,7 @@ namespace MajlesMefa.UI.Views.Report
         public ResponseStatusEnum? ResponseStatus { get; set; }
         public string BankName { get; set; }
         public LoanTypeEnum? LoanType { get; set; }
+        public int? Year { get; set; }
     }
 
     public class LoanSenatorReportRequestModel
@@ -192,5 +195,6 @@ namespace MajlesMefa.UI.Views.Report
 
         public string BankName { get; set; }
         public LoanTypeEnum? LoanType { get; set; }
+        public int? Year { get; set; }
     }
 }

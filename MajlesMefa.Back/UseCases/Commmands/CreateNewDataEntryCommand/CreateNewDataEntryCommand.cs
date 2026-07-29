@@ -33,6 +33,8 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
         public Guid? SenatorId { get; set; }
         public Guid? SenatorBudgetId { get; set; }
 
+        public bool IsAdmin { get; set; } = false;
+
         public void Mapping(Profile profile)
         {
             profile.CreateMap<CreateNewDataEntryCommand, DataEntryEntity>();
