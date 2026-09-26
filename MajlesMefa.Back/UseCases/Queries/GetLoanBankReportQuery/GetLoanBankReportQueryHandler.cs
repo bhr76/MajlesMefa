@@ -101,6 +101,8 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
                         BankName = u.Name
                     });
 
+          
+
             var result1 = tempTable19
                 .GroupBy(x => new { x.BankName, x.LoanType })
                 .Select(g => new
@@ -111,14 +113,15 @@ namespace MajlesMefa.Back.UseCases.Queries.GetLoanBankReportQuery
                     TotalCount = g.Count(),
                     TotalAmount = g.Sum(x => x.Amount),
 
-                    PaidCount = g.Count(x => x.VaziatPasokh == ResponseStatusEnum.Mosbat),
-                    PaidAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Mosbat).Sum(x => x.Amount),
+                    PaidCount = g.Sum(x => x.VaziatPasokh == ResponseStatusEnum.Mosbat ? 1 : 0),
+                    PaidAmount = g.Sum(x => x.VaziatPasokh == ResponseStatusEnum.Mosbat ? x.Amount : 0),
 
-                    UnpaidCount = g.Count(x => x.VaziatPasokh == ResponseStatusEnum.Manfi || x.VaziatPasokh == null),
-                    UnpaidAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Manfi || x.VaziatPasokh == null).Sum(x => x.Amount),
+                    UnpaidCount = g.Sum(x => x.VaziatPasokh == ResponseStatusEnum.Manfi || x.VaziatPasokh == null ? 1 : 0),
+                    UnpaidAmount = g.Sum(x => x.VaziatPasokh == ResponseStatusEnum.Manfi || x.VaziatPasokh == null ? x.Amount : 0),
 
-                    InBranchCount = g.Count(x => x.VaziatPasokh == ResponseStatusEnum.Shobe),
-                    InBranchAmount = g.Where(x => x.VaziatPasokh == ResponseStatusEnum.Shobe).Sum(x => x.Amount)
+                    InBranchCount = g.Sum(x => x.VaziatPasokh == ResponseStatusEnum.Shobe ? 1 : 0),
+                    InBranchAmount = g.Sum(x => x.VaziatPasokh == ResponseStatusEnum.Shobe ? x.Amount : 0),
+
                 });
 
             var result = await result1
