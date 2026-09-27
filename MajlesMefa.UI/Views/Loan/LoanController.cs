@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Dapper;
+using MajlesMefa.Back.Entities;
 using MajlesMefa.Back.ActionFilters;
 using MajlesMefa.Back.Dtos.DataEntryTypesDtos;
 using MajlesMefa.Back.Dtos.DataEntryTypesDtos.Details;
@@ -37,16 +39,18 @@ namespace MajlesMefa.UI.Views.Loan
         private readonly ILogger<LoanController> _logger;
         private readonly ICurrentUserService _currentUserService;
         private readonly ISoaPlusService _soaPlusService;
+        private readonly DapperContext _dapperContext;
         //private readonly ISenatorBudgetRepository _budgetRepository;
 
         public LoanController(IMapper mapper, ILogger<LoanController> logger, 
             IConfiguration configuration, ICurrentUserService currentUserService,
-            ISoaPlusService soaPlusService) : base(mapper)
+            ISoaPlusService soaPlusService, DapperContext dapperContext) : base(mapper)
         {
             _logger = logger;
             _configuration = configuration;
             _currentUserService = currentUserService;
             _soaPlusService = soaPlusService;
+            _dapperContext = dapperContext;
             // _budgetRepository = budgetRepository;
         }
 
@@ -86,7 +90,7 @@ namespace MajlesMefa.UI.Views.Loan
             }
             catch (Exception ex)
             {
-
+                await LogLoanFailureAsync(nameof(GetLoans), new { models, senatorId }, "Exception", ex.Message, ex);
                 throw;
             }
 
@@ -235,34 +239,47 @@ namespace MajlesMefa.UI.Views.Loan
         [HttpPost]
         public async Task<IActionResult> CreateLoanByAdminAsync(LoanByAdminViewModel request, CancellationToken cancellationToken)
         {
+            var submittedInput = JsonConvert.SerializeObject(request);
+            if (request?.LoanData == null)
+            {
+                await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), submittedInput, "InputValidation", "Loan data was not supplied.");
+                return BadRequest("اطلاعات تسهیلات ارسال نشده است.");
+            }
           
             //if (string.IsNullOrEmpty(request.LoanData.Address)
             //    || request.LoanData.ProvinceId == Guid.Empty ||
             //    request.LoanData.CityId == Guid.Empty)
             //{
-            //    return BadRequest("آدرس را وارد کنید");
-
+            //    await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), new { submittedInput, currentInput = request }, "InputValidation", "آدرس یا استان/شهر وارد نشده است.");
             //}
             if(string.IsNullOrEmpty(request.LoanData.MobileNo))
             {
                 request.LoanData.MobileNo = "09351111111";
             }
-            request.LoanData.Amount = request.LoanData.Amount.Replace(",", string.Empty);
+            request.LoanData.Amount = request.LoanData.Amount?.Replace(",", string.Empty);
+            if (!long.TryParse(request.LoanData.Amount, out var requestedAmount))
+            {
+                await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), new { submittedInput, currentInput = request }, "InputValidation", "مبلغ تسهیلات نامعتبر است.");
+                return BadRequest("مبلغ تسهیلات نامعتبر است.");
+            }
             var haveMaxGharzolHasaneConfig = long.TryParse(_configuration["maxGharzolHasanePerRequest"], out long gharzolHasaneMaxPerRequest);
             var haveMaxMorabeheConfig = long.TryParse(_configuration["maxMorabehePerRequest"], out long morabeheMaxPerRequest);
             if (!haveMaxGharzolHasaneConfig) { gharzolHasaneMaxPerRequest = 50000000; }
             if (!haveMaxMorabeheConfig) { morabeheMaxPerRequest = 300000000; }
             if (request.LoanData.LoanType == 0)
             {
+                await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), new { submittedInput, currentInput = request }, "InputValidation", "نوع تسهیلات مشخص نشده است.");
                 return BadRequest("نوع تسهیلات را مشخص کنید");
 
             }
-            else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && long.Parse(request.LoanData.Amount) > gharzolHasaneMaxPerRequest)
+            else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && requestedAmount > gharzolHasaneMaxPerRequest)
             {
+                await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), new { submittedInput, currentInput = request }, "CreditLimit", $"سقف تسهیلات قرض الحسنه برای هر شخص {gharzolHasaneMaxPerRequest} تومان می‌باشد.");
                 return BadRequest($"سقف تسهیلات قرض الحسنه برای هر شخص {gharzolHasaneMaxPerRequest} تومان می‌باشد.");
             }
-            else if (request.LoanData.LoanType == LoanTypeEnum.Morabehe && long.Parse(request.LoanData.Amount) > morabeheMaxPerRequest)
+            else if (request.LoanData.LoanType == LoanTypeEnum.Morabehe && requestedAmount > morabeheMaxPerRequest)
             {
+                await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), new { submittedInput, currentInput = request }, "CreditLimit", $"سقف تسهیلات مرابحه برای هر شخص {morabeheMaxPerRequest} تومان می‌باشد.");
                 return BadRequest($"سقف تسهیلات مرابحه برای هر شخص {morabeheMaxPerRequest} تومان می‌باشد.");
             }
 
@@ -274,10 +291,12 @@ namespace MajlesMefa.UI.Views.Loan
             //        (0, request.LoanData.NationalNo, request.LoanData.MobileNo));
             //    if (!shahkarInquiry.Done)
             //    {
+            //        await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), new { submittedInput, currentInput = request }, "ExternalService", shahkarInquiry.ErrorMessage ?? "Shahkar inquiry failed.");
             //        return BadRequest(shahkarInquiry.ErrorMessage);
             //    }
             //    if (shahkarInquiry.Result.Response != 200)
             //    {
+            //        await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), new { submittedInput, currentInput = request }, "ExternalService", "شماره ملی و موبایل وارد شده متعلق به یک شخص نیست.");
             //        return BadRequest("شماره ملی و موبایل وارد شده متعلق به یک شخص نیست.");
             //    }
             //}
@@ -306,12 +325,14 @@ namespace MajlesMefa.UI.Views.Loan
                 Guid dataEntryId = await Mediator.Send(command, cancellationToken);
                 if (dataEntryId == Guid.Empty)
                 {
+                    await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), new { submittedInput, currentInput = request }, "OperationFailed", "Mediator returned an empty data entry id.");
                     return BadRequest("عملیات به خطا مواجه شده است.");
                 }
                 var shoraUserIdValue = _configuration["ShoraUserId"];
                 if (!Guid.TryParse(shoraUserIdValue, out var shoraUserId) || shoraUserId == Guid.Empty)
                 {
                     _logger.LogError("Invalid or missing shoraUserIdValue configuration. Value: {ConfigValue}", shoraUserIdValue);
+                    await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), new { submittedInput, currentInput = request }, "Configuration", "Invalid or missing ShoraUserId.");
                     return BadRequest("شناسه کاربر شورا (shoraUserIdValue) در تنظیمات به‌درستی تعریف نشده است.");
                 }
 
@@ -319,6 +340,7 @@ namespace MajlesMefa.UI.Views.Loan
                 if (!Guid.TryParse(adminUserIdValue, out var adminUserId) || adminUserId == Guid.Empty)
                 {
                     _logger.LogError("Invalid or missing adminUserIdValue configuration. Value: {ConfigValue}", adminUserIdValue);
+                    await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), new { submittedInput, currentInput = request }, "Configuration", "Invalid or missing admin user id configuration.");
                     return BadRequest("شناسه کاربر ادمین (adminUserIdValue) در تنظیمات به‌درستی تعریف نشده است.");
                 }
 
@@ -348,7 +370,7 @@ namespace MajlesMefa.UI.Views.Loan
             }
             catch (Exception ex)
             {
-
+                await LogLoanFailureAsync(nameof(CreateLoanByAdminAsync), new { submittedInput, currentInput = request }, "Exception", ex.Message, ex);
                 throw;
             }
 
@@ -362,29 +384,44 @@ namespace MajlesMefa.UI.Views.Loan
         [HttpPost]
         public async Task<IActionResult> CreateAsync(LoanVm request, CancellationToken cancellationToken)
         {
+            var submittedInput = JsonConvert.SerializeObject(request);
+            if (request?.LoanData == null)
+            {
+                await LogLoanFailureAsync(nameof(CreateAsync), submittedInput, "InputValidation", "Loan data was not supplied.");
+                return BadRequest("اطلاعات تسهیلات ارسال نشده است.");
+            }
             if (string.IsNullOrEmpty(request.LoanData.Address) 
                 || request.LoanData.ProvinceId == Guid.Empty ||
                 request.LoanData.CityId == Guid.Empty)
             {
+                await LogLoanFailureAsync(nameof(CreateAsync), new { submittedInput, currentInput = request }, "InputValidation", "آدرس یا استان/شهر وارد نشده است.");
                 return BadRequest("آدرس را وارد کنید");
 
             }
-            request.LoanData.Amount = request.LoanData.Amount.Replace(",", string.Empty);
+            request.LoanData.Amount = request.LoanData.Amount?.Replace(",", string.Empty);
+            if (!long.TryParse(request.LoanData.Amount, out var requestedAmount))
+            {
+                await LogLoanFailureAsync(nameof(CreateAsync), new { submittedInput, currentInput = request }, "InputValidation", "مبلغ تسهیلات نامعتبر است.");
+                return BadRequest("مبلغ تسهیلات نامعتبر است.");
+            }
             var haveMaxGharzolHasaneConfig = long.TryParse(_configuration["maxGharzolHasanePerRequest"], out long gharzolHasaneMaxPerRequest);
             var haveMaxMorabeheConfig = long.TryParse(_configuration["maxMorabehePerRequest"], out long morabeheMaxPerRequest);
             if (!haveMaxGharzolHasaneConfig) { gharzolHasaneMaxPerRequest = 50000000; }
             if (!haveMaxMorabeheConfig) { morabeheMaxPerRequest = 300000000; }
             if (request.LoanData.LoanType == 0)
             {
+                await LogLoanFailureAsync(nameof(CreateAsync), new { submittedInput, currentInput = request }, "InputValidation", "نوع تسهیلات مشخص نشده است.");
                 return BadRequest("نوع تسهیلات را مشخص کنید");
 
             }
-            else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && long.Parse(request.LoanData.Amount) > gharzolHasaneMaxPerRequest)
+            else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && requestedAmount > gharzolHasaneMaxPerRequest)
             {
+                await LogLoanFailureAsync(nameof(CreateAsync), new { submittedInput, currentInput = request }, "CreditLimit", $"سقف تسهیلات قرض الحسنه برای هر شخص {gharzolHasaneMaxPerRequest} تومان می‌باشد.");
                 return BadRequest($"سقف تسهیلات قرض الحسنه برای هر شخص {gharzolHasaneMaxPerRequest} تومان می‌باشد.");
             }
-            else if (request.LoanData.LoanType == LoanTypeEnum.Morabehe && long.Parse(request.LoanData.Amount) > morabeheMaxPerRequest)
+            else if (request.LoanData.LoanType == LoanTypeEnum.Morabehe && requestedAmount > morabeheMaxPerRequest)
             {
+                await LogLoanFailureAsync(nameof(CreateAsync), new { submittedInput, currentInput = request }, "CreditLimit", $"سقف تسهیلات مرابحه برای هر شخص {morabeheMaxPerRequest} تومان می‌باشد.");
                 return BadRequest($"سقف تسهیلات مرابحه برای هر شخص {morabeheMaxPerRequest} تومان می‌باشد.");
             }
 
@@ -392,14 +429,25 @@ namespace MajlesMefa.UI.Views.Loan
             if (!haveshahkarByPassConfig) { shahkarByPass = true; }
             if (!shahkarByPass)
             {
-                var shahkarInquiry = await _soaPlusService.ShahkarInquiry(new GetShahkarInquiryRequest
-                    (0, request.LoanData.NationalNo, request.LoanData.MobileNo));
+                SoaPlusBaseResponse<GetShahkarInquiryResponse> shahkarInquiry;
+                try
+                {
+                    shahkarInquiry = await _soaPlusService.ShahkarInquiry(new GetShahkarInquiryRequest
+                        (0, request.LoanData.NationalNo, request.LoanData.MobileNo));
+                }
+                catch (Exception ex)
+                {
+                    await LogLoanFailureAsync(nameof(CreateAsync), new { submittedInput, currentInput = request }, "ExternalServiceException", ex.Message, ex);
+                    throw;
+                }
                 if (!shahkarInquiry.Done)
                 {
-                    return BadRequest(shahkarInquiry.ErrorMessage);
+                    await LogLoanFailureAsync(nameof(CreateAsync), new { submittedInput, currentInput = request }, "ExternalService", shahkarInquiry.ErrorMessage ?? "Shahkar inquiry failed.");
+            return BadRequest(shahkarInquiry.ErrorMessage);
                 }
                 if (shahkarInquiry.Result.Response != 200)
                 {
+                    await LogLoanFailureAsync(nameof(CreateAsync), new { submittedInput, currentInput = request }, "ExternalService", "شماره ملی و موبایل وارد شده متعلق به یک شخص نیست.");
                     return BadRequest("شماره ملی و موبایل وارد شده متعلق به یک شخص نیست.");
                 }
             }
@@ -427,12 +475,14 @@ namespace MajlesMefa.UI.Views.Loan
                 Guid dataEntryId = await Mediator.Send(command, cancellationToken);
                 if (dataEntryId == Guid.Empty)
                 {
+                    await LogLoanFailureAsync(nameof(CreateAsync), new { submittedInput, currentInput = request }, "OperationFailed", "Mediator returned an empty data entry id.");
                     return BadRequest("عملیات به خطا مواجه شده است.");
                 }
                 var shoraUserIdValue = _configuration["ShoraUserId"];
                 if (!Guid.TryParse(shoraUserIdValue, out var shoraUserId) || shoraUserId == Guid.Empty)
                 {
                     _logger.LogError("Invalid or missing ParlemaniUserId configuration. Value: {ConfigValue}", shoraUserIdValue);
+                    await LogLoanFailureAsync(nameof(CreateAsync), new { submittedInput, currentInput = request }, "Configuration", "Invalid or missing ParlemaniUserId.");
                     return BadRequest("شناسه کاربر پارلمانی (ParlemaniUserId) در تنظیمات به‌درستی تعریف نشده است.");
                 }
 
@@ -451,7 +501,7 @@ namespace MajlesMefa.UI.Views.Loan
             }
             catch (Exception ex)
             {
-
+                await LogLoanFailureAsync(nameof(CreateAsync), new { submittedInput, currentInput = request }, "Exception", ex.Message, ex);
                 throw;
             }
             
@@ -464,25 +514,39 @@ namespace MajlesMefa.UI.Views.Loan
         [HttpPost]
         public async Task<IActionResult> EditAsync(LoanVm request, CancellationToken cancellationToken)
         {
+            var submittedInput = JsonConvert.SerializeObject(request);
+            if (request?.LoanData == null)
+            {
+                await LogLoanFailureAsync(nameof(EditAsync), submittedInput, "InputValidation", "Loan data was not supplied.");
+                return BadRequest("اطلاعات تسهیلات ارسال نشده است.");
+            }
             if(request.LoanData.PasokhState == ResponseStatusEnum.Inprogress)
             {
                 //edited by Senator
-                request.LoanData.Amount = request.LoanData.Amount.Replace(",", string.Empty);
+                request.LoanData.Amount = request.LoanData.Amount?.Replace(",", string.Empty);
+                if (!long.TryParse(request.LoanData.Amount, out var requestedAmount))
+                {
+                    await LogLoanFailureAsync(nameof(EditAsync), new { submittedInput, currentInput = request }, "InputValidation", "مبلغ تسهیلات نامعتبر است.");
+                    return BadRequest("مبلغ تسهیلات نامعتبر است.");
+                }
                 var haveMaxGharzolHasaneConfig = long.TryParse(_configuration["maxGharzolHasanePerRequest"], out long gharzolHasaneMaxPerRequest);
                 var haveMaxMorabeheConfig = long.TryParse(_configuration["maxMorabehePerRequest"], out long morabeheMaxPerRequest);
                 if (!haveMaxGharzolHasaneConfig) { gharzolHasaneMaxPerRequest = 50000000; }
                 if (!haveMaxMorabeheConfig) { morabeheMaxPerRequest = 300000000; }
                 if (request.LoanData.LoanType == 0)
                 {
+                    await LogLoanFailureAsync(nameof(EditAsync), new { submittedInput, currentInput = request }, "InputValidation", "نوع تسهیلات مشخص نشده است.");
                     return BadRequest("نوع تسهیلات را مشخص کنید");
 
                 }
-                else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && long.Parse(request.LoanData.Amount) > gharzolHasaneMaxPerRequest)
+                else if (request.LoanData.LoanType == LoanTypeEnum.Gharzolhasane && requestedAmount > gharzolHasaneMaxPerRequest)
                 {
+                    await LogLoanFailureAsync(nameof(EditAsync), new { submittedInput, currentInput = request }, "CreditLimit", "سقف تسهیلات قرض الحسنه برای هر شخص پنجاه میلیون تومان می‌باشد.");
                     return BadRequest("سقف تسهیلات قرض الحسنه برای هر شخص پنجاه میلیون تومان می‌باشد.");
                 }
-                else if (request.LoanData.LoanType == LoanTypeEnum.Morabehe && long.Parse(request.LoanData.Amount) > morabeheMaxPerRequest)
+                else if (request.LoanData.LoanType == LoanTypeEnum.Morabehe && requestedAmount > morabeheMaxPerRequest)
                 {
+                    await LogLoanFailureAsync(nameof(EditAsync), new { submittedInput, currentInput = request }, "CreditLimit", "سقف تسهیلات مرابحه برای هر شخص سیصد میلیون تومان می‌باشد.");
                     return BadRequest("سقف تسهیلات مرابحه برای هر شخص سیصد میلیون تومان می‌باشد.");
                 }
             }
@@ -491,7 +555,15 @@ namespace MajlesMefa.UI.Views.Loan
             LoanDtailDto loanDetails = (LoanDtailDto)command.DataEntryData;
             command.DataEntryId = request.LoanData.Id;
             command.DataEntryData = loanDetails;
-            await Mediator.Send(command, cancellationToken);
+            try
+            {
+                await Mediator.Send(command, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                await LogLoanFailureAsync(nameof(EditAsync), new { submittedInput, currentInput = request }, "Exception", ex.Message, ex);
+                throw;
+            }
             return Json(new { redirectToUrl = Url.Action("Index", "Loan") });
         }
 
@@ -591,6 +663,36 @@ namespace MajlesMefa.UI.Views.Loan
             }
         }
 
+
+        private async Task LogLoanFailureAsync(string action, object input, string category, string error, Exception exception = null)
+        {
+            try
+            {
+                Guid? userId = null;
+                string userName = null;
+                try
+                {
+                    var user = _currentUserService.GetCurrentUser();
+                    userId = user?.BussinessUserId;
+                    userName = user?.UserName;
+                }
+                catch { }
+                const string sql = @"INSERT INTO LoanErrorLogs (OccurredAtUtc, Action, Category, UserId, UserName, InputJson, ErrorMessage, ExceptionDetails, TraceIdentifier)
+VALUES (@OccurredAtUtc, @Action, @Category, @UserId, @UserName, @InputJson, @ErrorMessage, @ExceptionDetails, @TraceIdentifier);";
+                using var connection = _dapperContext.CreateConnection();
+                await connection.ExecuteAsync(sql, new
+                {
+                    OccurredAtUtc = DateTime.UtcNow, Action = action, Category = category,
+                    UserId = userId, UserName = userName,
+                    InputJson = JsonConvert.SerializeObject(input), ErrorMessage = error,
+                    ExceptionDetails = exception?.ToString(), TraceIdentifier = HttpContext.TraceIdentifier
+                });
+            }
+            catch (Exception logException)
+            {
+                _logger.LogError(logException, "Could not persist loan failure log for {Action}", action);
+            }
+        }
 
         private bool IsBatchAllowed()
         {
