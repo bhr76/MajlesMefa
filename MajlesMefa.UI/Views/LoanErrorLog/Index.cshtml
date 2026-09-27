@@ -1,0 +1,29 @@
+@using MajlesMefa.UI.Views.LoanErrorLog
+@{
+    ViewData["Title"] = "لاگ خطاهای تسهیلات";
+}
+
+<div class="home-page">
+    <div class="m-portlet">
+        <div class="m-portlet__body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="loan-log-user-name">کد کاربر (username)</label>
+                    <input id="loan-log-user-name" class="form-control" placeholder="مثلاً 12345" />
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button id="loan-log-search" type="button" class="k-button k-primary">جستجو</button>
+                    <button id="loan-log-clear" type="button" class="k-button mr-2">پاک کردن</button>
+                </div>
+            </div>
+            <div class="k-rtl"><div id="loan-error-log-grid"></div></div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        var url_get_loan_error_logs = '@Url.Action(nameof(LoanErrorLogController.GetLogs), LoanErrorLogController.CONTROLLER)';
+    </script>
+    <script src="~/js/pages/loanErrorLog.js" asp-append-version="true"></script>
+}
