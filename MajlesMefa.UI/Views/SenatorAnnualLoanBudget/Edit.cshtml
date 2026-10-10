@@ -1,0 +1,16 @@
+@using MajlesMefa.UI.Views.SenatorAnnualLoanBudget;
+@using MajlesMefa.UI.Models;
+@model SenatorAnnualLoanBudgetVm
+@{ ViewData["Title"] = "ویرایش سقف سالانه تسهیلات"; }
+<div class="m-portlet"><div class="m-portlet__body">
+    <form asp-controller="SenatorAnnualLoanBudget" asp-action="Edit" method="post">
+        <input asp-for="Id" type="hidden"/><input asp-for="SenatorId" type="hidden"/><div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group col-md-6"><label>نماینده</label><input value="@Model.SenatorName" class="form-control" readonly /></div>
+        <div class="form-group col-md-4"><label asp-for="Year"></label><input asp-for="Year" type="text" class="form-control" inputmode="numeric"/><span asp-validation-for="Year" class="text-danger"></span></div>
+        <div class="form-group col-md-6"><label asp-for="GharzolHasaneLimit"></label><input asp-for="GharzolHasaneLimit" type="text" class="form-control amount-input" inputmode="numeric"/><span asp-validation-for="GharzolHasaneLimit" class="text-danger"></span></div>
+        <div class="form-group col-md-6"><label asp-for="MorabeheLimit"></label><input asp-for="MorabeheLimit" type="text" class="form-control amount-input" inputmode="numeric"/><span asp-validation-for="MorabeheLimit" class="text-danger"></span></div>
+        <button class="btn btn-success" type="submit">ثبت</button>
+        <a class="btn btn-secondary" href="@Url.Action(nameof(SenatorAnnualLoanBudgetController.Index), SenatorAnnualLoanBudgetController.CONTROLLER, new { senatorId = Model.SenatorId })">بازگشت</a>
+    </form>
+</div></div>
+@section scripts { <script src="~/js/pages/senatorAnnualLoanBudgetForm.js" asp-append-version="true"></script> }

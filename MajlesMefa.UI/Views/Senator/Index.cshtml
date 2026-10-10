@@ -1,4 +1,5 @@
 ﻿@using MajlesMefa.UI.Views.Senator;
+@using MajlesMefa.UI.Views.SenatorAnnualLoanBudget;
 @using MajlesMefa.Back.Services.Abstractioin;
 @using MajlesMefa.Back.Enums;
 @model Guid?
@@ -13,6 +14,7 @@
 <div class="home-page">
     <div class="m-portlet__body">
         <div class="k-rtl">
+            <div class="mb-2"><a class="btn btn-outline-primary" href="@Url.Action(nameof(SenatorAnnualLoanBudgetController.Index), SenatorAnnualLoanBudgetController.CONTROLLER)">جستجو و مدیریت همه سقف‌های سالانه</a></div>
             <div id="report-grid"></div>
         </div>
 
@@ -39,8 +41,10 @@
         }
         var url_details = '@Url.Action(nameof(SenatorController.Details), SenatorController.CONTROLLER)';
         var url_report = '@Url.Action(nameof(SenatorController.Report), SenatorController.CONTROLLER)';
+        var url_annual_budget = '@Url.Action(nameof(SenatorAnnualLoanBudgetController.Index), SenatorAnnualLoanBudgetController.CONTROLLER)';
         //#if('${url_report}' != ''){# < a class="k-button mt-1" href = "${url_report}?senatorId=#:id#" > گزارش < /a>#}#
         var btns = `<button class="k-button mt-1" data-link="${url_details}/?senatorId=#:id#">جزییات</button>
+                                         <a class="k-button mt-1" href="${url_annual_budget}?senatorId=#:id#">ویرایش سقف</a>
                                          #if('${url_delete}' != ''){# <button class="k-button mt-1" data-link="${url_delete}/?senatorId=#:id#"> حذف </button>#}#
                                                       #if('${url_edit}' != ''){#<a class="k-button mt-1" href="${url_edit}?senatorId=#:id#"><span class="k-icon k-i-edit"></span> ویرایش</a>#}#
                                                       

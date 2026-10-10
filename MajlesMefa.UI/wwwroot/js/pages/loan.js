@@ -102,6 +102,7 @@
 
     // مدیریت تغییرات دراپ‌داون سال با ساختار کاملاً مشابه بقیه فیلترها
     $("#LoanYearDropDown").on("change", function (e) {
+        loadLoanYearStats(e.target.value);
         var filters = dataSource._filter?.filters ?? [];
         if (e.target.value) {
             filters = filters.filter(x => x.field != "year");
@@ -372,6 +373,8 @@
         updateBatchUI();
     });
 
+    loadLoanYearStats($("#LoanYearDropDown").data("kendoDropDownList").value());
+
     $(document).on("click", "#selectAllPagesBtn", function () {
         allPagesSelected = true;
         selectedIds = [];
@@ -566,6 +569,41 @@
             $("#header-chb").prop("checked", true);
         }
     }
+    function loadLoanYearStats(year) {
+        $("#loan-stats-period").text(year ? "سال " + year : "کل دوره (همه سال‌ها)");
+        $.ajax({
+            url: url_get_loan_stats,
+            type: "GET",
+            dataType: "json",
+            data: { year: year || "" },
+            success: function (result) {
+                function prop(obj, name) {
+                    return obj[name] !== undefined ? obj[name] : obj[name.charAt(0).toUpperCase() + name.substring(1)];
+                }
+                function number(value) { return new Intl.NumberFormat("fa-IR").format(Number(value || 0)); }
+                function render(prefix, stats) {
+                    $("#" + prefix + "-requested-amount").text(number(prop(stats, "requestedAmount")));
+                    $("#" + prefix + "-requested-count").text(number(prop(stats, "requestedCount")) + " درخواست");
+                    $("#" + prefix + "-paid-amount").text(number(prop(stats, "paidAmount")));
+                    $("#" + prefix + "-paid-count").text(number(prop(stats, "paidCount")) + " درخواست");
+                    $("#" + prefix + "-request-limit").text(number(prop(stats, "perRequestLimit")));
+                    $("#" + prefix + "-annual-limit").text(number(prop(stats, "annualLimit")));
+                    var used = prop(stats, "usedAmount");
+                    var remaining = prop(stats, "remainingAmount");
+                    var usage = prop(stats, "usagePercent");
+                    $("#" + prefix + "-used").text(used === null || used === undefined ? "سال را انتخاب کنید" : number(used));
+                    $("#" + prefix + "-remaining").text(remaining === null || remaining === undefined ? "سال را انتخاب کنید" : number(remaining));
+                    var percent = usage === null || usage === undefined ? 0 : Number(usage);
+                    $("#" + prefix + "-percent").text(usage === null || usage === undefined ? "—" : number(percent));
+                    $("#" + prefix + "-progress").css("width", Math.max(0, Math.min(100, percent)) + "%").attr("aria-valuenow", percent);
+                }
+                render("gharzol", prop(result, "gharzolHasane"));
+                render("morabehe", prop(result, "morabehe"));
+            },
+            error: function () { $("#loan-stats-period").text("دریافت آمار ناموفق بود"); }
+        });
+    }
+
 });
 
 function reportTypeChanged() {

@@ -109,7 +109,11 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
                     var now = DateTime.Now;
                     var currentPersianYear = persianCalendar.GetYear(now);
                     var startOfPersianYear = new DateTime(currentPersianYear, 1, 1, persianCalendar);
-                    var endOfPersianYear = new DateTime(currentPersianYear, 12, 29, 23, 59, 59, persianCalendar);
+                    var startOfNextPersianYear = new DateTime(currentPersianYear + 1, 1, 1, persianCalendar);
+                    var senatorIdForBudget = loan.DataEntry.SenatorId;
+                    var annualBudget = senatorIdForBudget.HasValue
+                        ? await _context.SenatorAnnualLoanBudgets.SingleOrDefaultAsync(x => x.SenatorId == senatorIdForBudget.Value && x.Year == currentPersianYear, cancellationToken)
+                        : null;
                     //
                     var haveOpenLoan = _context.Loans.Include(l => l.DataEntry)
                         .Where(x => x.DataEntry.Loan.NationalNo == loan.NationalNo
@@ -125,7 +129,7 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
                         .Where(x => x.DataEntry.SenatorId == loan.DataEntry.SenatorId
                                 && x.VaziatPasokh != ResponseStatusEnum.Manfi
                                 && x.DataEntry.Created >= startOfPersianYear
-                                && x.DataEntry.Created <= endOfPersianYear);
+                                && x.DataEntry.Created < startOfNextPersianYear);
                     //if (todayLoans.Count() >= int.Parse(_configuration.GetSection("DailyLoanCount").Value))
                     //{
                     //    throw new InvalidOperationException("شما قادر به معرفی بیش از 2 نفر جهت اخذ تسهیلات در روز نمی‌باشید.");
@@ -135,8 +139,11 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
 
                     if (loan.LoanType == LoanTypeEnum.Gharzolhasane)
                     {
-                        var havemaxGharzolhasaneInYearRequestConfig = long.TryParse(_configuration["maxGharzolhasaneInYearRequest"], out long maxGharzolhasaneInYearRequest);
-                        if (!havemaxGharzolhasaneInYearRequestConfig) { maxGharzolhasaneInYearRequest = 2000000000; }
+                        long maxGharzolhasaneInYearRequest;
+                        if (annualBudget != null)
+                            maxGharzolhasaneInYearRequest = annualBudget.GharzolHasaneLimit;
+                        else if (!long.TryParse(_configuration["maxGharzolhasaneInYearRequest"], out maxGharzolhasaneInYearRequest))
+                            maxGharzolhasaneInYearRequest = 2000000000;
 
                         var gharzolHasaneThisYear = yearlyLoans.Where(l => l.LoanType == LoanTypeEnum.Gharzolhasane).Sum(x => x.Amount);
                         var remainingCredit = maxGharzolhasaneInYearRequest - gharzolHasaneThisYear;
@@ -155,8 +162,11 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
 
                     if (loan.LoanType == LoanTypeEnum.Morabehe)
                     {
-                        var havemaxmaxMorabeheInYearRequestConfig = long.TryParse(_configuration["maxMorabeheInYearRequest"], out long maxMorabeheInYearRequest);
-                        if (!havemaxmaxMorabeheInYearRequestConfig) { maxMorabeheInYearRequest = 3000000000; }
+                        long maxMorabeheInYearRequest;
+                        if (annualBudget != null)
+                            maxMorabeheInYearRequest = annualBudget.MorabeheLimit;
+                        else if (!long.TryParse(_configuration["maxMorabeheInYearRequest"], out maxMorabeheInYearRequest))
+                            maxMorabeheInYearRequest = 3000000000;
 
                         var morabeheThisYear = yearlyLoans.Where(l => l.LoanType == LoanTypeEnum.Morabehe).Sum(x => x.Amount);
                         var remainingCredit = maxMorabeheInYearRequest - morabeheThisYear;
@@ -174,6 +184,14 @@ namespace MajlesMefa.Back.UseCases.Commmands.CreateNewDataEntryCommand
                     }
 
 
+
+                    if (annualBudget != null)
+                    {
+                        if (loan.LoanType == LoanTypeEnum.Gharzolhasane)
+                            annualBudget.GharzolHasaneUsed += loan.Amount;
+                        else if (loan.LoanType == LoanTypeEnum.Morabehe)
+                            annualBudget.MorabeheUsed += loan.Amount;
+                    }
 
                     loan.NationalNo = PersianToEnglish.ConvertPersianToEnglishNumber(loan.NationalNo);
                     loan.MobileNo = PersianToEnglish.ConvertPersianToEnglishNumber(loan.MobileNo);

@@ -73,6 +73,8 @@ namespace MajlesMefa.Back.Entities
         public ICollection<TahghighTafahosSenatorEntity> TahghighTafahosSenators { get; set; } = new HashSet<TahghighTafahosSenatorEntity>();
 
         public virtual ICollection<SenatorBudgetEntity> SenatorBudgets { get; set; } = new HashSet<SenatorBudgetEntity>();
+
+        public virtual ICollection<SenatorAnnualLoanBudgetEntity> AnnualLoanBudgets { get; set; } = new HashSet<SenatorAnnualLoanBudgetEntity>();
     }
 
     public class SenatorProfileConfig : IEntityTypeConfiguration<SenatorProfileEntity>

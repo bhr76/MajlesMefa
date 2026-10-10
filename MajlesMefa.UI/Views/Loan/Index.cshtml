@@ -11,6 +11,7 @@
     var id = Model.HasValue ? Model : Guid.Empty;
     var user = Context.RequestServices.GetService<ICurrentUserService>();
     var role = user.GetCurrentUser().Roles.FirstOrDefault();
+    var isSenator = user.GetCurrentUser().Roles.Any(r => r == RoleTypeEnum.Senator);
     var username = user.GetCurrentUser().UserName;
     var canSeeBatchActions = string.Equals(username, "b.refah", StringComparison.OrdinalIgnoreCase);
 
@@ -32,6 +33,59 @@
 
 <div class="home-page">
     <div class="m-portlet__body">
+        @if (isSenator)
+        {
+        <div class="m-portlet mb-3">
+            <div class="m-portlet__head">
+                <div class="m-portlet__head-caption">
+                    <div class="m-portlet__head-title">
+                        <h3 class="m-portlet__head-text">خلاصه تسهیلات <small id="loan-stats-period" class="mr-2">در حال بارگذاری...</small></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="m-portlet__body">
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <h5>قرض‌الحسنه</h5>
+                            <div class="row">
+                                <div class="col-sm-6"><span>درخواستی</span><strong class="d-block"><span id="gharzol-requested-amount">—</span> تومان</strong><small id="gharzol-requested-count">— درخواست</small></div>
+                                <div class="col-sm-6"><span>پرداخت‌شده</span><strong class="d-block"><span id="gharzol-paid-amount">—</span> تومان</strong><small id="gharzol-paid-count">— درخواست</small></div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-6">سقف هر درخواست: <strong id="gharzol-request-limit">—</strong> تومان</div>
+                                <div class="col-sm-6">سقف سالانه شما: <strong id="gharzol-annual-limit">—</strong> تومان</div>
+                                <div class="col-sm-6 mt-2">مصرف از سقف سالانه: <strong id="gharzol-used">—</strong> تومان (<span id="gharzol-percent">—</span>٪)</div>
+                                <div class="col-sm-6 mt-2">باقی‌مانده: <strong id="gharzol-remaining">—</strong> تومان</div>
+                            </div>
+                            <div class="progress mt-3" style="height:8px"><div id="gharzol-progress" class="progress-bar bg-success" role="progressbar" style="width:0%" aria-valuemin="0" aria-valuemax="100"></div></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <h5>مرابحه</h5>
+                            <div class="row">
+                                <div class="col-sm-6"><span>درخواستی</span><strong class="d-block"><span id="morabehe-requested-amount">—</span> تومان</strong><small id="morabehe-requested-count">— درخواست</small></div>
+                                <div class="col-sm-6"><span>پرداخت‌شده</span><strong class="d-block"><span id="morabehe-paid-amount">—</span> تومان</strong><small id="morabehe-paid-count">— درخواست</small></div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-sm-6">سقف هر درخواست: <strong id="morabehe-request-limit">—</strong> تومان</div>
+                                <div class="col-sm-6">سقف سالانه شما: <strong id="morabehe-annual-limit">—</strong> تومان<br /></div>
+                                <div class="col-sm-6 mt-2">مصرف از سقف سالانه: <strong id="morabehe-used">—</strong> تومان (<span id="morabehe-percent">—</span>٪)</div>
+                                <div class="col-sm-6 mt-2">باقی‌مانده: <strong id="morabehe-remaining">—</strong> تومان</div>
+                            </div>
+                            <div class="progress mt-3" style="height:8px"><div id="morabehe-progress" class="progress-bar bg-info" role="progressbar" style="width:0%" aria-valuemin="0" aria-valuemax="100"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <small class="text-muted">مصرف سهمیه بر اساس درخواست‌های ردنشده و سقف سالانهٔ شما محاسبه می‌شود. مبالغ درخواستی و پرداخت‌شده با فیلتر سال هماهنگ هستند. برای مصرف سهمیهٔ سالانه، سال مشخصی را انتخاب کنید.</small>
+            </div>
+        </div>
+
+        }
+
         <div class="m-portlet">
             <div class="m-portlet__body">
                 <form>
@@ -121,6 +175,8 @@
         ];
         var userRole = '@role';
         var url_get_loan = '';
+        var url_get_loan_stats = '@Url.Action(nameof(LoanController.GetYearlyLoanStats), LoanController.CONTROLLER)';
+        var loanStatsSenatorId = '@id';
         var url_create = '';
         var url_edit = '';
         var url_log = '';

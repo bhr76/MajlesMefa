@@ -91,6 +91,7 @@ namespace MajlesMefa.Back.Entities
 
         public DbSet<SenatorProfileEntity> SenatorProfiles { get; set; }
         public DbSet<SenatorBudgetEntity> SenatorBudgets { get; set; }
+        public DbSet<SenatorAnnualLoanBudgetEntity> SenatorAnnualLoanBudgets { get; set; }
 
         public DbSet<PageEntity> Pages { get; set; }
         public DbSet<BankEntity> Banks { get; set; }

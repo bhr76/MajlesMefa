@@ -1,0 +1,67 @@
+@using MajlesMefa.UI.Views.SenatorAnnualLoanBudget;
+@using MajlesMefa.UI.Models;
+@model Guid?
+@{
+    ViewData["Title"] = "سقف سالانه تسهیلات نمایندگان";
+    var senatorId = Model ?? Guid.Empty;
+    var senatorName = ViewBag.SenatorName as string;
+}
+<div class="home-page">
+    <div class="m-portlet__body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h3>سقف تسهیلات سالانه @(string.IsNullOrWhiteSpace(senatorName) ? "نمایندگان" : "نماینده: " + senatorName)</h3>
+                <small class="text-muted">سال بر مبنای تقویم شمسی است. مصرف از مجموع درخواست‌های ردنشدهٔ همان سال محاسبه و هنگام بارگذاری فهرست به‌روز می‌شود.</small>
+            </div>
+            <a class="btn btn-success" href="@Url.Action(nameof(SenatorAnnualLoanBudgetController.Create), SenatorAnnualLoanBudgetController.CONTROLLER, new { senatorId })">ثبت سقف سالانه</a>
+        </div>
+        @if (senatorId == Guid.Empty)
+        {
+        <div class="row mb-3">
+            <div class="col-xl-6 mb-3">
+                <div class="border rounded p-3 h-100">
+                    <h5>ثبت سقف یکسان برای همهٔ نمایندگان</h5>
+                    <small class="text-muted d-block mb-2">برای نماینده‌هایی که در سال انتخابی هنوز رکورد ندارند، رکورد جدید ساخته می‌شود؛ سقف‌های موجود تغییر نمی‌کنند.</small>
+                    <form id="bulk-create-form" method="post" action="@Url.Action(nameof(SenatorAnnualLoanBudgetController.BulkCreate), SenatorAnnualLoanBudgetController.CONTROLLER)">
+                        @Html.AntiForgeryToken()
+                        <div class="form-row">
+                            <div class="form-group col-md-3"><label>سال شمسی</label><input name="Year" type="number" min="1300" max="1500" value="@ViewBag.CurrentPersianYear" class="form-control" required /></div>
+                            <div class="form-group col-md-4"><label>سقف قرض‌الحسنه (تومان)</label><input name="GharzolHasaneLimit" type="number" min="0" step="1" class="form-control" required /></div>
+                            <div class="form-group col-md-4"><label>سقف مرابحه (تومان)</label><input name="MorabeheLimit" type="number" min="0" step="1" class="form-control" required /></div>
+                            <div class="form-group col-md-1 d-flex align-items-end"><button class="btn btn-success" type="submit">ثبت</button></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-xl-6 mb-3">
+                <div class="border rounded p-3 h-100">
+                    <h5>افزایش یا کاهش گروهی سقف‌ها</h5>
+                    <small class="text-muted d-block mb-2">تغییر روی رکوردهای موجود همان سال اعمال می‌شود. برای کاهش، عدد منفی وارد کنید؛ مصرف ثبت‌شده تغییر نمی‌کند.</small>
+                    <form id="bulk-adjust-form" method="post" action="@Url.Action(nameof(SenatorAnnualLoanBudgetController.BulkAdjust), SenatorAnnualLoanBudgetController.CONTROLLER)">
+                        @Html.AntiForgeryToken()
+                        <div class="form-row">
+                            <div class="form-group col-md-3"><label>سال شمسی</label><input name="Year" type="number" min="1300" max="1500" value="@ViewBag.CurrentPersianYear" class="form-control" required /></div>
+                            <div class="form-group col-md-4"><label>تغییر قرض‌الحسنه (تومان)</label><input name="GharzolHasaneDelta" type="number" step="1" value="0" class="form-control" required /></div>
+                            <div class="form-group col-md-4"><label>تغییر مرابحه (تومان)</label><input name="MorabeheDelta" type="number" step="1" value="0" class="form-control" required /></div>
+                            <div class="form-group col-md-1 d-flex align-items-end"><button class="btn btn-warning" type="submit">اعمال</button></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        }
+        <div class="mb-3"><input id="annual-budget-name-search" class="form-control" style="max-width:360px" placeholder="جستجو بر اساس نام نماینده" /></div>
+        <div class="k-rtl"><div id="annual-loan-budget-grid"></div></div>
+    </div>
+</div>
+@section scripts {
+    <script>
+        var annualBudgetSenatorId = '@senatorId';
+        var annualBudgetDefaultYear = '@ViewBag.CurrentPersianYear';
+        var annualBudgetReadUrl = '@Url.Action(nameof(SenatorAnnualLoanBudgetController.GetBudgets), SenatorAnnualLoanBudgetController.CONTROLLER)';
+        var annualBudgetEditUrl = '@Url.Action(nameof(SenatorAnnualLoanBudgetController.Edit), SenatorAnnualLoanBudgetController.CONTROLLER)';
+        var annualBudgetDeleteUrl = '@Url.Action(nameof(SenatorAnnualLoanBudgetController.Delete), SenatorAnnualLoanBudgetController.CONTROLLER)';
+        var annualBudgetToken = '@Html.AntiForgeryToken()'.match(/value="([^"]+)"/)[1];
+    </script>
+    <script src="~/js/pages/senatorAnnualLoanBudget.js" asp-append-version="true"></script>
+}

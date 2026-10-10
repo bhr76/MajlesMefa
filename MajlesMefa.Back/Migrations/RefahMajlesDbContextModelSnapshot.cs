@@ -1052,7 +1052,24 @@ namespace MajlesMefa.Back.Migrations
                     b.ToTable("SenatorBudgets");
                 });
 
-            modelBuilder.Entity("MajlesMefa.Back.Entities.SenatorProfileEntity", b =>
+                        modelBuilder.Entity("MajlesMefa.Back.Entities.SenatorAnnualLoanBudgetEntity", b =>
+                {
+                    b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uniqueidentifier");
+                    b.Property<DateTime>("Created").ValueGeneratedOnAdd().HasColumnType("datetime2").HasDefaultValueSql("getdate()");
+                    b.Property<Guid>("CreatorUserId").HasColumnType("uniqueidentifier");
+                    b.Property<long>("GharzolHasaneLimit").HasColumnType("bigint");
+                    b.Property<long>("GharzolHasaneUsed").HasColumnType("bigint");
+                    b.Property<long>("MorabeheLimit").HasColumnType("bigint");
+                    b.Property<long>("MorabeheUsed").HasColumnType("bigint");
+                    b.Property<Guid>("SenatorId").HasColumnType("uniqueidentifier");
+                    b.Property<int>("Year").HasColumnType("int");
+                    b.HasKey("Id");
+                    b.HasIndex("Created");
+                    b.HasIndex("SenatorId", "Year").IsUnique();
+                    b.ToTable("SenatorAnnualLoanBudgets");
+                });
+
+modelBuilder.Entity("MajlesMefa.Back.Entities.SenatorProfileEntity", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -1604,7 +1621,17 @@ namespace MajlesMefa.Back.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MajlesMefa.Back.Entities.SenatorProfileEntity", b =>
+                        modelBuilder.Entity("MajlesMefa.Back.Entities.SenatorAnnualLoanBudgetEntity", b =>
+                {
+                    b.HasOne("MajlesMefa.Back.Entities.SenatorProfileEntity", "Senator")
+                        .WithMany("AnnualLoanBudgets")
+                        .HasForeignKey("SenatorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                    b.Navigation("Senator");
+                });
+
+modelBuilder.Entity("MajlesMefa.Back.Entities.SenatorProfileEntity", b =>
                 {
                     b.HasOne("MajlesMefa.Back.Entities.CityEntity", "BirthCity")
                         .WithMany("SenatorBirthCities")
@@ -1811,6 +1838,8 @@ namespace MajlesMefa.Back.Migrations
 
             modelBuilder.Entity("MajlesMefa.Back.Entities.SenatorProfileEntity", b =>
                 {
+                    b.Navigation("AnnualLoanBudgets");
+
                     b.Navigation("SenatorBudgets");
 
                     b.Navigation("TahghighTafahosSenators");

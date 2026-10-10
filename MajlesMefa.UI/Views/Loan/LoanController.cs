@@ -25,6 +25,7 @@ using MajlesMefa.UI.Models;
 using MajlesMefa.UI.Views.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
@@ -40,17 +41,19 @@ namespace MajlesMefa.UI.Views.Loan
         private readonly ICurrentUserService _currentUserService;
         private readonly ISoaPlusService _soaPlusService;
         private readonly DapperContext _dapperContext;
+        private readonly RefahMajlesDbContext _dbContext;
         //private readonly ISenatorBudgetRepository _budgetRepository;
 
         public LoanController(IMapper mapper, ILogger<LoanController> logger, 
             IConfiguration configuration, ICurrentUserService currentUserService,
-            ISoaPlusService soaPlusService, DapperContext dapperContext) : base(mapper)
+            ISoaPlusService soaPlusService, DapperContext dapperContext, RefahMajlesDbContext dbContext) : base(mapper)
         {
             _logger = logger;
             _configuration = configuration;
             _currentUserService = currentUserService;
             _soaPlusService = soaPlusService;
             _dapperContext = dapperContext;
+            _dbContext = dbContext;
             // _budgetRepository = budgetRepository;
         }
 
@@ -94,6 +97,124 @@ namespace MajlesMefa.UI.Views.Loan
                 throw;
             }
 
+        }
+
+        [RequestLimit(NoOfRequest = 30, Seconds = 5)]
+        [Auth]
+        public async Task<IActionResult> GetYearlyLoanStats(int? year, CancellationToken ct)
+        {
+            DateTime? fromDate = null;
+            DateTime? toDate = null;
+            if (year.HasValue)
+            {
+                if (year.Value == 1404)
+                {
+                    fromDate = new DateTime(2025, 3, 21, 0, 0, 0, DateTimeKind.Utc);
+                    toDate = new DateTime(2026, 3, 20, 23, 59, 59, DateTimeKind.Utc);
+                }
+                else if (year.Value == 1405)
+                {
+                    fromDate = new DateTime(2026, 3, 21, 0, 0, 0, DateTimeKind.Utc);
+                    toDate = new DateTime(2027, 3, 20, 23, 59, 59, DateTimeKind.Utc);
+                }
+                else
+                {
+                    return BadRequest("سال انتخاب‌شده معتبر نیست.");
+                }
+            }
+
+            var currentUser = _currentUserService.GetCurrentUser();
+            if (!currentUser.Roles.Any(role => role == RoleTypeEnum.Senator))
+                return Forbid();
+
+            // گزارش سهمیه فقط برای خود Senator و بر اساس شناسهٔ کاربر جاری محاسبه می‌شود.
+            const string sql = @"SELECT d.SenatorId,
+       l.LoanType,
+       COUNT(1) AS RequestedCount,
+       COALESCE(SUM(l.Amount), 0) AS RequestedAmount,
+       SUM(CASE WHEN l.VaziatPasokh = @PaidStatus THEN 1 ELSE 0 END) AS PaidCount,
+       COALESCE(SUM(CASE WHEN l.VaziatPasokh = @PaidStatus THEN l.Amount ELSE 0 END), 0) AS PaidAmount,
+       COALESCE(SUM(CASE WHEN l.VaziatPasokh <> @RejectedStatus THEN l.Amount ELSE 0 END), 0) AS UsedAmount
+ FROM dbo.DataEntries d
+ INNER JOIN dbo.Loans l ON l.DataEntryId = d.Id
+ WHERE d.DataEntryType = @LoanDataEntryType
+   AND d.SenatorId = @BusinessUserId
+   AND (@FromDate IS NULL OR d.Created >= @FromDate)
+   AND (@ToDate IS NULL OR d.Created <= @ToDate)
+ GROUP BY d.SenatorId, l.LoanType;";
+
+            using var connection = _dapperContext.CreateConnection();
+            var parameters = new
+            {
+                FromDate = fromDate,
+                ToDate = toDate,
+                PaidStatus = ResponseStatusEnum.Mosbat,
+                RejectedStatus = ResponseStatusEnum.Manfi,
+                LoanDataEntryType = DataEntryTypeEnum.Loan,
+                BusinessUserId = currentUser.BussinessUserId
+            };
+            var aggregates = (await connection.QueryAsync<LoanYearAggregate>(sql, parameters)).ToList();
+            var annualBudget = year.HasValue
+                ? await _dbContext.SenatorAnnualLoanBudgets.SingleOrDefaultAsync(x => x.SenatorId == currentUser.BussinessUserId && x.Year == year.Value, ct)
+                : null;
+
+            long ConfiguredLimit(string key, long defaultValue) =>
+                long.TryParse(_configuration[key], out var value) ? value : defaultValue;
+
+            object MakeTypeStats(LoanTypeEnum type, string requestKey, long requestDefault, string annualKey, long annualDefault)
+            {
+                var typeRows = aggregates.Where(row => row.LoanType == type).ToList();
+                var requestedCount = typeRows.Sum(row => row.RequestedCount);
+                var requestedAmount = typeRows.Sum(row => row.RequestedAmount);
+                var paidCount = typeRows.Sum(row => row.PaidCount);
+                var paidAmount = typeRows.Sum(row => row.PaidAmount);
+                var annualLimit = annualBudget == null
+                    ? ConfiguredLimit(annualKey, annualDefault)
+                    : type == LoanTypeEnum.Gharzolhasane ? annualBudget.GharzolHasaneLimit : annualBudget.MorabeheLimit;
+                var usedAmount = typeRows.Sum(row => row.UsedAmount);
+                var remainingAmount = year.HasValue
+                    ? Math.Max(0, annualLimit - usedAmount)
+                    : (long?)null;
+                var usagePercent = !year.HasValue || annualLimit <= 0
+                    ? (decimal?)null
+                    : Math.Round(usedAmount * 100m / annualLimit, 1);
+
+                return new
+                {
+                    RequestedCount = requestedCount,
+                    RequestedAmount = requestedAmount,
+                    PaidCount = paidCount,
+                    PaidAmount = paidAmount,
+                    PerRequestLimit = ConfiguredLimit(requestKey, requestDefault),
+                    AnnualLimit = annualLimit,
+                    UsedAmount = year.HasValue ? usedAmount : (long?)null,
+                    RemainingAmount = remainingAmount,
+                    UsagePercent = usagePercent
+                };
+            }
+
+            var gharzolHasaneStats = MakeTypeStats(LoanTypeEnum.Gharzolhasane, "maxGharzolHasanePerRequest", 50000000, "maxGharzolhasaneInYearRequest", 2000000000);
+            var morabeheStats = MakeTypeStats(LoanTypeEnum.Morabehe, "maxMorabehePerRequest", 300000000, "maxMorabeheInYearRequest", 3000000000);
+            if (annualBudget != null)
+            {
+                annualBudget.GharzolHasaneUsed = aggregates.Where(x => x.LoanType == LoanTypeEnum.Gharzolhasane).Sum(x => x.UsedAmount);
+                annualBudget.MorabeheUsed = aggregates.Where(x => x.LoanType == LoanTypeEnum.Morabehe).Sum(x => x.UsedAmount);
+                await _dbContext.SaveChangesAsync(ct);
+            }
+            return Json(new { Year = year, GharzolHasane = gharzolHasaneStats, Morabehe = morabeheStats });
+        }
+
+        private sealed class LoanYearAggregate
+        {
+            public LoanYearAggregate() { }
+
+            public Guid? SenatorId { get; set; }
+            public LoanTypeEnum LoanType { get; set; }
+            public int RequestedCount { get; set; }
+            public long RequestedAmount { get; set; }
+            public int PaidCount { get; set; }
+            public long PaidAmount { get; set; }
+            public long UsedAmount { get; set; }
         }
 
         [RequestLimit(NoOfRequest = 10, Seconds = 5)]

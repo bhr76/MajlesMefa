@@ -295,32 +295,41 @@ namespace MajlesMefa.Back.UseCases.Commmands.UpdateDataEntryCommand
                        
                        
                         requestLoanData.Amount = requestLoanData.Amount.Replace(",", "");
-                        if (data.DataEntry.Loan.Amount != long.Parse(requestLoanData.Amount)) // mablagh taghir karde to edit
+                        var requestedAmount = long.Parse(requestLoanData.Amount);
+                        if (requestedAmount > data.DataEntry.Loan.Amount || requestLoanData.LoanType != data.DataEntry.Loan.LoanType)
                         {
-
                             var persianCalendar = new PersianCalendar();
-                            var now = DateTime.Now;
-                            var currentPersianYear = persianCalendar.GetYear(now);
+                            var currentPersianYear = persianCalendar.GetYear(DateTime.Now);
                             var startOfPersianYear = new DateTime(currentPersianYear, 1, 1, persianCalendar);
-                            var endOfPersianYear = new DateTime(currentPersianYear, 12, 29, 23, 59, 59, persianCalendar);
+                            var startOfNextPersianYear = new DateTime(currentPersianYear + 1, 1, 1, persianCalendar);
+                            var senatorIdForBudget = data.DataEntry.SenatorId;
+                            var annualBudget = senatorIdForBudget.HasValue
+                                ? await _context.SenatorAnnualLoanBudgets.SingleOrDefaultAsync(x => x.SenatorId == senatorIdForBudget.Value && x.Year == currentPersianYear, cancellationToken)
+                                : null;
+                            var loanType = requestLoanData.LoanType;
+                            var yearlyUsed = await _context.Loans
+                                .Where(x => x.DataEntryId != data.DataEntryId
+                                    && x.DataEntry.SenatorId == senatorIdForBudget
+                                    && x.DataEntry.Created >= startOfPersianYear
+                                    && x.DataEntry.Created < startOfNextPersianYear
+                                    && x.VaziatPasokh != ResponseStatusEnum.Manfi
+                                    && x.LoanType == loanType)
+                                .SumAsync(x => (long?)x.Amount, cancellationToken) ?? 0;
 
-                            // checking saghf haye etebari
-                            var yearlyLoans = _context.Loans.Include(l => l.DataEntry)
-                           .Where(x => x.DataEntry.SenatorId == data.DataEntry.SenatorId
-                                   && x.DataEntry.Created >= startOfPersianYear
-                                   && x.DataEntry.Created <= endOfPersianYear);
-                            //if (todayLoans.Count() >= int.Parse(_configuration.GetSection("DailyLoanCount").Value))
-                            //{
-                            //    throw new InvalidOperationException("شما قادر به معرفی بیش از 2 نفر جهت اخذ تسهیلات در روز نمی‌باشید.");
-                            //}
-                            //phase 2
-
-                            var havemaxLoaninYearRequestConfig = long.TryParse(_configuration["maxLoanInYearRequest"], out long maxLoanInYearRequest);
-                            if (!havemaxLoaninYearRequestConfig) { maxLoanInYearRequest = 5000000000; } // پنج میلیارد تومن در سال
-
-                            if (yearlyLoans.Sum(x => x.Amount) >= maxLoanInYearRequest)
+                            long annualLimit;
+                            if (annualBudget != null)
+                                annualLimit = loanType == LoanTypeEnum.Gharzolhasane ? annualBudget.GharzolHasaneLimit : annualBudget.MorabeheLimit;
+                            else
                             {
-                                throw new InvalidOperationException("سقف مجاز سالیانه شما جهت معرفی تسهیلات به پایان رسیده‌است.");
+                                var configKey = loanType == LoanTypeEnum.Gharzolhasane ? "maxGharzolhasaneInYearRequest" : "maxMorabeheInYearRequest";
+                                var defaultLimit = loanType == LoanTypeEnum.Gharzolhasane ? 2000000000L : 3000000000L;
+                                if (!long.TryParse(_configuration[configKey], out annualLimit)) annualLimit = defaultLimit;
+                            }
+
+                            if (yearlyUsed + requestedAmount > annualLimit)
+                            {
+                                var remainingCredit = annualLimit - yearlyUsed;
+                                throw new InvalidOperationException($"سقف مجاز سالیانهٔ شما جهت معرفی تسهیلات به پایان رسیده‌است. سقف: {annualLimit:N0} تومان، مصرف‌شده: {yearlyUsed:N0} تومان، مانده: {remainingCredit:N0} تومان، مبلغ درخواستی: {requestedAmount:N0} تومان");
                             }
                         }
 
